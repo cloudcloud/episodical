@@ -20,9 +20,9 @@ export default {
     Header,
   },
   data () {
-    return {}
-  }
-}
+    return {};
+  },
+};
 </script>
 
 <style></style>

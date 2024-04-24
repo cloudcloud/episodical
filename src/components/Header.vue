@@ -1,8 +1,10 @@
 <template>
-  <v-app-bar color="deep-green-darken-4" app>
-    <v-spacer />
+  <v-app-bar color="green-darken-4" app>
+    <v-spacer></v-spacer>
 
-    <v-btn class="mx-2" ripple small>Home</v-btn>
+    <v-btn class="mx-2" ripple small to="/">Home</v-btn>
+    <v-btn class="mx-2" ripple small to="/collections">Collections</v-btn>
+    <v-btn class="mx-2" ripple small to="/config">Config</v-btn>
 
     <v-spacer></v-spacer>
   </v-app-bar>
