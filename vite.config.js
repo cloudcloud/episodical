@@ -10,4 +10,7 @@ export default defineConfig({
     },
     extensions: [".vue", ".js", ".json", ".ts"],
   },
+  build: {
+    outDir: 'pkg/server/dist',
+  },
 });
