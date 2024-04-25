@@ -4,6 +4,7 @@
 *.dll
 *.so
 *.dylib
+episodical
 
 # Test binary, built with `go test -c`
 *.test
@@ -19,4 +20,3 @@ pkg/server/dist
 
 # Data
 .envrc
-

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const url = document.querySelector('#FOBaseURL').getAttribute('content');
+const url = document.querySelector('#EpisodicalBaseURL').getAttribute('content');
 const client = axios.create({
   baseURL: url,
   json: true,
@@ -18,7 +18,7 @@ export default {
       url: resource,
       data,
       headers: {
-        'X-Client': 'file-organization 1.0',
+        'X-Client': 'episodical 1.0',
       },
     }).then(req => {
       return req.data;

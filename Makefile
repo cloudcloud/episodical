@@ -1,8 +1,9 @@
-CONFIG_FILE?=./config.json
-PROJECT?=file-organization
-C = $(shell printf "\033[35;1m-->\033[0m")
-V := $(if $V,,@)
-GO := $(shell which go)
+DATA_FILE       ?= ./episodical.db
+DATA_PASSPHRASE ?= PickAStrongAndLong!1!PhraseHere
+PROJECT         ?= episodical
+C                = $(shell printf "\033[35;1m-->\033[0m")
+V               := $(if $V,,@)
+GO              := $(shell which go)
 
 binaries: ; $(info $(C) building all binaries)
 	$V $(MAKE) binary GOARCH=amd64 GOOS=linux
@@ -27,7 +28,7 @@ coverage: ; $(info $(C) running coverage)
 	$V $(GO) tool cover -html=c.out -o cover.html
 
 dev-be: install ; $(info $(C) building backend for dev)
-	$V CONFIG_FILE=$(CONFIG_FILE) ./$(PROJECT)
+	$V DATA_FILE=$(DATA_FILE) DATA_PASSPHRASE=$(DATA_PASSPHRASE) ./$(PROJECT)
 
 dev-fe: ; $(info $(C) building frontend for dev)
 	$V NODE_OPTIONS=--openssl-legacy-provider yarn serve
@@ -43,7 +44,7 @@ install: build-fe ; $(info $(C) installing $(PROJECT))
 
 local: ; $(info $(C) zero-to-hero for local running)
 	$V GOOS=$(shell uname) $(MAKE) install
-	$V HOSTNAME=http://localhost:8008 CONFIG_FILE=$(shell pwd)/config.json ./$(PROJECT)
+	$V HOSTNAME=http://localhost:8008 DATA_FILE=$(DATA_FILE) DATA_PASSPHRASE=$(DATA_PASSPHRASE) ./$(PROJECT)
 
 test: install ; $(info $(C) running tests)
 	$V $(GO) test -v -race ./...
