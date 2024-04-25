@@ -1,6 +1,6 @@
 CONFIG_FILE?=./config.json
 PROJECT?=file-organization
-C = $(shell printf "\=33[35;1m-->\033[0m")
+C = $(shell printf "\033[35;1m-->\033[0m")
 V := $(if $V,,@)
 GO := $(shell which go)
 
