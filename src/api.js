@@ -7,6 +7,11 @@ const client = axios.create({
 });
 
 export default {
+
+  getEpisodic(name) {
+    return this.perform('get', `/api/v1/${name}`);
+  },
+
   async perform(method, resource, data) {
     return client({
       method,

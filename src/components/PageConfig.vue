@@ -26,6 +26,14 @@
           </template>
         </v-card>
       </v-col>
+
+      <v-col cols="6">
+        <v-card shaped title="Integrations">
+          <template v-slot:append>
+            <v-btn icon="mdi-plus" x-small @click="newIntegration()"></v-btn>
+          </template>
+        </v-card>
+      </v-col>
     </v-row>
   </v-container>
 </template>
@@ -40,6 +48,8 @@ export default {
     newDocument() {
     },
     newEpisodic() {
+    },
+    newIntegration() {
     },
   },
 };
