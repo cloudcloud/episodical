@@ -2,20 +2,23 @@ package data
 
 import (
 	"github.com/cloudcloud/episodical/pkg/config"
-	"github.com/jmoiron/sqlx"
-
-	_ "modernc.org/sqlite"
+	"zombiezen.com/go/sqlite"
+	"zombiezen.com/go/sqlite/sqlitex"
 )
 
 type Base struct {
 	Errors []error
 
 	conf *config.Config
-	conn *sqlx.DB
+	conn *sqlitex.Pool
 }
 
 func Open(c *config.Config) (*Base, error) {
-	db, err := sqlx.Open("sqlite", c.DataFile)
+	db, err := sqlitex.Open(
+		c.DataFile,
+		sqlite.OpenCreate|sqlite.OpenReadWrite|sqlite.OpenWAL|sqlite.OpenNoMutex,
+		10,
+	)
 	if err != nil {
 		return nil, err
 	}

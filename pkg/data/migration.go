@@ -1,48 +1,45 @@
 package data
 
 import (
-	"database/sql"
+	"context"
 	"embed"
+	"io/fs"
+	"log"
 
-	migrate "github.com/golang-migrate/migrate/v4"
-	"github.com/golang-migrate/migrate/v4/database/sqlite"
-	"github.com/golang-migrate/migrate/v4/source/iofs"
-	_ "modernc.org/sqlite"
+	"zombiezen.com/go/sqlite/sqlitemigration"
 )
 
 //go:embed migrations/*sql
 var migrations embed.FS
 
 func (d *Base) migrate() error {
-	db, err := sql.Open("sqlite", d.conf.DataFile)
+	schema := sqlitemigration.Schema{
+		AppID:      0x00060606,
+		Migrations: allMigrationFiles(migrations),
+	}
+
+	conn := d.db.Get(context.Background())
+	defer d.db.Put(conn)
+
+	return sqlitemigration.Migrate(context.Background(), conn, schema)
+}
+
+func allMigrationFiles() []string {
+	f := []string{}
+
+	e, err := fs.ReadDir(f, "migrations")
 	if err != nil {
-		return err
+		log.Fatalf("Unable to read migration files, '%s'", err)
 	}
 
-	mfs, err := iofs.New(migrations, "migrations")
-	if err != nil {
-		return err
+	// range f.ReadDir("migrations")
+	for _, x := range e {
+		content, err := f.ReadFile(x)
+		if err != nil {
+			log.Fatalf("Unable to open migration file, '%s'", err)
+		}
+		f = append(f, content)
 	}
 
-	data, err := sqlite.WithInstance(db, &sqlite.Config{})
-	if err != nil {
-		return err
-	}
-
-	m, err := migrate.NewWithInstance(
-		"iofs",
-		mfs,
-		"sqlite",
-		data,
-	)
-	if err != nil {
-		return err
-	}
-
-	err = m.Up()
-	if err != nil && err.Error() != "no change" {
-		return err
-	}
-
-	return nil
+	return f
 }
