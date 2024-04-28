@@ -7,10 +7,11 @@ create table episodic (
   date_added text not null, -- iso8601 from go, date of when this episodic was added
   date_updated text, -- iso8601 from go, date of when this configuration was last changed
 
-  integration_id text, -- uuid, which integration the data for this episodical is pulled from
+  integration_used text, -- uuid, which integration the data for this episodical is pulled from
 
   file_system int not null, -- boolean, whether there are files corresponding to this
   path_id text, -- uuid, the identifier for which filesystem
+
   is_active int, -- boolean, if this episodic is continuing
   genre text, -- any particular genre information for the episodic
   public_db_id text, -- the identifier in the linkable public database
@@ -48,7 +49,7 @@ create table artistic (
   date_added text not null, -- iso8601 from go, date of when this artistic was added
   date_updated text, -- iso8601 from go, date of when this configuration was last changed
 
-  integration_id text, -- uuid, which integration the data for this artistic is pulled from
+  integration_used text, -- uuid, which integration the data for this artistic is pulled from
 
   file_system int not null, -- boolean, whether there are files corresponding to this
   path_id text, -- uuid, the identifier for which filesystem
