@@ -2,6 +2,17 @@ package types
 
 import "time"
 
+type AddEpisodic struct {
+	Title string `json:"title"`
+	Year  int    `json:"year"`
+
+	UseIntegration bool   `json:"use_integration"`
+	IntegrationID  string `json:"integration_id,omitempty"`
+
+	UseFileSystem bool   `json:"use_file_system"`
+	FileSystemID  string `json:"file_system_id,omitempty"`
+}
+
 type Episodic struct {
 	Base
 	Collection
@@ -57,4 +68,14 @@ type Song struct {
 	AlbumPosition int    `json:"album_position" db:"album_position"`
 
 	SongLength string `json:"song_length" db:"song_length"`
+}
+
+func (a AddEpisodic) Convert() (*Episodic, error) {
+	e := &Episodic{}
+
+	return e, nil
+}
+
+func (e *Episodic) Named() map[string]any {
+	return map[string]any{}
 }

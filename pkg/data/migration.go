@@ -15,11 +15,11 @@ var migrations embed.FS
 func (d *Base) migrate() error {
 	schema := sqlitemigration.Schema{
 		AppID:      0x00060606,
-		Migrations: allMigrationFiles(migrations),
+		Migrations: allMigrationFiles(),
 	}
 
-	conn := d.db.Get(context.Background())
-	defer d.db.Put(conn)
+	conn := d.conn.Get(context.Background())
+	defer d.conn.Put(conn)
 
 	return sqlitemigration.Migrate(context.Background(), conn, schema)
 }
@@ -27,18 +27,17 @@ func (d *Base) migrate() error {
 func allMigrationFiles() []string {
 	f := []string{}
 
-	e, err := fs.ReadDir(f, "migrations")
+	e, err := fs.ReadDir(migrations, "migrations")
 	if err != nil {
-		log.Fatalf("Unable to read migration files, '%s'", err)
+		log.Fatalf("Unable to read migration files, '%s'", err.Error())
 	}
 
-	// range f.ReadDir("migrations")
 	for _, x := range e {
-		content, err := f.ReadFile(x)
+		content, err := migrations.ReadFile("migrations/" + x.Name())
 		if err != nil {
-			log.Fatalf("Unable to open migration file, '%s'", err)
+			log.Fatalf("Unable to open migration file, '%s'", err.Error())
 		}
-		f = append(f, content)
+		f = append(f, string(content))
 	}
 
 	return f
