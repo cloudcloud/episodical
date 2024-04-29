@@ -1,45 +1,60 @@
 package server
 
 import (
-	"bytes"
-	"embed"
 	"net/http"
-	"path"
-	"strings"
 
-	"github.com/cloudcloud/episodical/pkg/config"
+	"github.com/cloudcloud/episodical/pkg/data"
+	"github.com/cloudcloud/episodical/pkg/types"
 	"github.com/gin-gonic/gin"
 )
 
-//go:embed dist/assets/* dist/index.html
-var dist embed.FS
+func routeAPI(g *gin.Engine) {
+	api := g.Group("/api/v1/")
 
-func routeEmbeds(g *gin.Engine) {
-	g.GET("/", index)
-	g.GET("/assets/*filepath", func(c *gin.Context) {
-		c.FileFromFS(path.Join("dist", c.Request.URL.Path), http.FS(dist))
+	api.GET("episodic/:id", getEpisodic)
+	api.POST("episodic/create", postEpisodic)
+	api.PUT("episodic/update/:id", putEpisodic)
+}
+
+func getEpisodic(c *gin.Context) {
+	wrap(c, func(ctx *gin.Context) (interface{}, []string, int) {
+		db := ctx.MustGet("db").(*data.Base)
+		id := ctx.Param("id")
+
+		res, err := db.GetEpisodicByID(ctx, id)
+
+		if err != nil {
+			return gin.H{}, []string{err.Error()}, http.StatusInternalServerError
+		}
+		return good(res)
 	})
 }
 
-func index(c *gin.Context) {
-	f, err := dist.ReadFile("dist/index.html")
-	if err != nil {
-		panic(err)
-	}
+func postEpisodic(c *gin.Context) {
+	wrap(c, func(ctx *gin.Context) (interface{}, []string, int) {
+		db := ctx.MustGet("db").(*data.Base)
 
-	s := strings.Replace(
-		string(f),
-		"[EP_BASE_URL]",
-		c.MustGet("conf").(*config.Config).Hostname,
-		1,
-	)
+		body := &types.AddEpisodic{}
+		ctx.BindJSON(body)
+		res, err := db.AddEpisodic(ctx, body)
+		if err != nil {
+			return gin.H{}, []string{err.Error()}, http.StatusInternalServerError
+		}
+		return good(res)
+	})
+}
 
-	r := bytes.NewReader([]byte(s))
-	c.DataFromReader(
-		http.StatusOK,
-		int64(len(s)),
-		"text/html",
-		r,
-		map[string]string{},
-	)
+func putEpisodic(c *gin.Context) {
+	wrap(c, func(ctx *gin.Context) (interface{}, []string, int) {
+		db := ctx.MustGet("db").(*data.Base)
+		id := ctx.Param("id")
+
+		body := &types.AddEpisodic{}
+		ctx.BindJSON(body)
+		res, err := db.UpdateEpisodic(ctx, id, body)
+		if err != nil {
+			return gin.H{}, []string{err.Error()}, http.StatusInternalServerError
+		}
+		return good(res)
+	})
 }

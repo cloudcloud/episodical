@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 	"log"
+	"net/http"
 	"time"
 
 	"github.com/cloudcloud/episodical/pkg/config"
@@ -45,6 +46,7 @@ func New(c *config.Config) *Server {
 	g.SetTrustedProxies(nil)
 
 	routeEmbeds(g)
+	routeAPI(g)
 
 	s.g = g
 	return s
@@ -87,4 +89,23 @@ func (s *Server) logger() gin.HandlerFunc {
 			log.With("size", ctx.Writer.Size(), "end", e, "latency", e.Sub(start), "status", ctx.Writer.Status()).Info("access_log")
 		}
 	}
+}
+
+func good(d interface{}) (interface{}, []string, int) {
+	return d, []string{}, http.StatusOK
+}
+
+func wrap(c *gin.Context, f func(*gin.Context) (interface{}, []string, int)) {
+	begin := time.Now()
+	out, errs, status := f(c)
+	latency := time.Since(begin)
+
+	c.JSON(status, gin.H{
+		"data":   out,
+		"errors": errs,
+		"meta": map[string]interface{}{
+			"latency": fmt.Sprintf("%v", latency),
+			"errors":  len(errs),
+		},
+	})
 }

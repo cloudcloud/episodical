@@ -22,7 +22,7 @@ SET title = :title
 WHERE id = :id;`
 )
 
-func (d *Base) AddEpisodic(ctx context.Context, ep types.AddEpisodic) (*types.Episodic, error) {
+func (d *Base) AddEpisodic(ctx context.Context, ep *types.AddEpisodic) (*types.Episodic, error) {
 	conn := d.conn.Get(ctx)
 	defer d.conn.Put(conn)
 
@@ -75,6 +75,6 @@ func (d *Base) RemoveEpisodic(ctx context.Context, ep types.Episodic) error {
 	return sqlitex.Execute(conn, sqlRemoveEpisodic, &sqlitex.ExecOptions{Args: []interface{}{ep.ID}})
 }
 
-func (d *Base) UpdateEpisodic(ctx context.Context, ep types.AddEpisodic) (*types.Episodic, error) {
+func (d *Base) UpdateEpisodic(ctx context.Context, id string, ep *types.AddEpisodic) (*types.Episodic, error) {
 	return nil, nil
 }
