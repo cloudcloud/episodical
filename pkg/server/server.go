@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"log"
 	"time"
 
@@ -34,20 +35,23 @@ func New(c *config.Config) *Server {
 	g := gin.New()
 	g.Use(
 		cors.New(cors.Config{
-			AllowOrigins: []string{c.Hostname},
+			AllowOrigins: []string{"http://" + c.Hostname + ":" + fmt.Sprintf("%d", c.Port)},
 			AllowMethods: []string{"GET", "POST", "PUT", "OPTIONS", "HEAD", "DELETE"},
 			AllowHeaders: []string{"Origin", "X-Client", "Content-Type"},
 		}),
 		s.logger(),
 		s.data(),
 	)
+	g.SetTrustedProxies(nil)
+
+	routeEmbeds(g)
 
 	s.g = g
 	return s
 }
 
 func (s *Server) Start() {
-	s.g.Run(s.conf.Hostname)
+	s.g.Run(s.conf.Hostname + ":" + fmt.Sprintf("%d", s.conf.Port))
 }
 
 func (s *Server) data() gin.HandlerFunc {
