@@ -11,9 +11,16 @@ import (
 func routeAPI(g *gin.Engine) {
 	api := g.Group("/api/v1/")
 
+	api.GET("episodics", getEpisodics)
 	api.GET("episodic/:id", getEpisodic)
 	api.POST("episodic/create", postEpisodic)
 	api.PUT("episodic/update/:id", putEpisodic)
+}
+
+func getEpisodics(c *gin.Context) {
+	wrap(c, func(ctx *gin.Context) (interface{}, []string, int) {
+		return good("")
+	})
 }
 
 func getEpisodic(c *gin.Context) {

@@ -19,6 +19,8 @@ var (
 	}
 )
 
+type WrapFunc func(*gin.Context, func(*gin.Context) (interface{}, []string, int))
+
 type Server struct {
 	conf *config.Config
 	db   *data.Base
@@ -95,7 +97,7 @@ func good(d interface{}) (interface{}, []string, int) {
 	return d, []string{}, http.StatusOK
 }
 
-func wrap(c *gin.Context, f func(*gin.Context) (interface{}, []string, int)) {
+func wrap(c *gin.Context, f WrapFunc) {
 	begin := time.Now()
 	out, errs, status := f(c)
 	latency := time.Since(begin)
