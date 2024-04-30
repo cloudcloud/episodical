@@ -19,7 +19,7 @@ var (
 	}
 )
 
-type WrapFunc func(*gin.Context, func(*gin.Context) (interface{}, []string, int))
+type WrapFunc func(*gin.Context) (interface{}, []string, int)
 
 type Server struct {
 	conf *config.Config

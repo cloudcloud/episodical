@@ -19,7 +19,13 @@ func routeAPI(g *gin.Engine) {
 
 func getEpisodics(c *gin.Context) {
 	wrap(c, func(ctx *gin.Context) (interface{}, []string, int) {
-		return good("")
+		db := ctx.MustGet("db").(*data.Base)
+
+		res, err := db.GetEpisodics(ctx)
+		if err != nil {
+			return gin.H{}, []string{err.Error()}, http.StatusInternalServerError
+		}
+		return good(res)
 	})
 }
 
