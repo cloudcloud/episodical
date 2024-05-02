@@ -3,6 +3,7 @@ package server
 import (
 	"bytes"
 	"embed"
+	"fmt"
 	"net/http"
 	"path"
 	"strings"
@@ -16,9 +17,12 @@ var dist embed.FS
 
 func routeEmbeds(g *gin.Engine) {
 	g.GET("/", index)
-	g.GET("/assets/*filepath", func(c *gin.Context) {
+	g.GET("/assets/:file", func(c *gin.Context) {
 		c.FileFromFS(path.Join("dist", c.Request.URL.Path), http.FS(dist))
 	})
+
+	// default to index display
+	g.NoRoute(index)
 }
 
 func index(c *gin.Context) {
@@ -27,10 +31,11 @@ func index(c *gin.Context) {
 		panic(err)
 	}
 
+	conf := c.MustGet("conf").(*config.Config)
 	s := strings.Replace(
 		string(f),
 		"[EP_BASE_URL]",
-		c.MustGet("conf").(*config.Config).Hostname,
+		fmt.Sprintf("http://%s:%d/", conf.Hostname, conf.Port),
 		1,
 	)
 

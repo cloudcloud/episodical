@@ -1,15 +1,16 @@
 package types
 
-import "time"
+import (
+	"time"
+
+	"github.com/segmentio/ksuid"
+)
 
 type AddEpisodic struct {
 	Title string `json:"title"`
 	Year  int    `json:"year"`
 
-	UseIntegration bool   `json:"use_integration"`
-	IntegrationID  string `json:"integration_id,omitempty"`
-
-	UseFileSystem bool   `json:"use_file_system"`
+	IntegrationID string `json:"integration_id,omitempty"`
 	FileSystemID  string `json:"file_system_id,omitempty"`
 }
 
@@ -73,9 +74,46 @@ type Song struct {
 func (a AddEpisodic) Convert() (*Episodic, error) {
 	e := &Episodic{}
 
+	// generate uuid
+	uid, err := ksuid.NewRandom()
+	if err != nil {
+		return e, err
+	}
+	e.ID = uid.String()
+	e.DateAdded = time.Now()
+	e.IntegrationUsed = a.IntegrationID
+	e.FileSystemID = a.FileSystemID
+	e.Title = a.Title
+	e.Year = a.Year
+
 	return e, nil
 }
 
 func (e *Episodic) Named() map[string]any {
-	return map[string]any{}
+	d := map[string]any{
+		"@id":               e.ID,
+		"@title":            e.Title,
+		"@year":             e.Year,
+		"@date_added":       e.DateAdded,
+		"@integration_used": e.IntegrationUsed,
+		"@file_system_id":   e.FileSystemID,
+		"@path_id":          e.PathID,
+		"@genre":            e.Genre,
+		"@public_db_id":     e.PublicDBID,
+		"@date_updated":     e.DateUpdated,
+		"@last_checked":     e.LastChecked,
+	}
+
+	if e.IsActive {
+		d["@is_active"] = 1
+	} else {
+		d["@is_active"] = 0
+	}
+	if e.AutoUpdate {
+		d["@auto_update"] = 1
+	} else {
+		d["@auto_update"] = 0
+	}
+
+	return d
 }

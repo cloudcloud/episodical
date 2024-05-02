@@ -44,6 +44,7 @@ func New(c *config.Config) *Server {
 		}),
 		s.logger(),
 		s.data(),
+		gin.Recovery(),
 	)
 	g.SetTrustedProxies(nil)
 

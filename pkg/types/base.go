@@ -8,17 +8,17 @@ type Base struct {
 
 	DateAdded   time.Time `json:"date_added" db:"date_added"`
 	DateUpdated time.Time `json:"date_updated" db:"date_updated"`
-
-	LastChecked time.Time `json:"last_checked" db:"last_checked"`
-	AutoUpdate  bool      `json:"auto_update" db:"auto_update"`
 }
 
 // Collection contains shared attributes across each main collection type.
 type Collection struct {
-	IntegrationUsed bool `json:"integration_used" db:"integration_used"`
+	IntegrationUsed string `json:"integration_used" db:"integration_used"`
 
-	FileSystem bool   `json:"file_system" db:"file_system"`
-	PathID     string `json:"path_id" db:"path_id"`
+	FileSystemID string `json:"file_system_id" db:"file_system_id"`
+	PathID       string `json:"path_id" db:"path_id"`
+
+	LastChecked time.Time `json:"last_checked" db:"last_checked"`
+	AutoUpdate  bool      `json:"auto_update" db:"auto_update"`
 }
 
 // SubCollection contains shared attributes across the sub-types within a collection.

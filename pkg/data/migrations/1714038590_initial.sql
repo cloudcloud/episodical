@@ -37,7 +37,7 @@ create table episodic_episode (
 
   integration_identifier text, -- the identifier to reference this episode from the integration
   date_first_aired text, -- iso8601 from go, the date when this episode was first aired
-  overview text -- blurb text for the episode content
+  overview text, -- blurb text for the episode content
 );
 
 --
@@ -69,6 +69,7 @@ create table document (
 --
 create table filesystem (
   id text not null primary key, -- uuid
+  title text not null, -- pretty name top refer to the filesystem
   base_path text not null, -- the location on the filesystem where files can be found
 
   auto_update integer not null, -- boolean, whether the files under this location should be automatically scanned for updates
@@ -87,10 +88,10 @@ create table filesystem_file (
 --
 create table integrations (
   id text not null primary key, -- uuid
-  name text not null, -- actual name
+  title text not null, -- pretty name to refer to the integration
 
   access_key text, -- a key used for API access if required
-  base_url text, -- a base URL for calls if required
+  base_model text, -- which integration configuration internally to utilise
 
   collection_type text check(collection_type in ('episodic', 'artistic', 'document')) not null -- which type the integration is used for
 );

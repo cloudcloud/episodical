@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/cloudcloud/episodical/pkg/types"
 	"zombiezen.com/go/sqlite"
@@ -13,9 +14,11 @@ const (
 (id, title, year, date_added, date_updated, integration_used, file_system, path_id, is_active, genre, public_db_id, last_checked, auto_update)
 VALUES
 (@id, @title, @year, @date_added, @date_updated, @integration_used, @file_system, @path_id, @is_active, @genre, @public_db_id, @last_checked, @auto_update);`
-	sqlRemoveEpisodic = `DELETE FROM episodic
-WHERE episodic.id = ?;`
 	sqlGetEpisodicByID = `SELECT * FROM episodic
+WHERE episodic.id = ?;`
+	sqlGetEpisodics = `SELECT * FROM episodic
+`
+	sqlRemoveEpisodic = `DELETE FROM episodic
 WHERE episodic.id = ?;`
 	sqlUpdateEpisodic = `UPDATE episodic
 SET title = :title
@@ -36,7 +39,26 @@ func (d *Base) AddEpisodic(ctx context.Context, ep *types.AddEpisodic) (*types.E
 }
 
 func (d *Base) GetEpisodics(ctx context.Context) ([]*types.Episodic, error) {
-	return []*types.Episodic{}, nil
+	conn := d.conn.Get(ctx)
+	defer d.conn.Put(conn)
+
+	eps := []*types.Episodic{}
+	err := sqlitex.Execute(
+		conn,
+		sqlGetEpisodics,
+		&sqlitex.ExecOptions{
+			ResultFunc: func(stmt *sqlite.Stmt) error {
+				e, err := loadEpisodic(stmt)
+				if err == nil {
+					eps = append(eps, e)
+				}
+
+				return err
+			},
+		},
+	)
+
+	return eps, err
 }
 
 func (d *Base) GetEpisodicByID(ctx context.Context, u string) (*types.Episodic, error) {
@@ -50,10 +72,19 @@ func (d *Base) GetEpisodicByID(ctx context.Context, u string) (*types.Episodic, 
 		&sqlitex.ExecOptions{
 			Args: []interface{}{u},
 			ResultFunc: func(stmt *sqlite.Stmt) error {
-				return nil
+				e, err := loadEpisodic(stmt)
+				ep = e
+
+				return err
 			},
 		},
 	)
+	if err != nil {
+		return nil, err
+	}
+	if ep.ID != u {
+		return nil, fmt.Errorf("Unable to find Episodic with ID '%s'", u)
+	}
 
 	eps, err := d.GetEpisodicEpisodesByID(ctx, u)
 	if err != nil {
