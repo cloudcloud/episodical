@@ -6,7 +6,7 @@ const client = axios.create({
   json: true,
 });
 client.defaults.timeout = 2500;
-client.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+client.defaults.headers.post['Content-Type'] = 'application/json';
 client.defaults.headers.common['X-Client'] = 'episodical 1.0';
 
 export default {
@@ -16,7 +16,7 @@ export default {
   },
 
   addFilesystem(payload) {
-    return this.perform('post', `/api/v1/filesystems/add`, payload);
+    return this.perform('post', `/api/v1/filesystem/add`, payload);
   },
 
   addIntegration(payload) {
@@ -27,12 +27,17 @@ export default {
     return this.perform('get', `/api/v1/episodic/${name}`);
   },
 
-  async perform(method, resource, data) {
-    return client({
-      method: method,
-      url: resource,
-      data: data,
-    }).then(req => {
+  getFilesystems() {
+    return this.perform('get', `/api/v1/filesystems`);
+  },
+
+  async perform(method, url, data) {
+    const headers = {};
+    if (method !== 'get') {
+      headers['Content-Type'] = 'application/json';
+    }
+
+    return client({method, url, data, headers}).then(req => {
       return req.data;
     });
   },

@@ -61,3 +61,15 @@ func loadEpisodic(stmt *sqlite.Stmt) (*types.Episodic, error) {
 
 	return ep, nil
 }
+
+func loadFilesystem(stmt *sqlite.Stmt) (types.Filesystem, error) {
+	lc, _ := time.Parse(time.RFC3339, stmt.ColumnText(4))
+
+	return types.Filesystem{
+		ID:          stmt.ColumnText(0),
+		Title:       stmt.ColumnText(1),
+		BasePath:    stmt.ColumnText(2),
+		AutoUpdate:  (stmt.ColumnInt(3) == 1),
+		LastChecked: lc,
+	}, nil
+}

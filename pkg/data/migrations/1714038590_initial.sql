@@ -37,7 +37,7 @@ create table episodic_episode (
 
   integration_identifier text, -- the identifier to reference this episode from the integration
   date_first_aired text, -- iso8601 from go, the date when this episode was first aired
-  overview text, -- blurb text for the episode content
+  overview text -- blurb text for the episode content
 );
 
 --

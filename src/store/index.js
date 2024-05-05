@@ -4,15 +4,23 @@ import apiClient from '@/api';
 export default createStore({
   state: {
     episodic: {},
+    filesystems: {},
   },
 
   mutations: {
     resetEpisodic(state, ep) {
       state.episodic[ep.name] = ep;
     },
+    resetFilesystems(state, fs) {
+      state.filesystems = fs.data;
+    },
   },
 
-  getters: {},
+  getters: {
+    allFilesystems: state => {
+      return state.filesystems;
+    },
+  },
 
   actions: {
 
@@ -24,13 +32,11 @@ export default createStore({
       });
     },
 
-    addFilesystem(_, {payload}) {
-      console.log(payload);
+    addFilesystem(_, payload) {
       return apiClient.addFilesystem(payload);
     },
 
-    addIntegration(_, {payload}) {
-      console.log(payload);
+    addIntegration(_, payload) {
       return apiClient.addIntegration(payload)
     },
 
@@ -39,6 +45,17 @@ export default createStore({
         apiClient.getEpisodic(name).then((data) => {
           if (data.meta && data.meta.errors && data.meta.errors.length < 1) {
             commit('resetShow', data);
+          }
+          resolve();
+        });
+      });
+    },
+
+    getFilesystems({commit}) {
+      return new Promise((resolve) => {
+        apiClient.getFilesystems().then((data) => {
+          if (data.errors.length < 1 && data.meta.errors < 1) {
+            commit('resetFilesystems', data);
           }
           resolve();
         });

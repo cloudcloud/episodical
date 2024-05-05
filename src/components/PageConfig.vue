@@ -2,18 +2,19 @@
   <v-container>
     <v-row>
       <v-col cols="6">
-        <ConfigCard title="Add File System" type="filesystems" />
+        <ConfigFilesystems />
       </v-col>
 
       <v-col cols="6">
-        <ConfigCard title="Add Integration" type="integrations" />
+        <ConfigIntegrations />
       </v-col>
     </v-row>
   </v-container>
 </template>
 
 <script>
-import ConfigCard from '@/components/ConfigCard';
+import ConfigFilesystems from '@/components/ConfigFilesystems';
+import ConfigIntegrations from '@/components/ConfigIntegrations';
 
 export default {
   data: () => ({
@@ -21,7 +22,8 @@ export default {
   methods: {
   },
   components: {
-    ConfigCard,
+    ConfigFilesystems,
+    ConfigIntegrations,
   },
 };
 </script>

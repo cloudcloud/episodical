@@ -11,7 +11,8 @@ import (
 func routeAPI(g *gin.Engine) {
 	api := g.Group("/api/v1/")
 
-	api.POST("filesystems/add", postFilesystemsAdd)
+	api.GET("filesystems", getFilesystems)
+	api.POST("filesystem/add", postFilesystemsAdd)
 
 	api.GET("episodics", getEpisodics)
 	api.GET("episodic/:id", getEpisodic)
@@ -19,12 +20,25 @@ func routeAPI(g *gin.Engine) {
 	api.PUT("episodic/update/:id", putEpisodic)
 }
 
+func getFilesystems(c *gin.Context) {
+	wrap(c, func(ctx *gin.Context) (interface{}, []string, int) {
+		db := ctx.MustGet("db").(*data.Base)
+
+		res, err := db.GetFilesystems(ctx)
+		if err != nil {
+			return gin.H{}, []string{err.Error()}, http.StatusInternalServerError
+		}
+		return good(res)
+	})
+}
+
 func postFilesystemsAdd(c *gin.Context) {
 	wrap(c, func(ctx *gin.Context) (interface{}, []string, int) {
 		db := ctx.MustGet("db").(*data.Base)
 
 		body := &types.AddFilesystem{}
-		ctx.BindJSON(body)
+		err := ctx.BindJSON(body)
+
 		res, err := db.AddFilesystem(ctx, body)
 		if err != nil {
 			return gin.H{}, []string{err.Error()}, http.StatusInternalServerError
