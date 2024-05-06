@@ -7,7 +7,7 @@
       :title="'Removing ' + title"
       class="mx-auto"
       width="500"
-      subtitle="Are you sure you wish to remove the filesystem?">
+      subtitle="Are you sure you wish to remove the integration?">
 
       <v-card-actions>
         <v-spacer />
@@ -35,7 +35,7 @@ export default {
     },
     run() {
       this.loading = true;
-      this.$store.dispatch('removeFilesystem', { id: this.id }).then(() => {
+      this.$store.dispatch('removeIntegration', { id: this.id }).then(() => {
         this.close();
         this.$emit('removeComplete');
       });

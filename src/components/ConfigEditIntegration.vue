@@ -21,18 +21,29 @@
           outlined
           density="comfortable" />
 
+        <v-combobox
+          density="comfortable"
+          outlined
+          label="Collection Type"
+          v-model="type"
+          item-title="title"
+          item-value="title"
+          :items="options" />
+
         <v-text-field
-          v-model="path"
+          v-model="key"
           outlined
           density="comfortable"
           :rules="[]"
-          label="Base Path" />
+          label="Access Key" />
 
-        <v-checkbox
-          v-model="check"
+        <v-combobox
+          v-model="model"
           outlined
           density="comfortable"
-          label="Auto Check?" />
+          :rules="[]"
+          label="Integration Model"
+          :items="models" />
       </v-card-text>
 
       <v-card-actions>
@@ -51,15 +62,19 @@ export default {
     loading: false,
     id: '',
     title: '',
-    path: '',
-    check: false,
+    key: '',
+    model: '',
+    type: '',
+    models: [],
+    options: [],
   }),
   props: ['item'],
   created() {
     this.id = this.item.id;
     this.title = this.item.title;
-    this.path = this.item.base_path;
-    this.check = this.item.auto_update;
+    this.key = this.item.access_key;
+    this.model = this.item.base_model;
+    this.type = this.item.collection_type;
   },
   methods: {
     close() {
@@ -71,12 +86,13 @@ export default {
     },
     save() {
       this.loading = true;
-      this.$store.dispatch('updateFilesystem', {
+      this.$store.dispatch('updateIntegration', {
         id: this.id,
         payload: {
           title: this.title,
-          path: this.path,
-          check: this.check,
+          key: this.key,
+          model: this.model,
+          type: this.type,
         },
       }).then(() => {
         this.close();
@@ -88,4 +104,3 @@ export default {
 </script>
 
 <style></style>
-

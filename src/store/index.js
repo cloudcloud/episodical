@@ -5,6 +5,7 @@ export default createStore({
   state: {
     episodic: {},
     filesystems: {},
+    integrations: {},
   },
 
   mutations: {
@@ -14,11 +15,17 @@ export default createStore({
     resetFilesystems(state, fs) {
       state.filesystems = fs.data;
     },
+    resetIntegrations(state, i) {
+      state.integrations = i.data;
+    },
   },
 
   getters: {
     allFilesystems: state => {
       return state.filesystems;
+    },
+    allIntegrations: state => {
+      return state.integrations;
     },
   },
 
@@ -62,12 +69,31 @@ export default createStore({
       });
     },
 
-    removeFilesystem({commit}, {id}) {
+    getIntegrations({commit}) {
+      return new Promise((resolve) => {
+        apiClient.getIntegrations().then((data) => {
+          if (data.errors.length < 1 && data.meta.errors < 1) {
+            commit('resetIntegrations', data);
+          }
+          resolve();
+        });
+      });
+    },
+
+    removeFilesystem(_, {id}) {
       return apiClient.removeFilesystem(id);
     },
 
-    updateFilesystem({commit}, {id, payload}) {
+    removeIntegration(_, {id}) {
+      return apiClient.removeIntegration(id);
+    },
+
+    updateFilesystem(_, {id, payload}) {
       return apiClient.updateFilesystem(id, payload);
+    },
+
+    updateIntegration(_, {id, payload}) {
+      return apiClient.updateIntegration(id, payload);
     },
 
   },

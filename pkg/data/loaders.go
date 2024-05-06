@@ -73,3 +73,13 @@ func loadFilesystem(stmt *sqlite.Stmt) (types.Filesystem, error) {
 		LastChecked: lc,
 	}, nil
 }
+
+func loadIntegration(stmt *sqlite.Stmt) (types.Integration, error) {
+	return types.Integration{
+		ID:             stmt.GetText("id"),
+		Title:          stmt.GetText("title"),
+		AccessKey:      stmt.GetText("access_key"),
+		BaseModel:      stmt.GetText("base_model"),
+		CollectionType: stmt.GetText("collection_type"),
+	}, nil
+}

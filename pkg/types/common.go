@@ -27,6 +27,14 @@ type Filesystem struct {
 	LastChecked time.Time `json:"last_checked"`
 }
 
+type Integration struct {
+	ID             string `json:"id"`
+	Title          string `json:"title"`
+	AccessKey      string `json:"access_key"`
+	BaseModel      string `json:"base_model"`
+	CollectionType string `json:"collection_type"`
+}
+
 func (f *AddFilesystem) Convert() (*Filesystem, error) {
 	n := &Filesystem{
 		Title:      f.Title,
@@ -55,6 +63,35 @@ func (f *Filesystem) Named() map[string]any {
 		d["@auto_update"] = 1
 	} else {
 		d["@auto_update"] = 0
+	}
+
+	return d
+}
+
+func (i *AddIntegration) Convert() (*Integration, error) {
+	n := &Integration{
+		Title:          i.Title,
+		AccessKey:      i.Key,
+		BaseModel:      i.Model,
+		CollectionType: i.Type,
+	}
+
+	uid, err := ksuid.NewRandom()
+	if err != nil {
+		return n, err
+	}
+	n.ID = uid.String()
+
+	return n, nil
+}
+
+func (i *Integration) Named() map[string]any {
+	d := map[string]any{
+		"@id":              i.ID,
+		"@title":           i.Title,
+		"@access_key":      i.AccessKey,
+		"@base_model":      i.BaseModel,
+		"@collection_type": i.CollectionType,
 	}
 
 	return d

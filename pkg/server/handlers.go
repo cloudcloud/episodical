@@ -16,6 +16,11 @@ func routeAPI(g *gin.Engine) {
 	api.PUT("filesystem/update/:id", putFilesystem)
 	api.DELETE("filesystem/remove/:id", deleteFilesystem)
 
+	api.GET("integrations", getIntegrations)
+	api.POST("integrations/add", postIntegrationsAdd)
+	api.PUT("integration/update/:id", putIntegration)
+	api.DELETE("integration/remove/:id", deleteIntegration)
+
 	api.GET("episodics", getEpisodics)
 	api.GET("episodic/:id", getEpisodic)
 	api.POST("episodic/create", postEpisodic)
@@ -34,6 +39,18 @@ func getFilesystems(c *gin.Context) {
 	})
 }
 
+func getIntegrations(c *gin.Context) {
+	wrap(c, func(ctx *gin.Context) (interface{}, []string, int) {
+		db := ctx.MustGet("db").(*data.Base)
+
+		res, err := db.GetIntegrations(ctx)
+		if err != nil {
+			return gin.H{}, []string{err.Error()}, http.StatusInternalServerError
+		}
+		return good(res)
+	})
+}
+
 func postFilesystemsAdd(c *gin.Context) {
 	wrap(c, func(ctx *gin.Context) (interface{}, []string, int) {
 		db := ctx.MustGet("db").(*data.Base)
@@ -42,6 +59,21 @@ func postFilesystemsAdd(c *gin.Context) {
 		err := ctx.BindJSON(body)
 
 		res, err := db.AddFilesystem(ctx, body)
+		if err != nil {
+			return gin.H{}, []string{err.Error()}, http.StatusInternalServerError
+		}
+		return good(res)
+	})
+}
+
+func postIntegrationsAdd(c *gin.Context) {
+	wrap(c, func(ctx *gin.Context) (interface{}, []string, int) {
+		db := ctx.MustGet("db").(*data.Base)
+
+		body := &types.AddIntegration{}
+		err := ctx.BindJSON(body)
+
+		res, err := db.AddIntegration(ctx, body)
 		if err != nil {
 			return gin.H{}, []string{err.Error()}, http.StatusInternalServerError
 		}
@@ -65,12 +97,41 @@ func putFilesystem(c *gin.Context) {
 	})
 }
 
+func putIntegration(c *gin.Context) {
+	wrap(c, func(ctx *gin.Context) (interface{}, []string, int) {
+		db := ctx.MustGet("db").(*data.Base)
+		id := ctx.Param("id")
+
+		body := &types.AddIntegration{}
+		err := ctx.BindJSON(body)
+
+		res, err := db.UpdateIntegration(ctx, id, body)
+		if err != nil {
+			return gin.H{}, []string{err.Error()}, http.StatusInternalServerError
+		}
+		return good(res)
+	})
+}
+
 func deleteFilesystem(c *gin.Context) {
 	wrap(c, func(ctx *gin.Context) (interface{}, []string, int) {
 		db := ctx.MustGet("db").(*data.Base)
 		id := ctx.Param("id")
 
 		err := db.DeleteFilesystem(ctx, id)
+		if err != nil {
+			return gin.H{}, []string{err.Error()}, http.StatusInternalServerError
+		}
+		return good(gin.H{})
+	})
+}
+
+func deleteIntegration(c *gin.Context) {
+	wrap(c, func(ctx *gin.Context) (interface{}, []string, int) {
+		db := ctx.MustGet("db").(*data.Base)
+		id := ctx.Param("id")
+
+		err := db.DeleteIntegration(ctx, id)
 		if err != nil {
 			return gin.H{}, []string{err.Error()}, http.StatusInternalServerError
 		}

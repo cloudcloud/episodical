@@ -31,12 +31,24 @@ export default {
     return this.perform('get', `/api/v1/filesystems`);
   },
 
+  getIntegrations() {
+    return this.perform('get', `/api/v1/integrations`);
+  },
+
   removeFilesystem(id) {
     return this.perform('delete', `/api/v1/filesystem/remove/${id}`);
   },
 
+  removeIntegration(id) {
+    return this.perform('delete', `/api/v1/integration/remove/${id}`);
+  },
+
   updateFilesystem(id, payload) {
     return this.perform('put', `/api/v1/filesystem/update/${id}`, payload);
+  },
+
+  updateIntegration(id, payload) {
+    return this.perform('put', `/api/v1/integration/update/${id}`, payload);
   },
 
   async perform(method, url, data) {

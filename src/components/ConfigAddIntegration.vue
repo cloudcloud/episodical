@@ -1,18 +1,17 @@
 <template>
   <v-btn
-    text="Add"
-    @click="add"
     prepend-icon="mdi-plus"
     x-small
-    ripple />
+    ripple
+    @click="add"
+    text="Add" />
 
   <v-dialog v-model="dialog" max-width="500">
     <v-card
       :loading="loading"
-      title="Add New Filesystem Path"
+      title="Add New Integration Configuration"
       class="mx-auto"
       width="500">
-
       <v-card-text>
         <v-text-field
           v-model="title"
@@ -20,18 +19,29 @@
           outlined
           density="comfortable" />
 
+        <v-combobox
+          density="comfortable"
+          outlined
+          label="Collection Type"
+          v-model="type"
+          item-title="title"
+          item-value="title"
+          :items="options" />
+
         <v-text-field
-          v-model="path"
+          v-model="key"
           outlined
           density="comfortable"
           :rules="[]"
-          label="Base Path" />
+          label="Access Key" />
 
-        <v-checkbox
-          v-model="check"
+        <v-combobox
+          v-model="model"
           outlined
           density="comfortable"
-          label="Auto Check?" />
+          :rules="[]"
+          label="Integration Model"
+          :items="models" />
       </v-card-text>
 
       <v-card-actions>
@@ -49,23 +59,31 @@ export default {
     dialog: false,
     loading: false,
     title: '',
-    path: '',
-    check: false,
+    type: '',
+    key: '',
+    model: '',
+    models: ['thetvdb', 'musicbrainz', 'isbndb', 'openlibrary'],
+    options: [
+      {title: 'Episodic', value: 'episodic'},
+      {title: 'Artistic', value: 'artistic'},
+      {title: 'Document', value: 'document'},
+    ],
   }),
   methods: {
+    add() {
+      this.dialog = true;
+    },
     close() {
       this.loading = false;
       this.dialog = false;
     },
-    add() {
-      this.dialog = true;
-    },
     save() {
       this.loading = true;
-      this.$store.dispatch('addFilesystem', {
+      this.$store.dispatch('addIntegration', {
         title: this.title,
-        path: this.path,
-        check: this.check,
+        type: this.type.value,
+        key: this.key,
+        model: this.model,
       }).then(() => {
         this.close();
         this.$emit('addComplete');
@@ -76,5 +94,3 @@ export default {
 </script>
 
 <style></style>
-
-

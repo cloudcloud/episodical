@@ -1,81 +1,65 @@
 <template>
   <v-card shaped title="Integrations">
     <template v-slot:append>
-      <v-btn
-        prepend-icon="mdi-plus"
-        x-small
-        ripple
-        @click="add"
-        text="Add" />
+      <ConfigAddIntegration @addComplete="loadIntegrations" />
     </template>
 
-    <v-data-table-virtual
-      :headers="headers"
-      :items="items" />
+    <v-data-table-virtual :headers="headers" :items="items">
+
+      <template v-slot:item.key="{ item }">
+        <v-chip v-if="item.access_key != ''" variant="outline" color="success">
+          Added!
+        </v-chip>
+        <v-chip v-else color="gray" disabled variant="plain">
+          Not added.
+        </v-chip>
+      </template>
+      <template v-slot:item.actions="{ item }">
+        <ConfigEditIntegration :item="item" @editComplete="loadIntegrations" />
+        <ConfigRemoveIntegration :id="item.id" :title="item.title" @removeComplete="loadIntegrations" />
+      </template>
+
+    </v-data-table-virtual>
   </v-card>
-
-  <v-dialog v-model="dialog" max-width="500">
-    <v-card :loading="loading" class="mx-auto" title="Add Integration Configuration" width="500">
-      <v-card-text>
-        <v-text-field
-          v-model="newTitle"
-          label="Title"
-          outlined
-          density="comfortable" />
-
-        <v-combobox
-          density="comfortable"
-          outlined
-          label="Collection Type"
-          v-model="type"
-          item-title="title"
-          item-value="title"
-          :items="options" />
-
-        <v-text-field
-          v-model="key"
-          outlined
-          density="comfortable"
-          :rules="[]"
-          label="Access Key" />
-
-        <v-combobox
-          v-model="model"
-          outlined
-          density="comfortable"
-          :rules="[]"
-          label="Integration Model"
-          :items="models" />
-      </v-card-text>
-
-      <v-card-actions>
-        <v-spacer />
-        <v-btn @click="close" text="Cancel" />
-        <v-btn @click="save" color="primary" text="Add" />
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
 </template>
 
 <script>
+import { mapActions, mapMutations, mapGetters } from 'vuex';
+import ConfigAddIntegration from '@/components/ConfigAddIntegration';
+import ConfigEditIntegration from '@/components/ConfigEditIntegration';
+import ConfigRemoveIntegration from '@/components/ConfigRemoveIntegration';
 
 export default {
   data: () => ({
-    dialog: false,
-    loading: false,
-    headers: [],
-    items: [],
-    models: ['thetvtdb', 'musicbrainz', 'isbndb', 'openlibrary'],
-    options: [
-      {title: 'Episodic', value: 'episodic'},
-      {title: 'Artistic', value: 'artistic'},
-      {title: 'Document', value: 'document'},
+    headers: [
+      {title: 'Title', align: 'left', key: 'title'},
+      {title: 'Access Key', align: 'left', key: 'key'},
+      {title: 'Model', align: 'left', key: 'base_model'},
+      {title: 'Type', align: 'left', key: 'collection_type'},
+      {title: 'Actions', align: 'center', key: 'actions'},
     ],
-    newTitle: '',
-    type: '',
-    key: '',
-    model: '',
+    items: [],
   }),
+  computed: {
+    ...mapGetters(['allIntegrations']),
+  },
+  created() {
+    this.loadIntegrations();
+  },
+  methods: {
+    loadIntegrations() {
+      this.$store.dispatch('getIntegrations').then(() => {
+        this.items = this.$store.getters.allIntegrations;
+      });
+    },
+    ...mapMutations(['resetIntegrations']),
+    ...mapActions(['getIntegrations']),
+  },
+  components: {
+    ConfigAddIntegration,
+    ConfigEditIntegration,
+    ConfigRemoveIntegration,
+  },
 };
 </script>
 

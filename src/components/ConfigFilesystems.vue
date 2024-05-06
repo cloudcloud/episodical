@@ -4,9 +4,7 @@
       <ConfigAddFilesystem @addComplete="loadFilesystems" />
     </template>
 
-    <v-data-table-virtual
-      :headers="headers"
-      :items="items">
+    <v-data-table-virtual :headers="headers" :items="items">
 
       <template v-slot:item.last_checked="{ item }">
         <v-chip v-if="item.auto_update" variant="outline" color="success">
@@ -45,9 +43,7 @@ export default {
     ...mapGetters(['allFilesystems']),
   },
   created() {
-    this.$store.dispatch('getFilesystems').then(() => {
-      this.loadFilesystems();
-    });
+    this.loadFilesystems();
   },
   methods: {
     loadFilesystems() {
