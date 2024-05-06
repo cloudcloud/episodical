@@ -14,8 +14,12 @@ const (
 (id, title, base_path, auto_update, last_checked)
 VALUES
 (@id, @title, @base_path, @auto_update, @last_checked);`
+	sqlDeleteFilesystem  = `DELETE FROM filesystem WHERE id = ?;`
 	sqlGetFilesystems    = `SELECT * FROM filesystem;`
 	sqlGetFilesystemByID = `SELECT * FROM filesystem WHERE id = ?;`
+	sqlUpdateFilesystem  = `UPDATE filesystem
+SET title = @title, base_path = @base_path, auto_update = @auto_update
+WHERE id = @id;`
 )
 
 func (d *Base) AddFilesystem(ctx context.Context, f *types.AddFilesystem) (*types.Filesystem, error) {
@@ -28,6 +32,28 @@ func (d *Base) AddFilesystem(ctx context.Context, f *types.AddFilesystem) (*type
 	}
 
 	return n, sqlitex.Execute(conn, sqlAddFilesystem, &sqlitex.ExecOptions{Named: n.Named()})
+}
+
+func (d *Base) DeleteFilesystem(ctx context.Context, id string) error {
+	conn := d.conn.Get(ctx)
+	defer d.conn.Put(conn)
+
+	e := error(nil)
+	err := sqlitex.Execute(
+		conn,
+		sqlDeleteFilesystem,
+		&sqlitex.ExecOptions{
+			Args: []interface{}{id},
+			ResultFunc: func(stmt *sqlite.Stmt) error {
+				e = stmt.Finalize()
+				return e
+			},
+		},
+	)
+	if e != nil {
+		return e
+	}
+	return err
 }
 
 func (d *Base) GetFilesystems(ctx context.Context) ([]types.Filesystem, error) {
@@ -79,4 +105,20 @@ func (d *Base) GetFilesystemByID(ctx context.Context, u string) (*types.Filesyst
 	}
 
 	return fs, err
+}
+
+func (d *Base) UpdateFilesystem(ctx context.Context, id string, n *types.AddFilesystem) (*types.Filesystem, error) {
+	conn := d.conn.Get(ctx)
+	defer d.conn.Put(conn)
+
+	f, err := n.Convert()
+	if err != nil {
+		return nil, err
+	}
+
+	named := f.Named()
+	named["@id"] = id
+	delete(named, "@last_checked")
+
+	return f, sqlitex.Execute(conn, sqlUpdateFilesystem, &sqlitex.ExecOptions{Named: named})
 }

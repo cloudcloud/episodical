@@ -31,6 +31,14 @@ export default {
     return this.perform('get', `/api/v1/filesystems`);
   },
 
+  removeFilesystem(id) {
+    return this.perform('delete', `/api/v1/filesystem/remove/${id}`);
+  },
+
+  updateFilesystem(id, payload) {
+    return this.perform('put', `/api/v1/filesystem/update/${id}`, payload);
+  },
+
   async perform(method, url, data) {
     const headers = {};
     if (method !== 'get') {

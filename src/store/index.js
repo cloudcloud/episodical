@@ -62,5 +62,13 @@ export default createStore({
       });
     },
 
+    removeFilesystem({commit}, {id}) {
+      return apiClient.removeFilesystem(id);
+    },
+
+    updateFilesystem({commit}, {id, payload}) {
+      return apiClient.updateFilesystem(id, payload);
+    },
+
   },
 });
