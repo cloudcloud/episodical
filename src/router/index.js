@@ -8,6 +8,6 @@ export default createRouter({
     {path: '/artistic', name: 'Artistics', component: () => import('@/components/PageArtistic')},
     {path: '/document', name: 'Documents', component: () => import('@/components/PageDocument')},
     {path: '/config', name: 'Config', component: () => import('@/components/PageConfig')},
-    {path: '/episodic/:name', name: 'Episodic', component: () => import('@/components/PageEpisodic'), props: true},
+    {path: '/episodic/:id', name: 'Episodic', component: () => import('@/components/PageEpisodic'), props: true},
   ],
 });

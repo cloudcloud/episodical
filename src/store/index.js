@@ -4,13 +4,14 @@ import apiClient from '@/api';
 export default createStore({
   state: {
     episodics: {},
+    episodic: {},
     filesystems: {},
     integrations: {},
   },
 
   mutations: {
     resetEpisodic(state, ep) {
-      state.episodics[ep.name] = ep;
+      state.episodic[ep.data.id] = ep.data;
     },
     resetEpisodics(state, eps) {
       state.episodics = eps.data;
@@ -56,11 +57,11 @@ export default createStore({
       return apiClient.addIntegration(payload)
     },
 
-    getEpisodic({commit}, {name}) {
+    getEpisodic({commit}, {id}) {
       return new Promise((resolve) => {
-        apiClient.getEpisodic(name).then((data) => {
-          if (data.meta && data.meta.errors && data.meta.errors.length < 1) {
-            commit('resetShow', data);
+        apiClient.getEpisodic(id).then((data) => {
+          if (data.errors.length < 1 && data.meta.errors < 1) {
+            commit('resetEpisodic', data);
           }
           resolve();
         });
@@ -106,6 +107,17 @@ export default createStore({
 
     removeIntegration(_, {id}) {
       return apiClient.removeIntegration(id);
+    },
+
+    updateEpisodic({commit}, {id, payload}) {
+      return new Promise((resolve) => {
+        apiClient.updateEpisodic(id, payload).then((data) => {
+          if (data.errors.length < 1 && data.meta.errors < 1) {
+            commit('resetEpisodic', data);
+          }
+          resolve();
+        });
+      });
     },
 
     updateFilesystem(_, {id, payload}) {

@@ -3,6 +3,7 @@ package data
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/cloudcloud/episodical/pkg/types"
 	"zombiezen.com/go/sqlite"
@@ -21,8 +22,8 @@ WHERE episodic.id = ?;`
 	sqlRemoveEpisodic = `DELETE FROM episodic
 WHERE episodic.id = ?;`
 	sqlUpdateEpisodic = `UPDATE episodic
-SET title = :title
-WHERE id = :id;`
+SET title = @title, year = @year, date_added = @date_added, integration_id = @integration_id, filesystem_id = @filesystem_id, path = @path, genre = @genre, public_db_id = @public_db_id, date_updated = @date_updated, last_checked = @last_checked, is_active = @is_active, auto_update = @auto_update
+WHERE id = @id;`
 )
 
 func (d *Base) AddEpisodic(ctx context.Context, ep *types.AddEpisodic) (*types.Episodic, error) {
@@ -107,5 +108,30 @@ func (d *Base) RemoveEpisodic(ctx context.Context, ep types.Episodic) error {
 }
 
 func (d *Base) UpdateEpisodic(ctx context.Context, id string, ep *types.AddEpisodic) (*types.Episodic, error) {
-	return nil, nil
+	conn := d.conn.Get(ctx)
+	defer d.conn.Put(conn)
+
+	episodic := &types.Episodic{}
+	e, err := ep.Convert()
+	if err != nil {
+		return nil, err
+	}
+
+	named := e.Named()
+	named["@id"] = id
+
+	err = sqlitex.Execute(
+		conn,
+		sqlUpdateEpisodic,
+		&sqlitex.ExecOptions{
+			Named: named,
+			ResultFunc: func(stmt *sqlite.Stmt) error {
+				episodic, err = loadEpisodic(stmt)
+				log.Printf("%#v\n%#v\n", episodic, err)
+				return err
+			},
+		},
+	)
+
+	return episodic, err
 }

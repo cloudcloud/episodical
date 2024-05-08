@@ -1,9 +1,19 @@
 <template>
-  <v-btn prepend-icon="mdi-plus" @click="add" ripple text="Add Episodical" variant="outlined" density="comfortable" class="mx-2" />
+  <v-btn text="Edit" prepend-icon="mdi-pencil" @click="edit" variant="outlined" density="comfortable" class="mx-2" />
 
   <v-dialog v-model="dialog" max-width="500">
-    <v-card :loading="loading" class="mx-auto" title="Add Episodical" width="500">
+    <v-card
+      :loading="loading"
+      :title="'Updating ' + title + ' (' + year + ')'"
+      class="mx-auto"
+      width="500">
+
       <v-card-text>
+        <v-text-field
+          density="comfortable"
+          disabled
+          :model-value="id"
+          label="ID" />
 
         <v-text-field
           density="comfortable"
@@ -15,12 +25,11 @@
           density="comfortable"
           v-model.number="year"
           type="number"
-          :rules="[rules.required, rules.numerical]"
+          :rules="[]"
           label="Release Year" />
 
         <v-select
           density="comfortable"
-          outlined
           label="Integration"
           v-model="integration"
           item-title="title"
@@ -50,15 +59,15 @@
 
       <v-card-actions>
         <v-spacer />
-        <v-btn @click="close" text="Cancel" variant="outlined" density="comfortable" class="mx-2" />
-        <v-btn @click="save" color="primary" text="Add" variant="outlined" density="comfortable" class="mx-2" />
+        <v-btn @click="close" color="primary" text="No" variant="outlined" density="comfortable" class="mx-2" />
+        <v-btn @click="run" color="error" text="Yes" variant="outlined" density="comfortable" class="mx-2" />
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapState } from 'vuex';
 
 export default {
   data: () => ({
@@ -68,47 +77,59 @@ export default {
     year: 2000,
     integration: '',
     filesystem: '',
+    path: '',
     integrations: [],
     filesystems: [],
-    path: '',
     rules: {
       numerical: v => !/[^0-9]+/.test(v) || 'Numbers only.',
       required: v => !!v || 'Required.',
     },
   }),
+  props: ['id'],
   computed: {
     ...mapGetters(['allFilesystems', 'allIntegrations']),
+    ...mapState(['episodic']),
   },
   created() {
     this.loadDeps();
   },
   methods: {
-    add() {
-      this.dialog = true;
-    },
     close() {
-      this.dialog = false;
       this.loading = false;
+      this.dialog = false;
+    },
+    edit() {
+      this.dialog = true;
     },
     loadDeps() {
       this.$store.dispatch('getFilesystems').then(() => {
         this.filesystems = this.$store.getters.allFilesystems;
-      });
-      this.$store.dispatch('getIntegrations').then(() => {
-        this.integrations = this.$store.getters.allIntegrations;
+        this.$store.dispatch('getIntegrations').then(() => {
+          this.integrations = this.$store.getters.allIntegrations;
+          this.$store.dispatch('getEpisodic', {id: this.id}).then(() => {
+            this.title = this.episodic[this.id].title;
+            this.year = this.episodic[this.id].year;
+            this.integration = this.episodic[this.id].integration_id;
+            this.filesystem = this.episodic[this.id].filesystem_id;
+            this.path = this.episodic[this.id].path;
+          });
+        });
       });
     },
-    save() {
+    run() {
       this.loading = true;
-      this.$store.dispatch('addEpisodic', {
-        title: this.title,
-        year: this.year,
-        integration: this.integration,
-        filesystem: this.filesystem,
-        path: this.path,
+      this.$store.dispatch('updateEpisodic', {
+        id: this.id,
+        payload: {
+          title: this.title,
+          year: this.year,
+          integration: this.integration,
+          filesystem: this.filesystem,
+          path: this.path,
+        },
       }).then(() => {
         this.close();
-        this.$emit('addComplete');
+        this.$emit('editComplete');
       });
     },
   },

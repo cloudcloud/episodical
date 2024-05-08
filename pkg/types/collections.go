@@ -1,7 +1,6 @@
 package types
 
 import (
-	"strconv"
 	"time"
 
 	"github.com/segmentio/ksuid"
@@ -9,7 +8,7 @@ import (
 
 type AddEpisodic struct {
 	Title string `json:"title"`
-	Year  string `json:"year"`
+	Year  int    `json:"year"`
 
 	Integration  string `json:"integration,omitempty"`
 	FilesystemID string `json:"filesystem,omitempty"`
@@ -86,7 +85,8 @@ func (a AddEpisodic) Convert() (*Episodic, error) {
 	e.IntegrationID = a.Integration
 	e.FilesystemID = a.FilesystemID
 	e.Title = a.Title
-	e.Year, _ = strconv.Atoi(a.Year)
+	e.Year = a.Year
+	e.Path = a.Path
 
 	return e, nil
 }

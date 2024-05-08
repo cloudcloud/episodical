@@ -23,8 +23,8 @@ export default {
     return this.perform('post', `/api/v1/integrations/add`, payload);
   },
 
-  getEpisodic(name) {
-    return this.perform('get', `/api/v1/episodic/${name}`);
+  getEpisodic(id) {
+    return this.perform('get', `/api/v1/episodic/${id}`);
   },
 
   getEpisodics() {
@@ -45,6 +45,10 @@ export default {
 
   removeIntegration(id) {
     return this.perform('delete', `/api/v1/integration/remove/${id}`);
+  },
+
+  updateEpisodic(id, payload) {
+    return this.perform('put', `/api/v1/episodic/update/${id}`, payload);
   },
 
   updateFilesystem(id, payload) {
