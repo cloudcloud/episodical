@@ -39,6 +39,10 @@ export default {
     return this.perform('get', `/api/v1/integrations`);
   },
 
+  removeEpisodic(id) {
+    return this.perform('delete', `/api/v1/episodic/delete/${id}`);
+  },
+
   removeFilesystem(id) {
     return this.perform('delete', `/api/v1/filesystem/remove/${id}`);
   },

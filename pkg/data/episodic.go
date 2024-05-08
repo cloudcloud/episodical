@@ -3,7 +3,6 @@ package data
 import (
 	"context"
 	"fmt"
-	"log"
 
 	"github.com/cloudcloud/episodical/pkg/types"
 	"zombiezen.com/go/sqlite"
@@ -100,11 +99,11 @@ func (d *Base) GetEpisodicEpisodesByID(ctx context.Context, u string) ([]*types.
 	return []*types.Episode{}, nil
 }
 
-func (d *Base) RemoveEpisodic(ctx context.Context, ep types.Episodic) error {
+func (d *Base) DeleteEpisodic(ctx context.Context, id string) error {
 	conn := d.conn.Get(ctx)
 	defer d.conn.Put(conn)
 
-	return sqlitex.Execute(conn, sqlRemoveEpisodic, &sqlitex.ExecOptions{Args: []interface{}{ep.ID}})
+	return sqlitex.Execute(conn, sqlRemoveEpisodic, &sqlitex.ExecOptions{Args: []interface{}{id}})
 }
 
 func (d *Base) UpdateEpisodic(ctx context.Context, id string, ep *types.AddEpisodic) (*types.Episodic, error) {
@@ -127,7 +126,7 @@ func (d *Base) UpdateEpisodic(ctx context.Context, id string, ep *types.AddEpiso
 			Named: named,
 			ResultFunc: func(stmt *sqlite.Stmt) error {
 				episodic, err = loadEpisodic(stmt)
-				log.Printf("%#v\n%#v\n", episodic, err)
+
 				return err
 			},
 		},

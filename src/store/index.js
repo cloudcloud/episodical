@@ -10,6 +10,9 @@ export default createStore({
   },
 
   mutations: {
+    deleteEpisodic(state, id) {
+      delete state.episodic[id];
+    },
     resetEpisodic(state, ep) {
       state.episodic[ep.data.id] = ep.data;
     },
@@ -95,6 +98,17 @@ export default createStore({
         apiClient.getIntegrations().then((data) => {
           if (data.errors.length < 1 && data.meta.errors < 1) {
             commit('resetIntegrations', data);
+          }
+          resolve();
+        });
+      });
+    },
+
+    removeEpisodic({commit}, {id}) {
+      return new Promise((resolve) => {
+        apiClient.removeEpisodic(id).then((data) => {
+          if (data.errors.length < 1 && data.meta.errors < 1) {
+            commit('deleteEpisodic', id);
           }
           resolve();
         });

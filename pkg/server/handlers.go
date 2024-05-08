@@ -25,6 +25,7 @@ func routeAPI(g *gin.Engine) {
 	api.GET("episodic/:id", getEpisodic)
 	api.POST("episodics/add", postEpisodic)
 	api.PUT("episodic/update/:id", putEpisodic)
+	api.DELETE("episodic/delete/:id", deleteEpisodic)
 }
 
 func getFilesystems(c *gin.Context) {
@@ -132,6 +133,19 @@ func deleteIntegration(c *gin.Context) {
 		id := ctx.Param("id")
 
 		err := db.DeleteIntegration(ctx, id)
+		if err != nil {
+			return gin.H{}, []string{err.Error()}, http.StatusInternalServerError
+		}
+		return good(gin.H{})
+	})
+}
+
+func deleteEpisodic(c *gin.Context) {
+	wrap(c, func(ctx *gin.Context) (interface{}, []string, int) {
+		db := ctx.MustGet("db").(*data.Base)
+		id := ctx.Param("id")
+
+		err := db.DeleteEpisodic(ctx, id)
 		if err != nil {
 			return gin.H{}, []string{err.Error()}, http.StatusInternalServerError
 		}

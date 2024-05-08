@@ -23,7 +23,7 @@
 
           <template v-slot:append>
             <EpisodicEdit :id="id" @editComplete="loadEpisodic" />
-            <EpisodicRemove :id="id" :title="display" @removeComplete="loadEpisodic" />
+            <EpisodicRemove :id="id" :title="display" @removeComplete="mainListing" />
           </template>
 
           <!--
@@ -75,10 +75,12 @@ export default {
     },
     loadEpisodic() {
       this.getEpisodic({id: this.id}).then(() => {
-        console.log(this.episodic);
         this.item = this.episodic[this.id];
         this.display = `${this.item.title} (${this.item.year})`;
       });
+    },
+    mainListing() {
+      this.$router.push('/episodic');
     },
     ...mapActions(['getEpisodic']),
   },
