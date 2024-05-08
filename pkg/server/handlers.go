@@ -23,7 +23,7 @@ func routeAPI(g *gin.Engine) {
 
 	api.GET("episodics", getEpisodics)
 	api.GET("episodic/:id", getEpisodic)
-	api.POST("episodic/create", postEpisodic)
+	api.POST("episodics/add", postEpisodic)
 	api.PUT("episodic/update/:id", putEpisodic)
 }
 

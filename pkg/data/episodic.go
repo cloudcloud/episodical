@@ -11,9 +11,9 @@ import (
 
 const (
 	sqlAddEpisodic = `INSERT INTO episodic
-(id, title, year, date_added, date_updated, integration_used, file_system, path_id, is_active, genre, public_db_id, last_checked, auto_update)
+(id, title, year, date_added, date_updated, integration_id, filesystem_id, path, is_active, genre, public_db_id, last_checked, auto_update)
 VALUES
-(@id, @title, @year, @date_added, @date_updated, @integration_used, @file_system, @path_id, @is_active, @genre, @public_db_id, @last_checked, @auto_update);`
+(@id, @title, @year, @date_added, @date_updated, @integration_id, @filesystem_id, @path, @is_active, @genre, @public_db_id, @last_checked, @auto_update);`
 	sqlGetEpisodicByID = `SELECT * FROM episodic
 WHERE episodic.id = ?;`
 	sqlGetEpisodics = `SELECT * FROM episodic

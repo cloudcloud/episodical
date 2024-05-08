@@ -7,10 +7,10 @@ create table episodic (
   date_added text not null, -- iso8601 from go, date of when this episodic was added
   date_updated text, -- iso8601 from go, date of when this configuration was last changed
 
-  integration_used text, -- uuid, which integration the data for this episodical is pulled from
+  integration_id text, -- uuid, which integration the data for this episodical is pulled from
 
-  file_system integer not null, -- boolean, whether there are files corresponding to this
-  path_id text, -- uuid, the identifier for which filesystem
+  filesystem_id text, -- uuid, the filesystem to find files within
+  path text, -- the path within the filesystem specifically
 
   is_active integer, -- boolean, if this episodic is continuing
   genre text, -- any particular genre information for the episodic

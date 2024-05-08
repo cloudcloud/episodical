@@ -3,14 +3,17 @@ import apiClient from '@/api';
 
 export default createStore({
   state: {
-    episodic: {},
+    episodics: {},
     filesystems: {},
     integrations: {},
   },
 
   mutations: {
     resetEpisodic(state, ep) {
-      state.episodic[ep.name] = ep;
+      state.episodics[ep.name] = ep;
+    },
+    resetEpisodics(state, eps) {
+      state.episodics = eps.data;
     },
     resetFilesystems(state, fs) {
       state.filesystems = fs.data;
@@ -21,6 +24,9 @@ export default createStore({
   },
 
   getters: {
+    allEpisodics: state => {
+      return state.episodics;
+    },
     allFilesystems: state => {
       return state.filesystems;
     },
@@ -31,10 +37,13 @@ export default createStore({
 
   actions: {
 
-    addEpisodic({commit}, {payload}) {
+    addEpisodic({commit}, payload) {
       return new Promise((resolve) => {
         apiClient.addEpisodic(payload).then((data) => {
-          //
+          if (data.errors.length < 1 && data.meta.errors < 1) {
+            commit('resetEpisodic', data);
+          }
+          resolve();
         });
       });
     },
@@ -52,6 +61,17 @@ export default createStore({
         apiClient.getEpisodic(name).then((data) => {
           if (data.meta && data.meta.errors && data.meta.errors.length < 1) {
             commit('resetShow', data);
+          }
+          resolve();
+        });
+      });
+    },
+
+    getEpisodics({commit}) {
+      return new Promise((resolve) => {
+        apiClient.getEpisodics().then((data) => {
+          if (data.errors.length < 1 && data.meta.errors < 1) {
+            commit('resetEpisodics', data);
           }
           resolve();
         });

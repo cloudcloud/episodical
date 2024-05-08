@@ -10,26 +10,26 @@ import (
 func loadEpisode(stmt *sqlite.Stmt) (*types.Episode, error) {
 	ep := &types.Episode{}
 
-	da, _ := time.Parse(time.RFC3339, stmt.ColumnText(5))
-	du, _ := time.Parse(time.RFC3339, stmt.ColumnText(6))
-	dr, _ := time.Parse(time.RFC3339, stmt.ColumnText(11))
-	dw, _ := time.Parse(time.RFC3339, stmt.ColumnText(8))
+	da, _ := time.Parse(time.RFC3339, stmt.GetText("date_added"))
+	du, _ := time.Parse(time.RFC3339, stmt.GetText("date_updated"))
+	dr, _ := time.Parse(time.RFC3339, stmt.GetText("date_first_aired"))
+	dw, _ := time.Parse(time.RFC3339, stmt.GetText("date_watched"))
 
-	ep.ID = stmt.ColumnText(0)
+	ep.ID = stmt.GetText("id")
 	ep.DateAdded = da
 	ep.DateUpdated = du
 
-	ep.FileEntry = stmt.ColumnText(9)
-	ep.IntegrationIdentifier = stmt.ColumnText(10)
+	ep.FileEntry = stmt.GetText("file_entry")
+	ep.IntegrationIdentifier = stmt.GetText("integration_identifier")
 	ep.DateReleased = dr
 
-	ep.EpisodicID = stmt.ColumnText(1)
-	ep.Title = stmt.ColumnText(2)
-	ep.SeasonID = stmt.ColumnInt(3)
-	ep.EpisodeNumber = stmt.ColumnInt(4)
-	ep.IsWatched = (stmt.ColumnInt(7) == 1)
+	ep.EpisodicID = stmt.GetText("episodic_id")
+	ep.Title = stmt.GetText("title")
+	ep.SeasonID = int(stmt.GetInt64("season_id"))
+	ep.EpisodeNumber = int(stmt.GetInt64("episode_number"))
+	ep.IsWatched = stmt.GetBool("is_watched")
 	ep.DateWatched = dw
-	ep.Overview = stmt.ColumnText(12)
+	ep.Overview = stmt.GetText("overview")
 
 	return ep, nil
 }
@@ -39,37 +39,37 @@ func loadEpisodic(stmt *sqlite.Stmt) (*types.Episodic, error) {
 		Episodes: []*types.Episode{},
 	}
 
-	da, _ := time.Parse(time.RFC3339, stmt.ColumnText(3))
-	du, _ := time.Parse(time.RFC3339, stmt.ColumnText(4))
-	dc, _ := time.Parse(time.RFC3339, stmt.ColumnText(11))
+	da, _ := time.Parse(time.RFC3339, stmt.GetText("date_added"))
+	du, _ := time.Parse(time.RFC3339, stmt.GetText("date_updated"))
+	dc, _ := time.Parse(time.RFC3339, stmt.GetText("last_checked"))
 
-	ep.ID = stmt.ColumnText(0)
+	ep.ID = stmt.GetText("id")
 	ep.DateAdded = da
 	ep.DateUpdated = du
 
-	ep.IntegrationUsed = stmt.ColumnText(5)
-	ep.FileSystemID = stmt.ColumnText(6)
-	ep.PathID = stmt.ColumnText(7)
+	ep.IntegrationID = stmt.GetText("integration_id")
+	ep.FilesystemID = stmt.GetText("filesystem_id")
+	ep.Path = stmt.GetText("path")
 	ep.LastChecked = dc
-	ep.AutoUpdate = (stmt.ColumnInt(12) == 1)
+	ep.AutoUpdate = stmt.GetBool("auto_update")
 
-	ep.Title = stmt.ColumnText(1)
-	ep.Year = stmt.ColumnInt(2)
-	ep.IsActive = (stmt.ColumnInt(8) == 1)
-	ep.Genre = stmt.ColumnText(9)
-	ep.PublicDBID = stmt.ColumnText(10)
+	ep.Title = stmt.GetText("title")
+	ep.Year = int(stmt.GetInt64("year"))
+	ep.IsActive = stmt.GetBool("is_active")
+	ep.Genre = stmt.GetText("genre")
+	ep.PublicDBID = stmt.GetText("public_db_id")
 
 	return ep, nil
 }
 
 func loadFilesystem(stmt *sqlite.Stmt) (types.Filesystem, error) {
-	lc, _ := time.Parse(time.RFC3339, stmt.ColumnText(4))
+	lc, _ := time.Parse(time.RFC3339, stmt.GetText("last_checked"))
 
 	return types.Filesystem{
-		ID:          stmt.ColumnText(0),
-		Title:       stmt.ColumnText(1),
-		BasePath:    stmt.ColumnText(2),
-		AutoUpdate:  (stmt.ColumnInt(3) == 1),
+		ID:          stmt.GetText("id"),
+		Title:       stmt.GetText("title"),
+		BasePath:    stmt.GetText("base_path"),
+		AutoUpdate:  stmt.GetBool("auto_update"),
 		LastChecked: lc,
 	}, nil
 }

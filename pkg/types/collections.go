@@ -1,6 +1,7 @@
 package types
 
 import (
+	"strconv"
 	"time"
 
 	"github.com/segmentio/ksuid"
@@ -8,10 +9,11 @@ import (
 
 type AddEpisodic struct {
 	Title string `json:"title"`
-	Year  int    `json:"year"`
+	Year  string `json:"year"`
 
-	IntegrationID string `json:"integration_id,omitempty"`
-	FileSystemID  string `json:"file_system_id,omitempty"`
+	Integration  string `json:"integration,omitempty"`
+	FilesystemID string `json:"filesystem,omitempty"`
+	Path         string `json:"path,omitempty"`
 }
 
 type Episodic struct {
@@ -81,27 +83,27 @@ func (a AddEpisodic) Convert() (*Episodic, error) {
 	}
 	e.ID = uid.String()
 	e.DateAdded = time.Now()
-	e.IntegrationUsed = a.IntegrationID
-	e.FileSystemID = a.FileSystemID
+	e.IntegrationID = a.Integration
+	e.FilesystemID = a.FilesystemID
 	e.Title = a.Title
-	e.Year = a.Year
+	e.Year, _ = strconv.Atoi(a.Year)
 
 	return e, nil
 }
 
 func (e *Episodic) Named() map[string]any {
 	d := map[string]any{
-		"@id":               e.ID,
-		"@title":            e.Title,
-		"@year":             e.Year,
-		"@date_added":       e.DateAdded,
-		"@integration_used": e.IntegrationUsed,
-		"@file_system_id":   e.FileSystemID,
-		"@path_id":          e.PathID,
-		"@genre":            e.Genre,
-		"@public_db_id":     e.PublicDBID,
-		"@date_updated":     e.DateUpdated,
-		"@last_checked":     e.LastChecked,
+		"@id":             e.ID,
+		"@title":          e.Title,
+		"@year":           e.Year,
+		"@date_added":     e.DateAdded,
+		"@integration_id": e.IntegrationID,
+		"@filesystem_id":  e.FilesystemID,
+		"@path":           e.Path,
+		"@genre":          e.Genre,
+		"@public_db_id":   e.PublicDBID,
+		"@date_updated":   e.DateUpdated,
+		"@last_checked":   e.LastChecked,
 	}
 
 	if e.IsActive {

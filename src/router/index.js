@@ -4,10 +4,10 @@ export default createRouter({
   history: createWebHistory(),
   routes: [
     {path: '/', name: 'Home', component: () => import('@/components/PageHome')},
-    {path: '/episodic', name: 'Episodic', component: () => import('@/components/PageEpisodic')},
-    {path: '/artistic', name: 'Artistic', component: () => import('@/components/PageArtistic')},
-    {path: '/document', name: 'Document', component: () => import('@/components/PageDocument')},
+    {path: '/episodic', name: 'Episodics', component: () => import('@/components/PageEpisodics')},
+    {path: '/artistic', name: 'Artistics', component: () => import('@/components/PageArtistic')},
+    {path: '/document', name: 'Documents', component: () => import('@/components/PageDocument')},
     {path: '/config', name: 'Config', component: () => import('@/components/PageConfig')},
-    {path: '/episodic/:name', name: 'Episodie', component: () => import('@/components/PageEpisodicEpisode'), props: true},
+    {path: '/episodic/:name', name: 'Episodic', component: () => import('@/components/PageEpisodic'), props: true},
   ],
 });

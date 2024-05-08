@@ -12,10 +12,10 @@ type Base struct {
 
 // Collection contains shared attributes across each main collection type.
 type Collection struct {
-	IntegrationUsed string `json:"integration_used" db:"integration_used"`
+	IntegrationID string `json:"integration_id" db:"integration_id"`
 
-	FileSystemID string `json:"file_system_id" db:"file_system_id"`
-	PathID       string `json:"path_id" db:"path_id"`
+	FilesystemID string `json:"filesystem_id" db:"filesystem_id"`
+	Path         string `json:"path" db:"path"`
 
 	LastChecked time.Time `json:"last_checked" db:"last_checked"`
 	AutoUpdate  bool      `json:"auto_update" db:"auto_update"`

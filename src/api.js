@@ -27,6 +27,10 @@ export default {
     return this.perform('get', `/api/v1/episodic/${name}`);
   },
 
+  getEpisodics() {
+    return this.perform('get', `/api/v1/episodics`);
+  },
+
   getFilesystems() {
     return this.perform('get', `/api/v1/filesystems`);
   },
