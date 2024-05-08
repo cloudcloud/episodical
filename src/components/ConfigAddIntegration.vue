@@ -4,7 +4,7 @@
     x-small
     ripple
     @click="add"
-    text="Add" />
+    text="Add" variant="outlined" density="comfortable" class="mx-2" />
 
   <v-dialog v-model="dialog" max-width="500">
     <v-card
@@ -46,8 +46,8 @@
 
       <v-card-actions>
         <v-spacer />
-        <v-btn @click="close" color="primary" text="Cancel" />
-        <v-btn @click="save" color="error" text="Save" />
+        <v-btn @click="close" color="primary" text="Cancel" variant="outlined" density="comfortable" class="mx-2" />
+        <v-btn @click="save" color="error" text="Save" variant="outlined" density="comfortable" class="mx-2" />
       </v-card-actions>
     </v-card>
   </v-dialog>

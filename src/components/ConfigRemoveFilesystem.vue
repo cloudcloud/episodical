@@ -1,5 +1,5 @@
 <template>
-  <v-btn text="Remove" color="error" @click="remove" />
+  <v-btn text="Remove" prepend-icon="mdi-trash-can" color="error" @click="remove" variant="outlined" density="comfortable" class="mx-2" />
 
   <v-dialog v-model="dialog" max-width="500">
     <v-card
@@ -11,8 +11,8 @@
 
       <v-card-actions>
         <v-spacer />
-        <v-btn @click="close" color="primary" text="No" />
-        <v-btn @click="run" color="error" text="Yes" />
+        <v-btn @click="close" color="primary" text="No" variant="outlined" density="comfortable" class="mx-2" />
+        <v-btn @click="run" color="error" text="Yes" variant="outlined" density="comfortable" class="mx-2" />
       </v-card-actions>
     </v-card>
   </v-dialog>

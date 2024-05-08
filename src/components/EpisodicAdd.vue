@@ -1,9 +1,5 @@
 <template>
-  <v-btn
-    prepend-icon="mdi-plus"
-    @click="add"
-    ripple
-    text="Add Episodical" />
+  <v-btn prepend-icon="mdi-plus" @click="add" ripple text="Add Episodical" variant="outlined" density="comfortable" class="mx-2" />
 
   <v-dialog v-model="dialog" max-width="500">
     <v-card :loading="loading" class="mx-auto" title="Add Episodical" width="500">
@@ -53,8 +49,8 @@
 
       <v-card-actions>
         <v-spacer />
-        <v-btn @click="close" text="Cancel" />
-        <v-btn @click="save" color="primary" text="Add" />
+        <v-btn @click="close" text="Cancel" variant="outlined" density="comfortable" class="mx-2" />
+        <v-btn @click="save" color="primary" text="Add" variant="outlined" density="comfortable" class="mx-2" />
       </v-card-actions>
     </v-card>
   </v-dialog>

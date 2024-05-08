@@ -6,6 +6,11 @@
           :title="title"
           shaped>
 
+          <template v-slot:append>
+            <v-btn @click="edit" prepend-icon="mdi-pencil" text="Edit" color="primary" variant="outlined" density="comfortable" class="mx-2" />
+            <v-btn @click="remove" prepend-icon="mdi-trash-can" text="Remove" color="error" variant="outlined" density="comfortable" class="mx-2" />
+          </template>
+
           <v-data-table :headers="headers" :items="items">
           </v-data-table>
 
