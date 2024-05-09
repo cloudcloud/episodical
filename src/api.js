@@ -39,6 +39,10 @@ export default {
     return this.perform('get', `/api/v1/integrations`);
   },
 
+  refreshEpisodic(id) {
+    return this.perform('get', `/api/v1/episodic/refresh/${id}`);
+  },
+
   removeEpisodic(id) {
     return this.perform('delete', `/api/v1/episodic/delete/${id}`);
   },

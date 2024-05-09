@@ -22,6 +22,7 @@
           </v-card-subtitle>
 
           <template v-slot:append>
+            <EpisodicRefresh :id="id" />
             <EpisodicEdit :id="id" @editComplete="loadEpisodic" />
             <EpisodicRemove :id="id" :title="display" @removeComplete="mainListing" />
           </template>
@@ -46,6 +47,7 @@
 <script>
 import { mapActions, mapState } from 'vuex';
 import EpisodicEdit from '@/components/EpisodicEdit';
+import EpisodicRefresh from '@/components/EpisodicRefresh';
 import EpisodicRemove from '@/components/EpisodicRemove';
 
 export default {
@@ -56,6 +58,7 @@ export default {
   }),
   components: {
     EpisodicEdit,
+    EpisodicRefresh,
     EpisodicRemove,
   },
   computed: {

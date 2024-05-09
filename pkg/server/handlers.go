@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/cloudcloud/episodical/pkg/data"
+	"github.com/cloudcloud/episodical/pkg/filesystem"
 	"github.com/cloudcloud/episodical/pkg/types"
 	"github.com/gin-gonic/gin"
 )
@@ -26,6 +27,37 @@ func routeAPI(g *gin.Engine) {
 	api.POST("episodics/add", postEpisodic)
 	api.PUT("episodic/update/:id", putEpisodic)
 	api.DELETE("episodic/delete/:id", deleteEpisodic)
+	api.GET("episodic/refresh/:id", getEpisodicRefresh)
+}
+
+func getEpisodicRefresh(c *gin.Context) {
+	wrap(c, func(ctx *gin.Context) (interface{}, []string, int) {
+		db := ctx.MustGet("db").(*data.Base)
+		id := ctx.Param("id")
+
+		// load the episodic
+		ep, err := db.GetEpisodicByID(ctx, id)
+		if err != nil {
+			return gin.H{}, []string{err.Error()}, http.StatusInternalServerError
+		}
+		if ep.FilesystemID == "" {
+			return good(gin.H{"no_fs": true})
+		}
+
+		// load the filesystem if associated
+		f, err := db.GetFilesystemByID(ctx, ep.FilesystemID)
+		if err != nil {
+			return gin.H{}, []string{err.Error()}, http.StatusInternalServerError
+		}
+
+		fs := filesystem.Load(f, db)
+		count, err := fs.Gather(ep.Path, "episodical")
+		if err != nil {
+			return gin.H{}, []string{err.Error()}, http.StatusInternalServerError
+		}
+
+		return good(gin.H{"completed": true, "count": count})
+	})
 }
 
 func getFilesystems(c *gin.Context) {

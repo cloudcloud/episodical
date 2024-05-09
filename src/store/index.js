@@ -104,6 +104,10 @@ export default createStore({
       });
     },
 
+    refreshEpisodic(_, {id}) {
+      return apiClient.refreshEpisodic(id);
+    },
+
     removeEpisodic({commit}, {id}) {
       return new Promise((resolve) => {
         apiClient.removeEpisodic(id).then((data) => {
