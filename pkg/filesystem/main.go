@@ -1,12 +1,14 @@
 package filesystem
 
 import (
+	"context"
 	"io/fs"
 	"log"
 	"os"
 
 	"github.com/cloudcloud/episodical/pkg/data"
 	"github.com/cloudcloud/episodical/pkg/types"
+	"go.uber.org/zap"
 )
 
 var (
@@ -21,20 +23,23 @@ var (
 )
 
 type Process struct {
-	db *data.Base
-	fs *types.Filesystem
+	db  *data.Base
+	fs  *types.Filesystem
+	log *zap.SugaredLogger
 }
 
-func Load(fs *types.Filesystem, db *data.Base) *Process {
+func Load(fs *types.Filesystem, db *data.Base, log *zap.SugaredLogger) *Process {
 	return &Process{
-		fs: fs,
-		db: db,
+		fs:  fs,
+		db:  db,
+		log: log,
 	}
 }
 
 // Gather will process the internal filesystem and look for files to utilise.
-func (p *Process) Gather(b, t string) (int, error) {
-	system := os.DirFS(p.fs.BasePath + string(os.PathSeparator) + b)
+func (p *Process) Gather(b *types.Episodic, t string) (int, error) {
+	ctx := context.Background()
+	system := os.DirFS(p.fs.BasePath + string(os.PathSeparator) + b.Path)
 
 	switch t {
 	case "episodical":
@@ -68,7 +73,27 @@ func (p *Process) Gather(b, t string) (int, error) {
 
 		for _, f := range files {
 			// add each episode to the episodical
-			log.Println(f.GetToken("Episode"))
+			ep, err := b.ProvisionEpisode(f)
+			if err != nil {
+				p.log.With("error", err, "file", f).Info("Unable to parse episode details")
+				continue
+			}
+
+			orig, err := p.db.GetEpisodeSearch(ctx, ep)
+			if err != nil {
+				// log and continue
+				p.log.With("error", err, "episode", ep).Info("Error when searching for found episode")
+			}
+
+			if orig != nil {
+				err = p.db.UpdateEpisode(ctx, orig, ep)
+			} else {
+				err = p.db.StoreEpisode(ctx, ep)
+			}
+
+			if err != nil {
+				// log and continue
+			}
 		}
 
 	case "artistic":

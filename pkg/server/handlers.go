@@ -7,6 +7,7 @@ import (
 	"github.com/cloudcloud/episodical/pkg/filesystem"
 	"github.com/cloudcloud/episodical/pkg/types"
 	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 )
 
 func routeAPI(g *gin.Engine) {
@@ -34,6 +35,7 @@ func getEpisodicRefresh(c *gin.Context) {
 	wrap(c, func(ctx *gin.Context) (interface{}, []string, int) {
 		db := ctx.MustGet("db").(*data.Base)
 		id := ctx.Param("id")
+		log := ctx.MustGet("log").(*zap.SugaredLogger)
 
 		// load the episodic
 		ep, err := db.GetEpisodicByID(ctx, id)
@@ -50,8 +52,8 @@ func getEpisodicRefresh(c *gin.Context) {
 			return gin.H{}, []string{err.Error()}, http.StatusInternalServerError
 		}
 
-		fs := filesystem.Load(f, db)
-		count, err := fs.Gather(ep.Path, "episodical")
+		fs := filesystem.Load(f, db, log)
+		count, err := fs.Gather(ep, "episodical")
 		if err != nil {
 			return gin.H{}, []string{err.Error()}, http.StatusInternalServerError
 		}

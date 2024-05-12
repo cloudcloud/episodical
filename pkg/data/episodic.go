@@ -18,6 +18,8 @@ VALUES
 WHERE episodic.id = ?;`
 	sqlGetEpisodics = `SELECT * FROM episodic
 `
+	sqlGetEpisodesByEpisodic = `SELECT * FROM episodic_episode
+WHERE episodic_episode.episodic_id = ?;`
 	sqlRemoveEpisodic = `DELETE FROM episodic
 WHERE episodic.id = ?;`
 	sqlUpdateEpisodic = `UPDATE episodic
@@ -96,7 +98,25 @@ func (d *Base) GetEpisodicByID(ctx context.Context, u string) (*types.Episodic, 
 }
 
 func (d *Base) GetEpisodicEpisodesByID(ctx context.Context, u string) ([]*types.Episode, error) {
-	return []*types.Episode{}, nil
+	conn := d.conn.Get(ctx)
+	defer d.conn.Put(conn)
+
+	ep := []*types.Episode{}
+	err := sqlitex.Execute(
+		conn,
+		sqlGetEpisodesByEpisodic,
+		&sqlitex.ExecOptions{
+			Args: []interface{}{u},
+			ResultFunc: func(stmt *sqlite.Stmt) error {
+				e, err := loadEpisode(stmt)
+				ep = append(ep, e)
+
+				return err
+			},
+		},
+	)
+
+	return ep, err
 }
 
 func (d *Base) DeleteEpisodic(ctx context.Context, id string) error {
@@ -104,6 +124,21 @@ func (d *Base) DeleteEpisodic(ctx context.Context, id string) error {
 	defer d.conn.Put(conn)
 
 	return sqlitex.Execute(conn, sqlRemoveEpisodic, &sqlitex.ExecOptions{Args: []interface{}{id}})
+}
+
+func (d *Base) GetEpisodeSearch(ctx context.Context, ep *types.Episode) (*types.Episode, error) {
+	return nil, nil
+}
+
+func (d *Base) StoreEpisode(ctx context.Context, ep *types.Episode) error {
+	conn := d.conn.Get(ctx)
+	defer d.conn.Put(conn)
+
+	return nil
+}
+
+func (d *Base) UpdateEpisode(ctx context.Context, orig, ep *types.Episode) error {
+	return nil
 }
 
 func (d *Base) UpdateEpisodic(ctx context.Context, id string, ep *types.AddEpisodic) (*types.Episodic, error) {
