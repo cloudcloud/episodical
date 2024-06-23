@@ -28,7 +28,10 @@ type Server struct {
 }
 
 func New(c *config.Config) *Server {
-	db, err := data.Open(c)
+	z, _ := zap.NewProduction()
+	l := z.Sugar().With("app", "episodical")
+
+	db, err := data.Open(c, l)
 	if err != nil {
 		log.Fatalf(err.Error())
 	}
@@ -42,7 +45,7 @@ func New(c *config.Config) *Server {
 			AllowMethods: []string{"GET", "POST", "PUT", "OPTIONS", "HEAD", "DELETE"},
 			AllowHeaders: []string{"Origin", "X-Client", "Content-Type"},
 		}),
-		s.logger(),
+		s.logger(l),
 		s.data(),
 		gin.Recovery(),
 	)
@@ -68,10 +71,7 @@ func (s *Server) data() gin.HandlerFunc {
 	}
 }
 
-func (s *Server) logger() gin.HandlerFunc {
-	z, _ := zap.NewProduction()
-	l := z.Sugar().With("app", "episodical")
-
+func (s *Server) logger(l *zap.SugaredLogger) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		start := time.Now()
 

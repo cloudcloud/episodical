@@ -5,6 +5,7 @@ import (
 	"io/fs"
 	"log"
 	"os"
+	"time"
 
 	"github.com/cloudcloud/episodical/pkg/data"
 	"github.com/cloudcloud/episodical/pkg/types"
@@ -81,12 +82,15 @@ func (p *Process) Gather(b *types.Episodic, t string) (int, error) {
 
 			orig, err := p.db.GetEpisodeSearch(ctx, ep)
 			if err != nil {
-				// log and continue
 				p.log.With("error", err, "episode", ep).Info("Error when searching for found episode")
 			}
 
 			if orig != nil {
-				err = p.db.UpdateEpisode(ctx, orig, ep)
+				ep.ID = orig.ID
+				ep.DateAdded = orig.DateAdded
+				ep.DateUpdated = time.Now()
+
+				err = p.db.UpdateEpisode(ctx, ep)
 			} else {
 				err = p.db.StoreEpisode(ctx, ep)
 			}

@@ -26,15 +26,16 @@ type Episodic struct {
 	Genre      string `json:"genre" db:"genre"`
 	PublicDBID string `json:"public_db_id" db:"public_db_id"`
 
-	Episodes []*Episode `json:"episode" db:"-"`
+	Episodes []*Episode `json:"episodes" db:"-"`
 }
 
 type Episode struct {
 	Base
 	SubCollection
 
-	EpisodicID string `json:"episodic_id" db:"episodic_id"`
-	Title      string `json:"title" db:"title"`
+	EpisodicID     string    `json:"episodic_id" db:"episodic_id"`
+	Title          string    `json:"title" db:"title"`
+	DateFirstAired time.Time `json:"date_first_aired"`
 
 	SeasonID      int `json:"season_id" db:"season_id"`
 	EpisodeNumber int `json:"episode_number" db:"episode_number"`
@@ -89,6 +90,26 @@ func (a AddEpisodic) Convert() (*Episodic, error) {
 	e.Path = a.Path
 
 	return e, nil
+}
+
+func (e *Episode) Named() map[string]any {
+	d := map[string]any{
+		"@id":                     e.ID,
+		"@episodic_id":            e.EpisodicID,
+		"@title":                  e.Title,
+		"@season_id":              e.SeasonID,
+		"@episode_number":         e.EpisodeNumber,
+		"@date_added":             e.DateAdded,
+		"@date_updated":           e.DateUpdated,
+		"@is_watched":             e.IsWatched,
+		"@date_watched":           e.DateWatched,
+		"@file_entry":             e.FileEntry,
+		"@integration_identifier": e.IntegrationIdentifier,
+		"@date_first_aired":       e.DateFirstAired,
+		"@overview":               e.Overview,
+	}
+
+	return d
 }
 
 func (e *Episodic) Named() map[string]any {

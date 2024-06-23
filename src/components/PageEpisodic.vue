@@ -3,7 +3,7 @@
     <v-row>
       <v-col cols="12">
         <v-card :title="display" shaped>
-          <v-card-subtitle>
+          <v-card-subtitle class="pb-4">
             <v-chip color="primary" variant="outlined" class="mx-2">
               Release Year: {{ item.year }}
             </v-chip>
@@ -26,20 +26,27 @@
             <EpisodicEdit :id="id" @editComplete="loadEpisodic" />
             <EpisodicRemove :id="id" :title="display" @removeComplete="mainListing" />
           </template>
-
-          <!--
-            loop for seasons, including the specials if there is one
-            have a data table, along with a title, for each
-
-            season could be a component?
-              each episode can be marked as watched, along with a season to do all of them at once
-
-            <v-data-table :headers="headers" :items="item.episodes">
-            </v-data-table>
-          -->
-
         </v-card>
       </v-col>
+
+      <v-col cols="12" v-if="hasSpecial">
+        <v-card title="Specials" shaped>
+          <v-data-table-virtual :headers="headers" :items="item.episodes" :custom-filter="filterForSeason" search="0" item-value="season_id">
+          </v-data-table-virtual>
+        </v-card>
+      </v-col>
+
+      <v-col cols="12" v-for="idx in seasonCount">
+        <v-card :title="'Season '+idx" shaped>
+          <v-data-table-virtual :headers="headers" :items="item.episodes" :custom-filter="filterForSeason" :search="idx" item-value="season_id">
+            <template v-slot:item.is_watched="{ item }">
+              <v-btn variant="outlined" text="Watched!" color="success" v-if="item.is_watched" />
+              <v-btn variant="outlined" text="Not Watched" color="info" v-if="!item.is_watched" />
+            </template>
+          </v-data-table-virtual>
+        </v-card>
+      </v-col>
+
     </v-row>
   </v-container>
 </template>
@@ -52,9 +59,17 @@ import EpisodicRemove from '@/components/EpisodicRemove';
 
 export default {
   data: () => ({
-    headers: [],
+    headers: [
+      {title: 'Episode', align: 'center', key: 'episode_number'},
+      {title: 'Title', align: 'left', key: 'title'},
+      {title: 'Date Aired', align: 'left', key: 'date_first_aired'},
+      {title: 'Watched?', align: 'center', key: 'is_watched'},
+      {title: 'File', align: 'left', key: 'file_entry'},
+    ],
     item: {},
     display: '',
+    hasSpecial: false,
+    seasonCount: 0,
   }),
   components: {
     EpisodicEdit,
@@ -76,10 +91,23 @@ export default {
         return "error";
       }
     },
+    filterForSeason(value, query, item) {
+      return value != null &&
+        query != null &&
+        query.toString() === item.raw.season_id.toString();
+    },
     loadEpisodic() {
       this.getEpisodic({id: this.id}).then(() => {
         this.item = this.episodic[this.id];
         this.display = `${this.item.title} (${this.item.year})`;
+
+        this.item.episodes.forEach((idx) => {
+          if (idx.season_id === 0) {
+            this.hasSpecial = true;
+          } else if (idx.season_id > this.seasonCount) {
+            this.seasonCount = idx.season_id;
+          }
+        });
       });
     },
     mainListing() {

@@ -77,15 +77,6 @@ create table filesystem (
 );
 
 --
-create table filesystem_file (
-  id text not null primary key, -- uuid
-  filesystem_id text not null, -- uuid, the filesystem that this file belongs to
-  sub_path text not null, -- path in the filesystem for the file
-
-  parsed integer not null -- boolean, has this file already been parsed to determine what it belongs to
-);
-
---
 create table integrations (
   id text not null primary key, -- uuid
   title text not null, -- pretty name to refer to the integration
