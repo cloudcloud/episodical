@@ -11,7 +11,9 @@
           <v-data-table-virtual :headers="headers" :items="items">
 
             <template v-slot:item.title="{ item }">
-              <router-link :to="'/episodic/' + item.id">{{ item.title }} ({{ item.year }})</router-link>
+              <v-btn variant="text" density="comfortable" class="text-none" :to="'/episodic/' + item.id">
+                {{ item.title }} ({{ item.year }})
+              </v-btn>
             </template>
             <template v-slot:item.status="{ item }">
               <v-chip text="Unknown" />
@@ -66,4 +68,8 @@ export default {
 };
 </script>
 
-<style></style>
+<style scoped>
+.active {
+  text-decoration: none;
+}
+</style>

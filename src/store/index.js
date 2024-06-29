@@ -60,6 +60,14 @@ export default createStore({
       return apiClient.addIntegration(payload)
     },
 
+    episodicIntegrationIdentifier(_, {id, payload}) {
+      return apiClient.episodicIntegrationIdentifier(id, payload);
+    },
+
+    episodicSearchIntegration(_, {title}) {
+      return apiClient.episodicSearchIntegration(title);
+    },
+
     getEpisodic({commit}, {id}) {
       return new Promise((resolve) => {
         apiClient.getEpisodic(id).then((data) => {

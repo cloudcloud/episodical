@@ -87,6 +87,11 @@ create table integrations (
   collection_type text check(collection_type in ('episodic', 'artistic', 'document')) not null -- which type the integration is used for
 );
 
+insert into integrations
+  (id, title, access_key, base_model, collection_type)
+values
+  ('2iPjUyJisxJQML2o3LAHEpQ3TlE', 'tvmaze', '', 'tvmaze', 'episodic');
+
 --
 create table audit_log (
   id text not null primary key, -- uuid

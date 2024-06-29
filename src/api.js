@@ -23,6 +23,14 @@ export default {
     return this.perform('post', `/api/v1/integrations/add`, payload);
   },
 
+  episodicIntegrationIdentifier(id, payload) {
+    return this.perform('post', `/api/v1/episodic/integration/${id}`, payload);
+  },
+
+  episodicSearchIntegration(title) {
+    return this.perform('get', `/api/v1/search/episodic/${title}`);
+  },
+
   getEpisodic(id) {
     return this.perform('get', `/api/v1/episodic/${id}`);
   },

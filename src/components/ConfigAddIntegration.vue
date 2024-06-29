@@ -62,7 +62,7 @@ export default {
     type: '',
     key: '',
     model: '',
-    models: ['thetvdb', 'musicbrainz', 'isbndb', 'openlibrary'],
+    models: ['tvmaze', 'thetvdb', 'musicbrainz', 'isbndb', 'openlibrary'],
     options: [
       {title: 'Episodic', value: 'episodic'},
       {title: 'Artistic', value: 'artistic'},

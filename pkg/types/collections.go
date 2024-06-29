@@ -46,6 +46,10 @@ type Episode struct {
 	Overview string `json:"overview" db:"overview"`
 }
 
+type EpisodicAssociateIntegration struct {
+	ExternalID string `json:"external"`
+}
+
 type Artistic struct {
 	Base
 	Collection

@@ -6,6 +6,10 @@ import (
 	"strconv"
 )
 
+const (
+	Version = "v0.0.0_alpha"
+)
+
 type Config struct {
 	DataFile       string
 	DataPassphrase string

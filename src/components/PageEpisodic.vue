@@ -19,6 +19,7 @@
             <v-chip color="success" variant="outlined" class="mx-2" v-if="item.integration_id != ''">
               Integration Enabled!
             </v-chip>
+            <EpisodicIntegrationModal :result="item" @updated="loadEpisodic" />
           </v-card-subtitle>
 
           <template v-slot:append>
@@ -56,6 +57,7 @@ import { mapActions, mapState } from 'vuex';
 import EpisodicEdit from '@/components/EpisodicEdit';
 import EpisodicRefresh from '@/components/EpisodicRefresh';
 import EpisodicRemove from '@/components/EpisodicRemove';
+import EpisodicIntegrationModal from '@/components/EpisodicIntegrationModal';
 
 export default {
   data: () => ({
@@ -75,6 +77,7 @@ export default {
     EpisodicEdit,
     EpisodicRefresh,
     EpisodicRemove,
+    EpisodicIntegrationModal,
   },
   computed: {
     ...mapState(['episodic']),
@@ -91,16 +94,17 @@ export default {
         return "error";
       }
     },
+
     filterForSeason(value, query, item) {
       return value != null &&
         query != null &&
         query.toString() === item.raw.season_id.toString();
     },
+
     loadEpisodic() {
       this.getEpisodic({id: this.id}).then(() => {
         this.item = this.episodic[this.id];
         this.display = `${this.item.title} (${this.item.year})`;
-
         this.item.episodes.forEach((idx) => {
           if (idx.season_id === 0) {
             this.hasSpecial = true;
@@ -110,9 +114,11 @@ export default {
         });
       });
     },
+
     mainListing() {
       this.$router.push('/episodic');
     },
+
     ...mapActions(['getEpisodic']),
   },
 };
