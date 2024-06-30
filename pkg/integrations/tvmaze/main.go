@@ -13,8 +13,8 @@ const (
 	urlBase = "https://api.tvmaze.com/"
 
 	urlSearch   = "search/shows?q=%s"
-	urlShow     = "show/%s"
-	urlEpisodes = "show/%s/episodes"
+	urlShow     = "shows/%s"
+	urlEpisodes = "shows/%s/episodes"
 )
 
 var (

@@ -16,6 +16,7 @@ const (
 	sqlGetEpisodics              = `SELECT * FROM episodic;`
 	sqlGetEpisodesByEpisodic     = `SELECT * FROM episodic_episode WHERE episodic_episode.episodic_id = ?;`
 	sqlInsertEpisode             = `INSERT INTO episodic_episode (id, episodic_id, title, season_id, episode_number, date_added, date_updated, is_watched, date_watched, file_entry, integration_identifier, date_first_aired, overview) VALUES (@id, @episodic_id, @title, @season_id, @episode_number, @date_added, @date_updated, @is_watched, @date_watched, @file_entry, @integration_identifier, @date_first_aired, @overview);`
+	sqlRemoveAllEpisodes         = `DELETE FROM episodic_episode WHERE episodic_id = ?;`
 	sqlRemoveEpisodic            = `DELETE FROM episodic WHERE episodic.id = ?;`
 	sqlUpdateEpisode             = `UPDATE episodic_episode SET title = @title, season_id = @season_id, episode_number = @episode_number, date_updated = @date_updated, is_watched = @is_watched, date_watched = @date_watched, file_entry = @file_entry, integration_identifier = @integration_identifier, date_first_aired = @date_first_aired, overview = @overview WHERE id = @id;`
 	sqlUpdateEpisodic            = `UPDATE episodic SET title = @title, year = @year, date_added = @date_added, integration_id = @integration_id, filesystem_id = @filesystem_id, path = @path, genre = @genre, public_db_id = @public_db_id, date_updated = @date_updated, last_checked = @last_checked, is_active = @is_active, auto_update = @auto_update WHERE id = @id;`
@@ -118,6 +119,14 @@ func (d *Base) DeleteEpisodic(ctx context.Context, id string) error {
 	conn := d.conn.Get(ctx)
 	defer d.conn.Put(conn)
 
+	sqlitex.Execute(
+		conn,
+		sqlRemoveAllEpisodes,
+		&sqlitex.ExecOptions{
+			Args: []interface{}{id},
+		},
+	)
+
 	return sqlitex.Execute(conn, sqlRemoveEpisodic, &sqlitex.ExecOptions{Args: []interface{}{id}})
 }
 
@@ -177,13 +186,52 @@ func (d *Base) UpdateEpisode(ctx context.Context, ep *types.Episode) error {
 	conn := d.conn.Get(ctx)
 	defer d.conn.Put(conn)
 
-	return sqlitex.Execute(
+	named := ep.Named()
+	delete(named, "@date_added")
+	delete(named, "@episodic_id")
+
+	var err error
+	err = sqlitex.Execute(
 		conn,
 		sqlUpdateEpisode,
 		&sqlitex.ExecOptions{
-			Named: ep.Named(),
+			Named: named,
+			ResultFunc: func(stmt *sqlite.Stmt) error {
+				up, er := loadEpisode(stmt)
+				if er != nil {
+					err = er
+				}
+
+				return er
+			},
 		},
 	)
+
+	return err
+}
+
+func (d *Base) UpdateEpisodicByID(ctx context.Context, ep *types.Episodic) error {
+	conn := d.conn.Get(ctx)
+	defer d.conn.Put(conn)
+
+	var err error
+	err = sqlitex.Execute(
+		conn,
+		sqlUpdateEpisodic,
+		&sqlitex.ExecOptions{
+			Named: ep.Named(),
+			ResultFunc: func(stmt *sqlite.Stmt) error {
+				_, er := loadEpisodic(stmt)
+				if er != nil {
+					err = er
+				}
+
+				return er
+			},
+		},
+	)
+
+	return err
 }
 
 func (d *Base) UpdateEpisodic(ctx context.Context, id string, ep *types.AddEpisodic) (*types.Episodic, error) {

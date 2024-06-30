@@ -4,11 +4,10 @@ import (
 	"net/http"
 
 	"github.com/cloudcloud/episodical/pkg/data"
-	"github.com/cloudcloud/episodical/pkg/filesystem"
 	"github.com/cloudcloud/episodical/pkg/integrations/tvmaze"
+	"github.com/cloudcloud/episodical/pkg/process"
 	"github.com/cloudcloud/episodical/pkg/types"
 	"github.com/gin-gonic/gin"
-	"go.uber.org/zap"
 )
 
 func routeAPI(g *gin.Engine) {
@@ -38,32 +37,9 @@ func routeAPI(g *gin.Engine) {
 
 func getEpisodicRefresh(c *gin.Context) {
 	wrap(c, func(ctx *gin.Context) (interface{}, []string, int) {
-		db := ctx.MustGet("db").(*data.Base)
-		id := ctx.Param("id")
-		log := ctx.MustGet("log").(*zap.SugaredLogger)
+		process.Push(process.BackgroundEpisodicProcess, ctx.Copy())
 
-		// load the episodic
-		ep, err := db.GetEpisodicByID(ctx, id)
-		if err != nil {
-			return gin.H{}, []string{err.Error()}, http.StatusInternalServerError
-		}
-		if ep.FilesystemID == "" {
-			return good(gin.H{"no_fs": true})
-		}
-
-		// load the filesystem if associated
-		f, err := db.GetFilesystemByID(ctx, ep.FilesystemID)
-		if err != nil {
-			return gin.H{}, []string{err.Error()}, http.StatusInternalServerError
-		}
-
-		fs := filesystem.Load(f, db, log)
-		count, err := fs.Gather(ep, "episodical")
-		if err != nil {
-			return gin.H{}, []string{err.Error()}, http.StatusInternalServerError
-		}
-
-		return good(gin.H{"completed": true, "count": count})
+		return good(gin.H{"enqueued": true})
 	})
 }
 

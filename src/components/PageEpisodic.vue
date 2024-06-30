@@ -16,9 +16,6 @@
             <v-chip color="success" variant="outlined" class="mx-2" v-if="item.filesystem_id != ''">
               Path: {{ item.path }}
             </v-chip>
-            <v-chip color="success" variant="outlined" class="mx-2" v-if="item.integration_id != ''">
-              Integration Enabled!
-            </v-chip>
             <EpisodicIntegrationModal :result="item" @updated="loadEpisodic" />
           </v-card-subtitle>
 
@@ -41,8 +38,8 @@
         <v-card :title="'Season '+idx" shaped>
           <v-data-table-virtual :headers="headers" :items="item.episodes" :custom-filter="filterForSeason" :search="idx" item-value="season_id">
             <template v-slot:item.is_watched="{ item }">
-              <v-btn variant="outlined" text="Watched!" color="success" v-if="item.is_watched" />
-              <v-btn variant="outlined" text="Not Watched" color="info" v-if="!item.is_watched" />
+              <v-btn variant="outlined" density="comfortable" text="Watched!" color="success" v-if="item.is_watched" />
+              <v-btn variant="outlined" density="comfortable" text="Not Watched" color="info" v-if="!item.is_watched" />
             </template>
           </v-data-table-virtual>
         </v-card>
@@ -64,7 +61,7 @@ export default {
     headers: [
       {title: 'Episode', align: 'center', key: 'episode_number'},
       {title: 'Title', align: 'left', key: 'title'},
-      {title: 'Date Aired', align: 'left', key: 'date_first_aired'},
+      {title: 'Date Released', align: 'left', key: 'date_released'},
       {title: 'Watched?', align: 'center', key: 'is_watched'},
       {title: 'File', align: 'left', key: 'file_entry'},
     ],

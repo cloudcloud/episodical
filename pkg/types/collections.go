@@ -1,8 +1,11 @@
 package types
 
 import (
+	"fmt"
+	"strings"
 	"time"
 
+	"github.com/cloudcloud/episodical/pkg/integrations/tvmaze"
 	"github.com/segmentio/ksuid"
 )
 
@@ -103,13 +106,13 @@ func (e *Episode) Named() map[string]any {
 		"@title":                  e.Title,
 		"@season_id":              e.SeasonID,
 		"@episode_number":         e.EpisodeNumber,
-		"@date_added":             e.DateAdded,
-		"@date_updated":           e.DateUpdated,
+		"@date_added":             e.DateAdded.Format(time.RFC3339),
+		"@date_updated":           e.DateUpdated.Format(time.RFC3339),
 		"@is_watched":             e.IsWatched,
-		"@date_watched":           e.DateWatched,
+		"@date_watched":           e.DateWatched.Format(time.RFC3339),
 		"@file_entry":             e.FileEntry,
 		"@integration_identifier": e.IntegrationIdentifier,
-		"@date_first_aired":       e.DateFirstAired,
+		"@date_first_aired":       e.DateFirstAired.Format(time.RFC3339),
 		"@overview":               e.Overview,
 	}
 
@@ -121,13 +124,13 @@ func (e *Episodic) Named() map[string]any {
 		"@id":             e.ID,
 		"@title":          e.Title,
 		"@year":           e.Year,
-		"@date_added":     e.DateAdded,
+		"@date_added":     e.DateAdded.Format(time.RFC3339),
 		"@integration_id": e.IntegrationID,
 		"@filesystem_id":  e.FilesystemID,
 		"@path":           e.Path,
 		"@genre":          e.Genre,
 		"@public_db_id":   e.PublicDBID,
-		"@date_updated":   e.DateUpdated,
+		"@date_updated":   e.DateUpdated.Format(time.RFC3339),
 		"@last_checked":   e.LastChecked,
 	}
 
@@ -153,8 +156,11 @@ func (e *Episodic) ProvisionEpisode(f *File) (*Episode, error) {
 		return nil, err
 	}
 	ep.ID = uid.String()
+
 	ep.DateAdded = time.Now()
 	ep.EpisodicID = e.ID
+	ep.FileEntry = f.Path
+
 	n, err := f.GetToken("Season")
 	if err != nil {
 		return nil, err
@@ -165,6 +171,29 @@ func (e *Episodic) ProvisionEpisode(f *File) (*Episode, error) {
 		return nil, err
 	}
 	ep.EpisodeNumber = n.(int)
+
+	return ep, nil
+}
+
+func (e *Episodic) ProvisionFromTVMaze(s tvmaze.Episode) (*Episode, error) {
+	ep := &Episode{}
+
+	uid, err := ksuid.NewRandom()
+	if err != nil {
+		return nil, err
+	}
+	ep.ID = uid.String()
+	ep.DateAdded = time.Now()
+	ep.EpisodicID = e.ID
+
+	ep.SeasonID = s.Season
+	ep.EpisodeNumber = s.Number
+	ep.Title = s.Name
+	ep.Overview = s.Summary
+	ep.IntegrationIdentifier = fmt.Sprintf("%d", s.ID)
+
+	t, _ := time.Parse("2006-01-02T15:04:05", strings.TrimSuffix(s.AirStamp, "+00:00"))
+	ep.DateFirstAired = t
 
 	return ep, nil
 }
