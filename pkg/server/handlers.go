@@ -217,11 +217,36 @@ func getEpisodic(c *gin.Context) {
 		id := ctx.Param("id")
 
 		res, err := db.GetEpisodicByID(ctx, id)
+		hs, sc, te, we, h := false, 0, 0, 0, 0
+
+		for _, x := range res.Episodes {
+			if x.SeasonID == 0 {
+				hs = true
+			}
+			if x.SeasonID > sc {
+				sc = x.SeasonID
+			}
+			te++
+			if x.IsWatched {
+				we++
+			}
+			if x.FileEntry != "" {
+				h++
+			}
+		}
+
+		meta := gin.H{
+			"has_specials":       hs,
+			"season_count":       sc,
+			"total_episodes":     te,
+			"watched_episodes":   we,
+			"have_episode_files": h,
+		}
 
 		if err != nil {
 			return gin.H{}, []string{err.Error()}, http.StatusInternalServerError
 		}
-		return good(res)
+		return good(gin.H{"episodic": res, "meta": meta})
 	})
 }
 
