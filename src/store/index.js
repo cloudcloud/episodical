@@ -14,7 +14,7 @@ export default createStore({
       delete state.episodic[id];
     },
     resetEpisodic(state, ep) {
-      state.episodic[ep.data.id] = ep.data;
+      state.episodic[ep.data.episodic.id] = ep.data;
     },
     resetEpisodics(state, eps) {
       state.episodics = eps.data;

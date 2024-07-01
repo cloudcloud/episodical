@@ -10,10 +10,10 @@
             <v-chip color="primary" variant="outlined" class="mx-2">
               Genre: {{ item.genre }}
             </v-chip>
-            <v-chip :color="activeColour()" variant="outlined" class="mx-2">
+            <v-chip :color="activeColour" variant="outlined" class="mx-2">
               Active
             </v-chip>
-            <v-chip color="success" variant="outlined" class="mx-2" v-if="item.filesystem_id != ''">
+            <v-chip color="success" variant="outlined" class="mx-2" v-if="item.path != ''">
               Path: {{ item.path }}
             </v-chip>
             <EpisodicIntegrationModal :result="item" @updated="loadEpisodic" />
@@ -69,6 +69,7 @@ export default {
     display: '',
     hasSpecial: false,
     seasonCount: 0,
+    activeColour: 'blue',
   }),
   components: {
     EpisodicEdit,
@@ -84,14 +85,6 @@ export default {
   },
   props: ['id'],
   methods: {
-    activeColour() {
-      if (this.item.is_active) {
-        return "success";
-      } else {
-        return "error";
-      }
-    },
-
     filterForSeason(value, query, item) {
       return value != null &&
         query != null &&
@@ -100,7 +93,9 @@ export default {
 
     loadEpisodic() {
       this.getEpisodic({id: this.id}).then(() => {
-        this.item = this.episodic[this.id];
+        this.item = this.episodic[this.id].episodic;
+        this.meta = this.episodic[this.id].meta;
+
         this.display = `${this.item.title} (${this.item.year})`;
         this.item.episodes.forEach((idx) => {
           if (idx.season_id === 0) {
@@ -109,6 +104,7 @@ export default {
             this.seasonCount = idx.season_id;
           }
         });
+        this.activeColour = this.item.is_active ? 'success' : 'error';
       });
     },
 
