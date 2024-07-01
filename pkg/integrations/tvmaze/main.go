@@ -14,7 +14,7 @@ const (
 
 	urlSearch   = "search/shows?q=%s"
 	urlShow     = "shows/%s"
-	urlEpisodes = "shows/%s/episodes"
+	urlEpisodes = "shows/%s/episodes?specials=1"
 )
 
 var (

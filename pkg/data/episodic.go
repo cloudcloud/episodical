@@ -197,7 +197,7 @@ func (d *Base) UpdateEpisode(ctx context.Context, ep *types.Episode) error {
 		&sqlitex.ExecOptions{
 			Named: named,
 			ResultFunc: func(stmt *sqlite.Stmt) error {
-				up, er := loadEpisode(stmt)
+				_, er := loadEpisode(stmt)
 				if er != nil {
 					err = er
 				}

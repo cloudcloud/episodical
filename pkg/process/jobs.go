@@ -93,6 +93,7 @@ func BackgroundEpisodicProcess(ctx *gin.Context) {
 					episode.DateUpdated = time.Now()
 					episode.IsWatched = orig.IsWatched
 					episode.DateWatched = orig.DateWatched
+					episode.FileEntry = orig.FileEntry
 
 					err = db.UpdateEpisode(ctx, episode)
 				} else {
