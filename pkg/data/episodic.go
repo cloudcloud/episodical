@@ -40,7 +40,9 @@ func (d *Base) GetEpisodics(ctx context.Context) ([]*types.Episodic, error) {
 	conn := d.conn.Get(ctx)
 	defer d.conn.Put(conn)
 
+	ids, il := []string{}, make(map[string][]*types.Episode, 0)
 	eps := []*types.Episodic{}
+
 	err := sqlitex.Execute(
 		conn,
 		sqlGetEpisodics,
@@ -48,6 +50,7 @@ func (d *Base) GetEpisodics(ctx context.Context) ([]*types.Episodic, error) {
 			ResultFunc: func(stmt *sqlite.Stmt) error {
 				e, err := loadEpisodic(stmt)
 				if err == nil {
+					ids = append(ids, e.ID)
 					eps = append(eps, e)
 				}
 
@@ -55,6 +58,32 @@ func (d *Base) GetEpisodics(ctx context.Context) ([]*types.Episodic, error) {
 			},
 		},
 	)
+
+	// get all the episodes and shuffle them in, we can dodgy the query because we generated
+	// the list of IDs and it's _trusted_.
+	err = sqlitex.Execute(
+		conn,
+		`SELECT * FROM episodic_episode WHERE episodic_id IN ('`+strings.Join(ids, "', '")+`');`,
+		&sqlitex.ExecOptions{
+			ResultFunc: func(stmt *sqlite.Stmt) error {
+				e, err := loadEpisode(stmt)
+				if err == nil {
+					if _, ok := il[e.EpisodicID]; !ok {
+						il[e.EpisodicID] = []*types.Episode{e}
+					} else {
+						il[e.EpisodicID] = append(il[e.EpisodicID], e)
+					}
+				}
+				return err
+			},
+		},
+	)
+
+	for idx, ep := range eps {
+		if _, ok := il[ep.ID]; ok {
+			eps[idx].Episodes = il[ep.ID]
+		}
+	}
 
 	return eps, err
 }

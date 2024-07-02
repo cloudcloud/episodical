@@ -203,11 +203,16 @@ func getEpisodics(c *gin.Context) {
 	wrap(c, func(ctx *gin.Context) (interface{}, []string, int) {
 		db := ctx.MustGet("db").(*data.Base)
 
+		meta := gin.H{}
 		res, err := db.GetEpisodics(ctx)
+		for _, x := range res {
+			meta[x.ID] = generateMetaFromEpisodes(x.Episodes)
+		}
+
 		if err != nil {
 			return gin.H{}, []string{err.Error()}, http.StatusInternalServerError
 		}
-		return good(res)
+		return good(gin.H{"episodics": res, "meta": meta})
 	})
 }
 
@@ -217,37 +222,41 @@ func getEpisodic(c *gin.Context) {
 		id := ctx.Param("id")
 
 		res, err := db.GetEpisodicByID(ctx, id)
-		hs, sc, te, we, h := false, 0, 0, 0, 0
-
-		for _, x := range res.Episodes {
-			if x.SeasonID == 0 {
-				hs = true
-			}
-			if x.SeasonID > sc {
-				sc = x.SeasonID
-			}
-			te++
-			if x.IsWatched {
-				we++
-			}
-			if x.FileEntry != "" {
-				h++
-			}
-		}
-
-		meta := gin.H{
-			"has_specials":       hs,
-			"season_count":       sc,
-			"total_episodes":     te,
-			"watched_episodes":   we,
-			"have_episode_files": h,
-		}
+		meta := generateMetaFromEpisodes(res.Episodes)
 
 		if err != nil {
 			return gin.H{}, []string{err.Error()}, http.StatusInternalServerError
 		}
 		return good(gin.H{"episodic": res, "meta": meta})
 	})
+}
+
+func generateMetaFromEpisodes(eps []*types.Episode) gin.H {
+	hs, sc, te, we, h := false, 0, 0, 0, 0
+
+	for _, x := range eps {
+		if x.SeasonID == 0 {
+			hs = true
+		}
+		if x.SeasonID > sc {
+			sc = x.SeasonID
+		}
+		te++
+		if x.IsWatched {
+			we++
+		}
+		if x.FileEntry != "" {
+			h++
+		}
+	}
+
+	return gin.H{
+		"has_specials":       hs,
+		"season_count":       sc,
+		"total_episodes":     te,
+		"watched_episodes":   we,
+		"have_episode_files": h,
+	}
 }
 
 func postEpisodic(c *gin.Context) {
