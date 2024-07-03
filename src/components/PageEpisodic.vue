@@ -16,6 +16,7 @@
             <v-chip color="success" variant="outlined" class="mx-2" v-if="item.path != ''">
               Path: {{ item.path }}
             </v-chip>
+            <EpisodeGradiantChip :text="'Watched: '+meta.watched_episodes+' / '+meta.total_episodes" :gradient="Math.floor((meta.watched_episodes / meta.total_episodes) * 10)" />
             <EpisodicIntegrationModal :result="item" @updated="loadEpisodic" />
           </v-card-subtitle>
 
@@ -37,10 +38,16 @@
       <v-col cols="12" v-for="idx in seasonCount">
         <v-card :title="'Season '+idx" shaped>
           <v-data-table-virtual :headers="headers" :items="item.episodes" :custom-filter="filterForSeason" :search="idx" item-value="season_id">
+
             <template v-slot:item.is_watched="{ item }">
-              <v-btn variant="outlined" density="comfortable" text="Watched!" color="success" v-if="item.is_watched" />
-              <v-btn variant="outlined" density="comfortable" text="Not Watched" color="info" v-if="!item.is_watched" />
+              <v-btn
+                variant="outlined"
+                density="comfortable"
+                :text="item.is_watched ? 'Watched' : 'Not watched'"
+                :color="item.is_watched ? 'success' : 'primary'"
+                @click="watched(item.id)" />
             </template>
+
           </v-data-table-virtual>
         </v-card>
       </v-col>
@@ -51,6 +58,7 @@
 
 <script>
 import { mapActions, mapState } from 'vuex';
+import EpisodeGradiantChip from '@/components/EpisodeGradiantChip';
 import EpisodicEdit from '@/components/EpisodicEdit';
 import EpisodicRefresh from '@/components/EpisodicRefresh';
 import EpisodicRemove from '@/components/EpisodicRemove';
@@ -70,8 +78,10 @@ export default {
     hasSpecial: false,
     seasonCount: 0,
     activeColour: 'blue',
+    meta: {},
   }),
   components: {
+    EpisodeGradiantChip,
     EpisodicEdit,
     EpisodicRefresh,
     EpisodicRemove,
@@ -110,6 +120,12 @@ export default {
 
     mainListing() {
       this.$router.push('/episodic');
+    },
+
+    watched(id) {
+      this.$store.dispatch('markEpisodeWatched', { id: this.id, episode_id: id }).then((data) => {
+        this.loadEpisodic();
+      });
     },
 
     ...mapActions(['getEpisodic']),

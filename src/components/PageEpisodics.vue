@@ -8,15 +8,22 @@
             <EpisodicAdd @addComplete="loadEpisodics" />
           </template>
 
-          <v-data-table-virtual :headers="headers" :items="items">
+          <v-data-table-virtual
+            :headers="headers"
+            :items="items"
+            density="comfortable"
+            multi-sort
+            :sort-by="[{ key: 'meta.have_episode_files', order: 'asc' }]">
 
             <template v-slot:item.title="{ item }">
               <v-btn variant="text" density="comfortable" class="text-none" :to="'/episodic/' + item.id">
                 {{ item.title }} ({{ item.year }})
               </v-btn>
             </template>
-            <template v-slot:item.files="{ item }">
-              <v-chip density="comfortable" :text="meta[item.id].have_episode_files+' / '+meta[item.id].total_episodes" />
+            <template v-slot:item.meta.have_episode_files="{ item }">
+              <EpisodeGradiantChip
+                :text="'Files: '+item.meta.have_episode_files+' / '+item.meta.total_episodes"
+                :gradient="Math.floor((item.meta.have_episode_files/item.meta.total_episodes) * 10)" />
             </template>
             <template v-slot:item.status="{ item }">
               <v-chip density="comfortable" text="Unknown" />
@@ -24,8 +31,10 @@
             <template v-slot:item.available="{ item }">
               <v-chip density="comfortable" text="Available" />
             </template>
-            <template v-slot:item.watched="{ item }">
-              <v-chip density="comfortable" :text="meta[item.id].watched_episodes+' / '+meta[item.id].total_episodes" />
+            <template v-slot:item.meta.watched_episodes="{ item }">
+              <EpisodeGradiantChip
+                :text="'Watched: '+item.meta.watched_episodes+' / '+item.meta.total_episodes"
+                :gradient="Math.floor((item.meta.watched_episodes/item.meta.total_episodes) * 10)" />
             </template>
 
           </v-data-table-virtual>
@@ -38,16 +47,17 @@
 
 <script>
 import { mapActions, mapMutations, mapGetters } from 'vuex';
+import EpisodeGradiantChip from '@/components/EpisodeGradiantChip';
 import EpisodicAdd from '@/components/EpisodicAdd';
 
 export default {
   data: () => ({
     headers: [
       {title: 'Title', align: 'left', key: 'title'},
-      {title: 'Files', align: 'center', key: 'files'},
-      {title: 'Watched', align: 'center', key: 'watched'},
-      {title: 'Available', align: 'center', key: 'available'},
-      {title: 'Next Ep', align: 'center', key: 'status'},
+      {title: 'Files', align: 'center', key: 'meta.have_episode_files' },
+      {title: 'Watched', align: 'center', key: 'meta.watched_episodes' },
+      {title: 'Available', align: 'center', key: 'available', sortable: false},
+      {title: 'Next Ep', align: 'center', key: 'status', sortable: false},
     ],
     items: [],
   }),
@@ -60,14 +70,14 @@ export default {
   methods: {
     loadEpisodics() {
       this.$store.dispatch('getEpisodics').then(() => {
-        this.items = this.$store.getters.allEpisodics.episodics;
-        this.meta = this.$store.getters.allEpisodics.meta;
+        this.items = this.$store.getters.allEpisodics;
       });
     },
     ...mapMutations(['resetEpisodics']),
     ...mapActions(['getEpisodics']),
   },
   components: {
+    EpisodeGradiantChip,
     EpisodicAdd,
   },
 };

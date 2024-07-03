@@ -31,6 +31,7 @@ func routeAPI(g *gin.Engine) {
 	api.DELETE("episodic/delete/:id", deleteEpisodic)
 	api.GET("episodic/refresh/:id", getEpisodicRefresh)
 	api.POST("episodic/integration/:id", postEpisodicIntegration)
+	api.GET("episodic/:id/watched/:episode", getEpisodicWatched)
 
 	api.GET("search/episodic/:title", getSearchEpisodic)
 }
@@ -40,6 +41,20 @@ func getEpisodicRefresh(c *gin.Context) {
 		process.Push(process.BackgroundEpisodicProcess, ctx.Copy())
 
 		return good(gin.H{"enqueued": true})
+	})
+}
+
+func getEpisodicWatched(c *gin.Context) {
+	wrap(c, func(ctx *gin.Context) (interface{}, []string, int) {
+		db := ctx.MustGet("db").(*data.Base)
+		id := ctx.Param("id")
+		episodeID := ctx.Param("episode")
+
+		err := db.MarkEpisodeWatched(ctx, id, episodeID)
+		if err != nil {
+			return gin.H{}, []string{err.Error()}, http.StatusInternalServerError
+		}
+		return good(gin.H{"mark_watched": true})
 	})
 }
 

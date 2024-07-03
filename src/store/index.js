@@ -17,7 +17,13 @@ export default createStore({
       state.episodic[ep.data.episodic.id] = ep.data;
     },
     resetEpisodics(state, eps) {
-      state.episodics = eps.data;
+      let episodics = eps.data.episodics;
+      let meta = eps.data.meta;
+
+      episodics.forEach((v) => {
+        v.meta = meta[v.id];
+      });
+      state.episodics = episodics;
     },
     resetFilesystems(state, fs) {
       state.filesystems = fs.data;
@@ -110,6 +116,10 @@ export default createStore({
           resolve();
         });
       });
+    },
+
+    markEpisodeWatched(_, {id, episode_id}) {
+      return apiClient.markEpisodeWatched(id, episode_id);
     },
 
     refreshEpisodic(_, {id}) {

@@ -47,6 +47,10 @@ export default {
     return this.perform('get', `/api/v1/integrations`);
   },
 
+  markEpisodeWatched(id, episode_id) {
+    return this.perform('get', `/api/v1/episodic/${id}/watched/${episode_id}`);
+  },
+
   refreshEpisodic(id) {
     return this.perform('get', `/api/v1/episodic/refresh/${id}`);
   },
