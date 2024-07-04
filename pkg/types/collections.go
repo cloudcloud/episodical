@@ -36,9 +36,8 @@ type Episode struct {
 	Base
 	SubCollection
 
-	EpisodicID     string    `json:"episodic_id" db:"episodic_id"`
-	Title          string    `json:"title" db:"title"`
-	DateFirstAired time.Time `json:"date_first_aired"`
+	EpisodicID string `json:"episodic_id" db:"episodic_id"`
+	Title      string `json:"title" db:"title"`
 
 	SeasonID      int `json:"season_id" db:"season_id"`
 	EpisodeNumber int `json:"episode_number" db:"episode_number"`
@@ -112,7 +111,7 @@ func (e *Episode) Named() map[string]any {
 		"@date_watched":           e.DateWatched.Format(time.RFC3339),
 		"@file_entry":             e.FileEntry,
 		"@integration_identifier": e.IntegrationIdentifier,
-		"@date_first_aired":       e.DateFirstAired.Format(time.RFC3339),
+		"@date_first_aired":       e.DateReleased.Format(time.RFC3339),
 		"@overview":               e.Overview,
 	}
 
@@ -193,7 +192,7 @@ func (e *Episodic) ProvisionFromTVMaze(s tvmaze.Episode) (*Episode, error) {
 	ep.IntegrationIdentifier = fmt.Sprintf("%d", s.ID)
 
 	t, _ := time.Parse("2006-01-02T15:04:05", strings.TrimSuffix(s.AirStamp, "+00:00"))
-	ep.DateFirstAired = t
+	ep.DateReleased = t
 
 	return ep, nil
 }

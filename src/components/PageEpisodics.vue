@@ -25,16 +25,16 @@
                 :text="'Files: '+item.meta.have_episode_files+' / '+item.meta.total_episodes"
                 :gradient="Math.floor((item.meta.have_episode_files/item.meta.total_episodes) * 10)" />
             </template>
-            <template v-slot:item.status="{ item }">
-              <v-chip density="comfortable" text="Unknown" />
-            </template>
-            <template v-slot:item.available="{ item }">
-              <v-chip density="comfortable" text="Available" />
-            </template>
             <template v-slot:item.meta.watched_episodes="{ item }">
               <EpisodeGradiantChip
                 :text="'Watched: '+item.meta.watched_episodes+' / '+item.meta.total_episodes"
                 :gradient="Math.floor((item.meta.watched_episodes/item.meta.total_episodes) * 10)" />
+            </template>
+            <template v-slot:item.status="{ item }">
+              <v-chip density="comfortable" :text="item.is_active ? 'Active' : 'Ended'" :color="item.is_active ? 'green' : 'red'" variant="outlined" />
+            </template>
+            <template v-slot:item.available="{ item }">
+              <v-chip density="comfortable" :text="item.meta.next_episode_date" v-if="item.meta.next_episode_date != ''" variant="outlined" />
             </template>
 
           </v-data-table-virtual>
@@ -56,8 +56,8 @@ export default {
       {title: 'Title', align: 'left', key: 'title'},
       {title: 'Files', align: 'center', key: 'meta.have_episode_files' },
       {title: 'Watched', align: 'center', key: 'meta.watched_episodes' },
-      {title: 'Available', align: 'center', key: 'available', sortable: false},
-      {title: 'Next Ep', align: 'center', key: 'status', sortable: false},
+      {title: 'Status', align: 'center', key: 'status', sortable: false},
+      {title: 'Next Ep', align: 'center', key: 'available', sortable: false},
     ],
     items: [],
   }),

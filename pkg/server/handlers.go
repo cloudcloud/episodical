@@ -2,6 +2,7 @@ package server
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/cloudcloud/episodical/pkg/data"
 	"github.com/cloudcloud/episodical/pkg/integrations/tvmaze"
@@ -247,7 +248,8 @@ func getEpisodic(c *gin.Context) {
 }
 
 func generateMetaFromEpisodes(eps []*types.Episode) gin.H {
-	hs, sc, te, we, h := false, 0, 0, 0, 0
+	hs, sc, te, we, h, hn := false, 0, 0, 0, 0, false
+	next, _ := time.Parse("2006-01-02", "2050-01-01")
 
 	for _, x := range eps {
 		if x.SeasonID == 0 {
@@ -256,21 +258,38 @@ func generateMetaFromEpisodes(eps []*types.Episode) gin.H {
 		if x.SeasonID > sc {
 			sc = x.SeasonID
 		}
-		te++
-		if x.IsWatched {
-			we++
+
+		if x.DateReleased.Before(time.Now()) {
+			te++
+			if x.IsWatched {
+				we++
+			}
 		}
+
 		if x.FileEntry != "" {
 			h++
 		}
+		if x.DateReleased.Before(next) && x.DateReleased.After(time.Now()) {
+			hn = true
+			next = x.DateReleased
+		}
 	}
 
+	if h > te {
+		te = h
+	}
+
+	nx := ""
+	if hn {
+		nx = next.Format("2006-01-02")
+	}
 	return gin.H{
 		"has_specials":       hs,
 		"season_count":       sc,
 		"total_episodes":     te,
 		"watched_episodes":   we,
 		"have_episode_files": h,
+		"next_episode_date":  nx,
 	}
 }
 
