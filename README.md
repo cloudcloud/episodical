@@ -22,3 +22,10 @@ There are several integrations available to utilise within Episodical to bring a
 ## Building
 
 To build from source, `make install` will do everything that's necessary.
+
+For a relatively quick development cycle, the following command works well:
+
+```bash
+make clean install && HOSTNAME=localhost PORT=8088 DATA_FILE=/var/episodical/episodical.db DATA_PASSPHRASE=no ./episodical
+```
+
