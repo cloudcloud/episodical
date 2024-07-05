@@ -8,7 +8,7 @@ updates:
       time: '11:00'
     open-pull-requests-limit: 10
 
-  - package-ecosystem: 'yarn'
+  - package-ecosystem: 'npm'
     directory: '/'
     schedule:
       interval: 'daily'
