@@ -13,9 +13,10 @@ type AddEpisodic struct {
 	Title string `json:"title"`
 	Year  int    `json:"year"`
 
-	Integration  string `json:"integration,omitempty"`
-	FilesystemID string `json:"filesystem,omitempty"`
-	Path         string `json:"path,omitempty"`
+	Integration   string `json:"integration,omitempty"`
+	FilesystemID  string `json:"filesystem,omitempty"`
+	Path          string `json:"path,omitempty"`
+	IntegrationID string `json:"integration_id,omitempty"`
 }
 
 type Episodic struct {
@@ -94,6 +95,7 @@ func (a AddEpisodic) Convert() (*Episodic, error) {
 	e.Title = a.Title
 	e.Year = a.Year
 	e.Path = a.Path
+	e.PublicDBID = a.IntegrationID
 
 	return e, nil
 }

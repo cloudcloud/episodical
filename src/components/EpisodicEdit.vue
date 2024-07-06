@@ -55,6 +55,12 @@
             :rules="[]" />
         </div>
 
+        <v-text-field
+          density="comfortable"
+          :model-value="integration_id"
+          disabled
+          label="Integration ID" />
+
       </v-card-text>
 
       <v-card-actions>
@@ -80,6 +86,7 @@ export default {
     path: '',
     integrations: [],
     filesystems: [],
+    integration_id: '',
     rules: {
       numerical: v => !/[^0-9]+/.test(v) || 'Numbers only.',
       required: v => !!v || 'Required.',
@@ -94,13 +101,16 @@ export default {
     this.loadDeps();
   },
   methods: {
+
     close() {
       this.loading = false;
       this.dialog = false;
     },
+
     edit() {
       this.dialog = true;
     },
+
     loadDeps() {
       this.$store.dispatch('getFilesystems').then(() => {
         this.filesystems = this.$store.getters.allFilesystems;
@@ -112,10 +122,12 @@ export default {
             this.integration = this.episodic[this.id].episodic.integration_id;
             this.filesystem = this.episodic[this.id].episodic.filesystem_id;
             this.path = this.episodic[this.id].episodic.path;
+            this.integration_id = this.episodic[this.id].episodic.public_db_id;
           });
         });
       });
     },
+
     run() {
       this.loading = true;
       this.$store.dispatch('updateEpisodic', {
@@ -126,12 +138,14 @@ export default {
           integration: this.integration,
           filesystem: this.filesystem,
           path: this.path,
+          integration_id: this.integration_id,
         },
       }).then(() => {
         this.close();
         this.$emit('editComplete');
       });
     },
+
   },
 };
 </script>
