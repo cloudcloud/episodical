@@ -17,8 +17,7 @@ cover.html
 # Dependency directories
 node_modules
 pkg/server/dist
-.yarn/*
-!.yarn/releases
+.yarn/cache
 
 # Data
 .envrc
