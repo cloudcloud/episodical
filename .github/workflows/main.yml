@@ -84,7 +84,9 @@ jobs:
       - name: 'Build Frontend'
         run: yarn install && yarn build
       - name: 'Matrix Binaries'
-        run: GOOS=${{ matrix.type.os }} GOARCH=${{ matrix.type.arch }} go build -o dist/episodical-${{ matrix.type.arch }}-${{ matrix.type.os }} ./cmd/episodical
+        run: |
+          ls -l && ls -l cmd
+          GOOS=${{ matrix.type.os }} GOARCH=${{ matrix.type.arch }} go build -o dist/episodical-${{ matrix.type.arch }}-${{ matrix.type.os }} cmd/episodical
       - name: 'Archive Binary'
         uses: actions/upload-artifact@v4
         with:
