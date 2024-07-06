@@ -1,8 +1,12 @@
 FROM node:slim AS fe
 WORKDIR /app
-COPY *.j* index.html yarn.lock ./
+COPY *.j* index.html yarn.lock .yarnrc.yml ./
 COPY src ./src/
-RUN yarn && NODE_OPTIONS=--openssl-legacy-provider yarn build
+COPY .yarn ./.yarn/
+RUN corepack enable && \
+  yarn set version 4.3.1 && \
+  yarn install && \
+  yarn build
 
 FROM golang:alpine AS be
 WORKDIR /ep
