@@ -22,17 +22,15 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: ^1.22
+      - name: 'Hack Yarn'
+        run: corepack enable
       - name: 'Setup Node'
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: yarn
       - name: 'Build Frontend'
-        run: |
-          corepack enable
-          corepack install
-          yarn
-          yarn build
+        run: yarn && yarn build
       - name: 'Run Tests'
         run: go test -cover -coverprofile=coverage.txt ./...
       - name: 'Archive Results'
@@ -76,6 +74,8 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: ^1.22
+      - name: 'Hack Yarn'
+        run: corepack enable
       - name: 'Setup Node'
         uses: actions/setup-node@v4
         with:
