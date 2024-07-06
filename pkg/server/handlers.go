@@ -303,7 +303,7 @@ func postEpisodic(c *gin.Context) {
 		if err != nil {
 			return gin.H{}, []string{err.Error()}, http.StatusInternalServerError
 		}
-		return good(res)
+		return good(gin.H{"episodic": res, "meta": []string{}})
 	})
 }
 
@@ -315,9 +315,11 @@ func putEpisodic(c *gin.Context) {
 		body := &types.AddEpisodic{}
 		ctx.BindJSON(body)
 		res, err := db.UpdateEpisodic(ctx, id, body)
+		meta := generateMetaFromEpisodes(res.Episodes)
+
 		if err != nil {
 			return gin.H{}, []string{err.Error()}, http.StatusInternalServerError
 		}
-		return good(res)
+		return good(gin.H{"episodic": res, "meta": meta})
 	})
 }
