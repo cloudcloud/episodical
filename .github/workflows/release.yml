@@ -71,7 +71,7 @@ jobs:
         with:
           images: cloudcloud/episodical
       - name: 'Build and Push'
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           labels: ${{ steps.meta.outputs.labels }}
