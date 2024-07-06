@@ -17,7 +17,16 @@ cover.html
 # Dependency directories
 node_modules
 pkg/server/dist
-.yarn/cache
 
 # Data
 .envrc
+
+# Frontend files
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
