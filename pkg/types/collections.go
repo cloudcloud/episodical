@@ -149,31 +149,36 @@ func (e *Episodic) Named() map[string]any {
 	return d
 }
 
-func (e *Episodic) ProvisionEpisode(f *File) (*Episode, error) {
-	ep := &Episode{}
+func (e *Episodic) ProvisionEpisode(f *File) ([]*Episode, error) {
+	eps := []*Episode{}
+	for x := 0; x < f.FoundCount(); x++ {
+		ep := &Episode{}
 
-	uid, err := ksuid.NewRandom()
-	if err != nil {
-		return nil, err
+		uid, err := ksuid.NewRandom()
+		if err != nil {
+			return nil, err
+		}
+		ep.ID = uid.String()
+
+		ep.DateAdded = time.Now()
+		ep.EpisodicID = e.ID
+		ep.FileEntry = f.Path
+
+		n, err := f.GetToken(x, "Season")
+		if err != nil {
+			return nil, err
+		}
+		ep.SeasonID = n.(int)
+		n, err = f.GetToken(x, "Episode")
+		if err != nil {
+			return nil, err
+		}
+		ep.EpisodeNumber = n.(int)
+
+		eps = append(eps, ep)
 	}
-	ep.ID = uid.String()
 
-	ep.DateAdded = time.Now()
-	ep.EpisodicID = e.ID
-	ep.FileEntry = f.Path
-
-	n, err := f.GetToken("Season")
-	if err != nil {
-		return nil, err
-	}
-	ep.SeasonID = n.(int)
-	n, err = f.GetToken("Episode")
-	if err != nil {
-		return nil, err
-	}
-	ep.EpisodeNumber = n.(int)
-
-	return ep, nil
+	return eps, nil
 }
 
 func (e *Episodic) ProvisionFromTVMaze(s tvmaze.Episode) (*Episode, error) {

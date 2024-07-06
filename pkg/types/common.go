@@ -34,7 +34,7 @@ type File struct {
 	Type string
 	Path string
 
-	tokens map[string]any
+	tokens []map[string]any
 }
 
 type Integration struct {
@@ -107,27 +107,51 @@ func (i *Integration) Named() map[string]any {
 	return d
 }
 
+var (
+	matchesPatternSlim    = regexp.MustCompile(`.*S\d+E\d+.*\.[a-zA-Z0-9]+$`)
+	pullPatternSlim       = regexp.MustCompile(`\d*E(\d+)`)
+	pullPatternSlimShared = regexp.MustCompile(`.*S(\d+)E\d+.*\.([a-zA-Z0-9]+)$`)
+)
+
 func TokeniseEpisodical(s string) (*File, error) {
-	f := &File{Type: "episodical", Path: s, tokens: make(map[string]any, 0)}
+	f := &File{Type: "episodical", Path: s, tokens: make([]map[string]any, 0)}
 
 	// TODO: Support other formats as required.
-	r := regexp.MustCompile(`.*S(\d+)E(\d+).*\.([a-zA-Z0-9]+)$`)
-	matches := r.FindAllStringSubmatch(s, -1)
-	if len(matches) != 1 || len(matches[0]) != 4 {
-		return nil, fmt.Errorf("Could not find a Episodical match for '%s'", s)
-	}
+	if matchesPatternSlim.MatchString(s) {
+		matches := pullPatternSlimShared.FindAllStringSubmatch(s, -1)
+		if len(matches) < 1 || len(matches[0]) != 3 {
+			return nil, fmt.Errorf("Could not find a Episodical match for '%s'", s)
+		}
+		season, _ := strconv.Atoi(matches[0][1])
+		format := matches[0][2]
 
-	f.tokens["Season"], _ = strconv.Atoi(matches[0][1])
-	f.tokens["Episode"], _ = strconv.Atoi(matches[0][2])
-	f.tokens["Format"] = matches[0][3]
+		// now pull out the episodes
+		matched := pullPatternSlim.FindAllStringSubmatch(s, -1)
+		for _, x := range matched {
+			ep, _ := strconv.Atoi(x[1])
+
+			f.tokens = append(f.tokens, map[string]any{
+				"Season":  season,
+				"Episode": ep,
+				"Format":  format,
+			})
+		}
+	}
 
 	return f, nil
 }
 
-func (f *File) GetToken(n string) (any, error) {
-	if _, ok := f.tokens[n]; !ok {
+func (f *File) FoundCount() int {
+	return len(f.tokens)
+}
+
+func (f *File) GetToken(idx int, n string) (any, error) {
+	if idx >= f.FoundCount() {
+		return nil, fmt.Errorf("idx out of range of episode numbers found")
+	}
+	if _, ok := f.tokens[idx][n]; !ok {
 		return nil, fmt.Errorf("Unable to find token '%s'", n)
 	}
 
-	return f.tokens[n], nil
+	return f.tokens[idx][n], nil
 }

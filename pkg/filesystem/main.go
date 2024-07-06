@@ -44,7 +44,6 @@ func (p *Process) Gather(b *types.Episodic, t string) (int, error) {
 	switch t {
 	case "episodical":
 		p.gatherFromFilesystem(b, ctx, system)
-		// fmt.Printf("%#v\n", tvmaze.Search(b.Title))
 
 	case "artistic":
 		// mp3, aac, flac, ogg
@@ -71,12 +70,14 @@ func (p *Process) gatherFromFilesystem(b *types.Episodic, ctx context.Context, s
 
 		f, err := types.TokeniseEpisodical(path)
 		if err != nil {
-			return err
+			p.log.With("error", err).Info("Unable to determine Episode detail")
+			return nil
 		}
 
-		format, err := f.GetToken("Format")
+		format, err := f.GetToken(0, "Format")
 		if err != nil {
-			return err
+			p.log.With("error", err).Info("Invalid format found for matching file")
+			return nil
 		}
 		if _, ok := validEpisodical[format.(string)]; !ok {
 			return nil
@@ -88,29 +89,31 @@ func (p *Process) gatherFromFilesystem(b *types.Episodic, ctx context.Context, s
 
 	for _, f := range files {
 		// add each episode to the episodical
-		ep, err := b.ProvisionEpisode(f)
+		eps, err := b.ProvisionEpisode(f)
 		if err != nil {
 			p.log.With("error", err, "file", f).Info("Unable to parse episode details")
 			continue
 		}
 
-		orig, err := p.db.GetEpisodeSearch(ctx, ep)
-		if err != nil {
-			p.log.With("error", err, "episode", ep).Info("Error when searching for found episode")
-		}
+		for _, ep := range eps {
+			orig, err := p.db.GetEpisodeSearch(ctx, ep)
+			if err != nil {
+				p.log.With("error", err, "episode", ep).Info("Error when searching for found episode")
+			}
 
-		if orig != nil {
-			ep.ID = orig.ID
-			ep.DateAdded = orig.DateAdded
-			ep.DateUpdated = time.Now()
+			if orig != nil {
+				ep.ID = orig.ID
+				ep.DateAdded = orig.DateAdded
+				ep.DateUpdated = time.Now()
 
-			err = p.db.UpdateEpisode(ctx, ep)
-		} else {
-			err = p.db.StoreEpisode(ctx, ep)
-		}
+				err = p.db.UpdateEpisode(ctx, ep)
+			} else {
+				err = p.db.StoreEpisode(ctx, ep)
+			}
 
-		if err != nil {
-			// log and continue
+			if err != nil {
+				// log and continue
+			}
 		}
 	}
 
