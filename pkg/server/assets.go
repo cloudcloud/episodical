@@ -35,7 +35,7 @@ func index(c *gin.Context) {
 	s := strings.Replace(
 		string(f),
 		"[EP_BASE_URL]",
-		fmt.Sprintf("http://%s:%d/", conf.Hostname, conf.Port),
+		fmt.Sprintf("//%s:%d/", conf.Hostname, conf.Port),
 		1,
 	)
 
