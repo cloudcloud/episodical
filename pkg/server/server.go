@@ -41,7 +41,10 @@ func New(c *config.Config) *Server {
 	g := gin.New()
 	g.Use(
 		cors.New(cors.Config{
-			AllowOrigins: []string{"http://" + c.Hostname + ":" + fmt.Sprintf("%d", c.Port)},
+			AllowOrigins: []string{
+				"http://" + c.Hostname + ":" + fmt.Sprintf("%d", c.Port),
+				"https://" + c.Hostname + ":" + fmt.Sprintf("%d", c.Port),
+			},
 			AllowMethods: []string{"GET", "POST", "PUT", "OPTIONS", "HEAD", "DELETE"},
 			AllowHeaders: []string{"Origin", "X-Client", "Content-Type"},
 		}),
@@ -59,7 +62,7 @@ func New(c *config.Config) *Server {
 }
 
 func (s *Server) Start() {
-	s.g.Run(s.conf.Hostname + ":" + fmt.Sprintf("%d", s.conf.Port))
+	s.g.Run(":" + fmt.Sprintf("%d", s.conf.Port))
 }
 
 func (s *Server) data() gin.HandlerFunc {
