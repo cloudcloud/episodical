@@ -28,7 +28,11 @@ jobs:
           node-version: 20
           cache: yarn
       - name: 'Build Frontend'
-        run: yarn && yarn build
+        run: |
+          corepack enable
+          corepack install
+          yarn
+          yarn build
       - name: 'Run Tests'
         run: go test -cover -coverprofile=coverage.txt ./...
       - name: 'Archive Results'
