@@ -3,7 +3,6 @@ package server
 import (
 	"bytes"
 	"embed"
-	"fmt"
 	"net/http"
 	"path"
 	"strings"
@@ -35,7 +34,7 @@ func index(c *gin.Context) {
 	s := strings.Replace(
 		string(f),
 		"[EP_BASE_URL]",
-		fmt.Sprintf("//%s:%d/", conf.Hostname, conf.Port),
+		conf.HostViaAPI,
 		1,
 	)
 

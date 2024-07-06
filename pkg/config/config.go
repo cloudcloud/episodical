@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -14,6 +15,7 @@ type Config struct {
 	DataFile       string
 	DataPassphrase string
 	Hostname       string
+	HostViaAPI     string
 	Port           int
 }
 
@@ -22,6 +24,7 @@ func New() *Config {
 		DataFile:       findDataFile(),
 		DataPassphrase: findDataPassphrase(),
 		Hostname:       findHostname(),
+		HostViaAPI:     findHostViaAPI(),
 		Port:           findPort(),
 	}
 }
@@ -46,6 +49,14 @@ func findHostname() string {
 	host := os.Getenv("HOSTNAME")
 	if len(host) < 1 || host == "" {
 		host = "localhost"
+	}
+	return host
+}
+
+func findHostViaAPI() string {
+	host := os.Getenv("HOST_VIA_API")
+	if host == "" {
+		return fmt.Sprintf("//%s:%d/", findHostname(), findPort())
 	}
 	return host
 }
