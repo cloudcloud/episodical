@@ -30,7 +30,7 @@ jobs:
           node-version: 20
           cache: yarn
       - name: 'Build Frontend'
-        run: yarn && yarn build
+        run: yarn install && yarn build
       - name: 'Run Tests'
         run: go test -cover -coverprofile=coverage.txt ./...
       - name: 'Archive Results'
@@ -75,13 +75,14 @@ jobs:
         with:
           go-version: ^1.22
       - name: 'Hack Yarn'
-        run: corepack enable
+        run: corepack enable && yarn set version 4.3.1
       - name: 'Setup Node'
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: yarn
       - name: 'Build Frontend'
-        run: yarn && yarn build
+        run: yarn install && yarn build
       - name: 'Matrix Binaries'
         run: GOOS=${{ matrix.type.os }} GOARCH=${{ matrix.type.arch }} go build -o dist/episodical-${{ matrix.type.arch }}-${{ matrix.type.os }} ./cmd/episodical
       - name: 'Archive Binary'
@@ -89,5 +90,4 @@ jobs:
         with:
           name: binary-${{ matrix.type.arch }}-${{ matrix.type.os }}
           path: dist/episodical-${{ matrix.type.arch }}-${{ matrix.type.os }}
-
 
