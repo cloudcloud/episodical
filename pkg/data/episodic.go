@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/cloudcloud/episodical/pkg/types"
 	"zombiezen.com/go/sqlite"
@@ -281,14 +282,33 @@ func (d *Base) UpdateEpisodic(ctx context.Context, id string, ep *types.AddEpiso
 	conn := d.conn.Get(ctx)
 	defer d.conn.Put(conn)
 
-	episodic := &types.Episodic{}
 	e, err := ep.Convert()
 	if err != nil {
 		return nil, err
 	}
 
+	episodic, err := d.GetEpisodicByID(ctx, id)
+	if err != nil {
+		d.log.With("error", err, "episodic_id", id, "episodic", episodic).Info("Unable to load Episodic")
+	}
+
 	named := e.Named()
 	named["@id"] = id
+	named["@date_added"] = episodic.DateAdded
+	named["@date_updated"] = time.Now()
+	if named["@title"] == "" {
+		named["@title"] = episodic.Title
+	}
+	if named["@year"] == "" {
+		named["@year"] = episodic.Year
+	}
+	if named["@genre"] == "" {
+		named["@genre"] = episodic.Genre
+	}
+	if named["@public_db_id"] == "" {
+		named["@public_db_id"] = episodic.PublicDBID
+	}
+	named["@is_active"] = episodic.IsActive
 
 	err = sqlitex.Execute(
 		conn,
