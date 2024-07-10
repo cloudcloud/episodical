@@ -2,7 +2,6 @@ package types
 
 import (
 	"fmt"
-	"log"
 	"regexp"
 	"strconv"
 	"time"
@@ -118,7 +117,7 @@ var (
 	pullPatternSpacedShared = regexp.MustCompile(`.*\s+(\d+)x\d+\s+.*\.([a-zA-Z0-9]+)$`)
 
 	matchesPatternDots    = regexp.MustCompile(`.*\.\d+x\d+\.?.*\.[a-zA-Z0-9]+$`)
-	pullPatternDots       = regexp.MustCompile(`[^.][-x]([0-9]+)`)
+	pullPatternDots       = regexp.MustCompile(`[^.]x(\d+)|-(\d+)`)
 	pullPatternDotsShared = regexp.MustCompile(`.*\.(\d+)x\d+\.?.*\.([a-zA-Z0-9]+)$`)
 )
 
@@ -146,14 +145,15 @@ func (f *File) findMatches(s string, common, episode *regexp.Regexp) error {
 	matched := episode.FindAllStringSubmatch(s, -1)
 	for _, x := range matched {
 		ep, _ := strconv.Atoi(x[1])
+		if ep == 0 && len(x) > 1 {
+			ep, _ = strconv.Atoi(x[2])
+		}
 
 		f.tokens = append(f.tokens, map[string]any{
 			"Season":  season,
 			"Episode": ep,
 			"Format":  format,
 		})
-
-		log.Println("Season", season, "Episode", ep, "Format", format)
 	}
 
 	return nil
