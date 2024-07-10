@@ -37,7 +37,13 @@
 
       <v-col cols="12" v-for="idx in seasonCount">
         <v-card :title="'Season '+idx" shaped>
-          <v-data-table-virtual :headers="headers" :items="item.episodes" :custom-filter="filterForSeason" :search="idx" item-value="season_id">
+          <v-data-table-virtual
+            :headers="headers"
+            :items="item.episodes"
+            :custom-filter="filterForSeason"
+            :search="idx"
+            :sort-by="[{key: 'episode_number', order: 'asc'}]"
+            item-value="season_id">
 
             <template v-slot:item.is_watched="{ item }">
               <v-btn
@@ -70,7 +76,7 @@ export default {
       {title: 'Episode', align: 'center', key: 'episode_number'},
       {title: 'Title', align: 'left', key: 'title'},
       {title: 'Date Released', align: 'left', key: 'date_released'},
-      {title: 'Watched?', align: 'center', key: 'is_watched'},
+      {title: 'Watched?', align: 'center', key: 'is_watched', sortable: false},
       {title: 'File', align: 'left', key: 'file_entry'},
     ],
     item: {},
