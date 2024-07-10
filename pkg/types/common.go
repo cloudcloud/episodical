@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+	"log"
 	"regexp"
 	"strconv"
 	"time"
@@ -111,34 +112,51 @@ var (
 	matchesPatternSlim    = regexp.MustCompile(`.*S\d+E\d+.*\.[a-zA-Z0-9]+$`)
 	pullPatternSlim       = regexp.MustCompile(`\d*E(\d+)`)
 	pullPatternSlimShared = regexp.MustCompile(`.*S(\d+)E\d+.*\.([a-zA-Z0-9]+)$`)
+
+	matchesPatternSpaced    = regexp.MustCompile(`.*\s+\d+x\d+\s+.*\.[a-zA-Z0-9]+$`)
+	pullPatternSpaced       = regexp.MustCompile(`\s+\d+x(\d+)\s+`)
+	pullPatternSpacedShared = regexp.MustCompile(`.*\s+(\d+)x\d+\s+.*\.([a-zA-Z0-9]+)$`)
+
+	matchesPatternDots    = regexp.MustCompile(`.*\.\d+x\d+\.?.*\.[a-zA-Z0-9]+$`)
+	pullPatternDots       = regexp.MustCompile(`[^.][-x]([0-9]+)`)
+	pullPatternDotsShared = regexp.MustCompile(`.*\.(\d+)x\d+\.?.*\.([a-zA-Z0-9]+)$`)
 )
 
 func TokeniseEpisodical(s string) (*File, error) {
 	f := &File{Type: "episodical", Path: s, tokens: make([]map[string]any, 0)}
 
-	// TODO: Support other formats as required.
+	var err error
 	if matchesPatternSlim.MatchString(s) {
-		matches := pullPatternSlimShared.FindAllStringSubmatch(s, -1)
-		if len(matches) < 1 || len(matches[0]) != 3 {
-			return nil, fmt.Errorf("Could not find a Episodical match for '%s'", s)
-		}
-		season, _ := strconv.Atoi(matches[0][1])
-		format := matches[0][2]
-
-		// now pull out the episodes
-		matched := pullPatternSlim.FindAllStringSubmatch(s, -1)
-		for _, x := range matched {
-			ep, _ := strconv.Atoi(x[1])
-
-			f.tokens = append(f.tokens, map[string]any{
-				"Season":  season,
-				"Episode": ep,
-				"Format":  format,
-			})
-		}
+		err = f.findMatches(s, pullPatternSlimShared, pullPatternSlim)
+	} else if matchesPatternSpaced.MatchString(s) {
+		err = f.findMatches(s, pullPatternSpacedShared, pullPatternSpaced)
+	} else if matchesPatternDots.MatchString(s) {
+		err = f.findMatches(s, pullPatternDotsShared, pullPatternDots)
 	}
 
-	return f, nil
+	return f, err
+}
+
+func (f *File) findMatches(s string, common, episode *regexp.Regexp) error {
+	matches := common.FindAllStringSubmatch(s, -1)
+
+	season, _ := strconv.Atoi(matches[0][1])
+	format := matches[0][2]
+
+	matched := episode.FindAllStringSubmatch(s, -1)
+	for _, x := range matched {
+		ep, _ := strconv.Atoi(x[1])
+
+		f.tokens = append(f.tokens, map[string]any{
+			"Season":  season,
+			"Episode": ep,
+			"Format":  format,
+		})
+
+		log.Println("Season", season, "Episode", ep, "Format", format)
+	}
+
+	return nil
 }
 
 func (f *File) FoundCount() int {
