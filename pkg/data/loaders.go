@@ -62,6 +62,20 @@ func loadEpisodic(stmt *sqlite.Stmt) (*types.Episodic, error) {
 	return ep, nil
 }
 
+func loadEpisodicMeta(stmt *sqlite.Stmt) *types.EpisodicMeta {
+	dn, _ := time.Parse(time.RFC3339, stmt.GetText("next_episode_date"))
+
+	return &types.EpisodicMeta{
+		HasSpecials:          stmt.GetBool("has_specials"),
+		NextEpisodeDate:      dn,
+		Seasons:              stmt.GetText("seasons"),
+		TotalEpisodeFiles:    int(stmt.GetInt64("total_episode_files")),
+		TotalEpisodes:        int(stmt.GetInt64("total_episode_count")),
+		TotalEpisodesWatched: int(stmt.GetInt64("total_episodes_watched")),
+		TotalSpecialsCount:   int(stmt.GetInt64("total_specials_count")),
+	}
+}
+
 func loadFilesystem(stmt *sqlite.Stmt) (types.Filesystem, error) {
 	lc, _ := time.Parse(time.RFC3339, stmt.GetText("last_checked"))
 

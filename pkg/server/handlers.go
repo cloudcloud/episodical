@@ -1,9 +1,6 @@
 package server
 
 import (
-	"net/http"
-	"time"
-
 	"github.com/cloudcloud/episodical/pkg/data"
 	"github.com/cloudcloud/episodical/pkg/integrations/tvmaze"
 	"github.com/cloudcloud/episodical/pkg/process"
@@ -53,7 +50,7 @@ func getEpisodicWatched(c *gin.Context) {
 
 		err := db.MarkEpisodeWatched(ctx, id, episodeID)
 		if err != nil {
-			return gin.H{}, []string{err.Error()}, http.StatusInternalServerError
+			return bad(err)
 		}
 		return good(gin.H{"mark_watched": true})
 	})
@@ -65,7 +62,7 @@ func getFilesystems(c *gin.Context) {
 
 		res, err := db.GetFilesystems(ctx)
 		if err != nil {
-			return gin.H{}, []string{err.Error()}, http.StatusInternalServerError
+			return bad(err)
 		}
 		return good(res)
 	})
@@ -77,7 +74,7 @@ func getIntegrations(c *gin.Context) {
 
 		res, err := db.GetIntegrations(ctx)
 		if err != nil {
-			return gin.H{}, []string{err.Error()}, http.StatusInternalServerError
+			return bad(err)
 		}
 		return good(res)
 	})
@@ -89,7 +86,7 @@ func getSearchEpisodic(c *gin.Context) {
 
 		res, err := tvmaze.Search(title)
 		if err != nil {
-			return gin.H{}, []string{err.Error()}, http.StatusInternalServerError
+			return bad(err)
 		}
 		return good(res)
 	})
@@ -103,12 +100,12 @@ func postEpisodicIntegration(c *gin.Context) {
 		body := &types.EpisodicAssociateIntegration{}
 		err := ctx.BindJSON(body)
 		if err != nil {
-			return gin.H{}, []string{err.Error()}, http.StatusInternalServerError
+			return bad(err)
 		}
 
 		err = db.UpdateEpisodicIntegration(ctx, id, body.ExternalID)
 		if err != nil {
-			return gin.H{}, []string{err.Error()}, http.StatusInternalServerError
+			return bad(err)
 		}
 		return good(gin.H{"success": true})
 	})
@@ -123,7 +120,7 @@ func postFilesystemsAdd(c *gin.Context) {
 
 		res, err := db.AddFilesystem(ctx, body)
 		if err != nil {
-			return gin.H{}, []string{err.Error()}, http.StatusInternalServerError
+			return bad(err)
 		}
 		return good(res)
 	})
@@ -138,7 +135,7 @@ func postIntegrationsAdd(c *gin.Context) {
 
 		res, err := db.AddIntegration(ctx, body)
 		if err != nil {
-			return gin.H{}, []string{err.Error()}, http.StatusInternalServerError
+			return bad(err)
 		}
 		return good(res)
 	})
@@ -154,7 +151,7 @@ func putFilesystem(c *gin.Context) {
 
 		res, err := db.UpdateFilesystem(ctx, id, body)
 		if err != nil {
-			return gin.H{}, []string{err.Error()}, http.StatusInternalServerError
+			return bad(err)
 		}
 		return good(res)
 	})
@@ -170,7 +167,7 @@ func putIntegration(c *gin.Context) {
 
 		res, err := db.UpdateIntegration(ctx, id, body)
 		if err != nil {
-			return gin.H{}, []string{err.Error()}, http.StatusInternalServerError
+			return bad(err)
 		}
 		return good(res)
 	})
@@ -183,7 +180,7 @@ func deleteFilesystem(c *gin.Context) {
 
 		err := db.DeleteFilesystem(ctx, id)
 		if err != nil {
-			return gin.H{}, []string{err.Error()}, http.StatusInternalServerError
+			return bad(err)
 		}
 		return good(gin.H{})
 	})
@@ -196,7 +193,7 @@ func deleteIntegration(c *gin.Context) {
 
 		err := db.DeleteIntegration(ctx, id)
 		if err != nil {
-			return gin.H{}, []string{err.Error()}, http.StatusInternalServerError
+			return bad(err)
 		}
 		return good(gin.H{})
 	})
@@ -209,7 +206,7 @@ func deleteEpisodic(c *gin.Context) {
 
 		err := db.DeleteEpisodic(ctx, id)
 		if err != nil {
-			return gin.H{}, []string{err.Error()}, http.StatusInternalServerError
+			return bad(err)
 		}
 		return good(gin.H{})
 	})
@@ -219,16 +216,11 @@ func getEpisodics(c *gin.Context) {
 	wrap(c, func(ctx *gin.Context) (interface{}, []string, int) {
 		db := ctx.MustGet("db").(*data.Base)
 
-		meta := gin.H{}
 		res, err := db.GetEpisodics(ctx)
-		for _, x := range res {
-			meta[x.ID] = generateMetaFromEpisodes(x.Episodes)
-		}
-
 		if err != nil {
-			return gin.H{}, []string{err.Error()}, http.StatusInternalServerError
+			return bad(err)
 		}
-		return good(gin.H{"episodics": res, "meta": meta})
+		return good(res)
 	})
 }
 
@@ -238,59 +230,11 @@ func getEpisodic(c *gin.Context) {
 		id := ctx.Param("id")
 
 		res, err := db.GetEpisodicByID(ctx, id)
-		meta := generateMetaFromEpisodes(res.Episodes)
-
 		if err != nil {
-			return gin.H{}, []string{err.Error()}, http.StatusInternalServerError
+			return bad(err)
 		}
-		return good(gin.H{"episodic": res, "meta": meta})
+		return good(res)
 	})
-}
-
-func generateMetaFromEpisodes(eps []*types.Episode) gin.H {
-	hs, sc, te, we, h, hn := false, 0, 0, 0, 0, false
-	next, _ := time.Parse("2006-01-02", "2050-01-01")
-
-	for _, x := range eps {
-		if x.SeasonID == 0 {
-			hs = true
-		}
-		if x.SeasonID > sc {
-			sc = x.SeasonID
-		}
-
-		if x.DateReleased.Before(time.Now()) {
-			te++
-			if x.IsWatched {
-				we++
-			}
-		}
-
-		if x.FileEntry != "" {
-			h++
-		}
-		if x.DateReleased.Before(next) && x.DateReleased.After(time.Now()) {
-			hn = true
-			next = x.DateReleased
-		}
-	}
-
-	if h > te {
-		te = h
-	}
-
-	nx := ""
-	if hn {
-		nx = next.Format("2006-01-02")
-	}
-	return gin.H{
-		"has_specials":       hs,
-		"season_count":       sc,
-		"total_episodes":     te,
-		"watched_episodes":   we,
-		"have_episode_files": h,
-		"next_episode_date":  nx,
-	}
 }
 
 func postEpisodic(c *gin.Context) {
@@ -301,9 +245,9 @@ func postEpisodic(c *gin.Context) {
 		ctx.BindJSON(body)
 		res, err := db.AddEpisodic(ctx, body)
 		if err != nil {
-			return gin.H{}, []string{err.Error()}, http.StatusInternalServerError
+			return bad(err)
 		}
-		return good(gin.H{"episodic": res, "meta": []string{}})
+		return good(res)
 	})
 }
 
@@ -315,11 +259,10 @@ func putEpisodic(c *gin.Context) {
 		body := &types.AddEpisodic{}
 		ctx.BindJSON(body)
 		res, err := db.UpdateEpisodic(ctx, id, body)
-		meta := generateMetaFromEpisodes(res.Episodes)
 
 		if err != nil {
-			return gin.H{}, []string{err.Error()}, http.StatusInternalServerError
+			return bad(err)
 		}
-		return good(gin.H{"episodic": res, "meta": meta})
+		return good(res)
 	})
 }
