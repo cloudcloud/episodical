@@ -117,12 +117,12 @@ export default {
         this.$store.dispatch('getIntegrations').then(() => {
           this.integrations = this.$store.getters.allIntegrations;
           this.$store.dispatch('getEpisodic', {id: this.id}).then(() => {
-            this.title = this.episodic[this.id].episodic.title;
-            this.year = this.episodic[this.id].episodic.year;
-            this.integration = this.episodic[this.id].episodic.integration_id;
-            this.filesystem = this.episodic[this.id].episodic.filesystem_id;
-            this.path = this.episodic[this.id].episodic.path;
-            this.integration_id = this.episodic[this.id].episodic.public_db_id;
+            this.title = this.episodic[this.id].title;
+            this.year = this.episodic[this.id].year;
+            this.integration = this.episodic[this.id].integration_id;
+            this.filesystem = this.episodic[this.id].filesystem_id;
+            this.path = this.episodic[this.id].path;
+            this.integration_id = this.episodic[this.id].public_db_id;
           });
         });
       });

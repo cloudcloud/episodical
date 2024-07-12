@@ -16,8 +16,12 @@
             <v-chip color="success" variant="outlined" class="mx-2" v-if="item.path != ''">
               Path: {{ item.path }}
             </v-chip>
-            <EpisodeGradiantChip :text="'Watched: '+meta.watched_episodes+' / '+meta.total_episodes" :gradient="Math.floor((meta.watched_episodes / meta.total_episodes) * 10)" />
-            <EpisodicIntegrationModal :result="item" @updated="loadEpisodic" />
+            <EpisodeGradiantChip
+              :text="'Watched: '+meta.total_episodes_watched+' / '+meta.total_episodes"
+              :gradient="Math.floor((meta.total_episodes_watched / meta.total_episodes) * 10)" />
+            <EpisodicIntegrationModal
+              :result="item"
+              @updated="loadEpisodic" />
           </v-card-subtitle>
 
           <template v-slot:append>
@@ -28,14 +32,20 @@
         </v-card>
       </v-col>
 
-      <v-col cols="12" v-if="hasSpecial">
+      <v-col cols="12" v-if="meta.total_specials_count > 0">
         <v-card title="Specials" shaped>
-          <v-data-table-virtual :headers="headers" :items="item.episodes" :custom-filter="filterForSeason" search="0" item-value="season_id">
+          <v-data-table-virtual
+            :headers="headers"
+            :items="item.episodes"
+            :custom-filter="filterForSeason"
+            search="0"
+            item-value="season_id">
+
           </v-data-table-virtual>
         </v-card>
       </v-col>
 
-      <v-col cols="12" v-for="idx in seasonCount">
+      <v-col cols="12" v-for="idx in seasons">
         <v-card :title="'Season '+idx" shaped>
           <v-data-table-virtual
             :headers="headers"
@@ -63,7 +73,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 import EpisodeGradiantChip from '@/components/EpisodeGradiantChip';
 import EpisodicEdit from '@/components/EpisodicEdit';
 import EpisodicRefresh from '@/components/EpisodicRefresh';
@@ -80,11 +90,10 @@ export default {
       {title: 'File', align: 'left', key: 'file_entry'},
     ],
     item: {},
-    display: '',
-    hasSpecial: false,
-    seasonCount: 0,
-    activeColour: 'blue',
     meta: {},
+    display: '',
+    seasons: [],
+    activeColour: 'blue',
   }),
   components: {
     EpisodeGradiantChip,
@@ -94,7 +103,7 @@ export default {
     EpisodicIntegrationModal,
   },
   computed: {
-    ...mapState(['episodic']),
+    ...mapGetters(['episodicById']),
   },
   created() {
     this.loadEpisodic();
@@ -109,17 +118,11 @@ export default {
 
     loadEpisodic() {
       this.getEpisodic({id: this.id}).then(() => {
-        this.item = this.episodic[this.id].episodic;
-        this.meta = this.episodic[this.id].meta;
+        this.item = this.episodicById(this.id);
+        this.meta = this.item.meta;
 
         this.display = `${this.item.title} (${this.item.year})`;
-        this.item.episodes.forEach((idx) => {
-          if (idx.season_id === 0) {
-            this.hasSpecial = true;
-          } else if (idx.season_id > this.seasonCount) {
-            this.seasonCount = idx.season_id;
-          }
-        });
+        this.seasons = this.meta.seasons.split(',');
         this.activeColour = this.item.is_active ? 'success' : 'error';
       });
     },

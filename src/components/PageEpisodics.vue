@@ -13,22 +13,22 @@
             :items="items"
             density="comfortable"
             multi-sort
-            :sort-by="[{ key: 'meta.have_episode_files', order: 'asc' }]">
+            :sort-by="[{ key: 'meta.total_episode_files', order: 'asc' }]">
 
             <template v-slot:item.title="{ item }">
               <v-btn variant="text" density="comfortable" class="text-none" :to="'/episodic/' + item.id">
                 {{ item.title }} ({{ item.year }})
               </v-btn>
             </template>
-            <template v-slot:item.meta.have_episode_files="{ item }">
+            <template v-slot:item.meta.total_episode_files="{ item }">
               <EpisodeGradiantChip
-                :text="'Files: '+item.meta.have_episode_files+' / '+item.meta.total_episodes"
-                :gradient="Math.floor((item.meta.have_episode_files/item.meta.total_episodes) * 10)" />
+                :text="'Files: '+item.meta.total_episode_files+' / '+item.meta.total_episodes"
+                :gradient="Math.floor((item.meta.total_episode_files/item.meta.total_episodes) * 10)" />
             </template>
-            <template v-slot:item.meta.watched_episodes="{ item }">
+            <template v-slot:item.meta.total_episodes_watched="{ item }">
               <EpisodeGradiantChip
-                :text="'Watched: '+item.meta.watched_episodes+' / '+item.meta.total_episodes"
-                :gradient="Math.floor((item.meta.watched_episodes/item.meta.total_episodes) * 10)" />
+                :text="'Watched: '+item.meta.total_episodes_watched+' / '+item.meta.total_episodes"
+                :gradient="Math.floor((item.meta.total_episodes_watched/item.meta.total_episodes) * 10)" />
             </template>
             <template v-slot:item.status="{ item }">
               <v-chip density="comfortable" :text="item.is_active ? 'Active' : 'Ended'" :color="item.is_active ? 'green' : 'red'" variant="outlined" />
@@ -54,8 +54,8 @@ export default {
   data: () => ({
     headers: [
       {title: 'Title', align: 'left', key: 'title'},
-      {title: 'Files', align: 'center', key: 'meta.have_episode_files' },
-      {title: 'Watched', align: 'center', key: 'meta.watched_episodes' },
+      {title: 'Files', align: 'center', key: 'meta.total_episode_files' },
+      {title: 'Watched', align: 'center', key: 'meta.total_episodes_watched' },
       {title: 'Status', align: 'center', key: 'status', sortable: false},
       {title: 'Next Ep', align: 'center', key: 'available', sortable: false},
     ],
