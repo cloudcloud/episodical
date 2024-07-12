@@ -30,7 +30,18 @@ type Episodic struct {
 	Genre      string `json:"genre" db:"genre"`
 	PublicDBID string `json:"public_db_id" db:"public_db_id"`
 
-	Episodes []*Episode `json:"episodes" db:"-"`
+	Episodes []*Episode    `json:"episodes" db:"-"`
+	Meta     *EpisodicMeta `json:"meta"`
+}
+
+type EpisodicMeta struct {
+	HasSpecials          bool      `json:"has_specials"`           // has_specials
+	NextEpisodeDate      time.Time `json:"next_episode_date"`      // next_episode_date
+	Seasons              string    `json:"seasons"`                // seasons
+	TotalEpisodeFiles    int       `json:"total_episode_files"`    // total_episode_files
+	TotalEpisodes        int       `json:"total_episodes"`         // total_episode_count
+	TotalEpisodesWatched int       `json:"total_episodes_watched"` // total_episodes_watched
+	TotalSpecialsCount   int       `json:"total_specials_count"`   // total_specials_count
 }
 
 type Episode struct {

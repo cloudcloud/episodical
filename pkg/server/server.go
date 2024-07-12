@@ -97,6 +97,10 @@ func (s *Server) logger(l *zap.SugaredLogger) gin.HandlerFunc {
 	}
 }
 
+func bad(e error) (interface{}, []string, int) {
+	return gin.H{}, []string{e.Error()}, http.StatusInternalServerError
+}
+
 func good(d interface{}) (interface{}, []string, int) {
 	return d, []string{}, http.StatusOK
 }

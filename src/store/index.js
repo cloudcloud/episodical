@@ -14,16 +14,10 @@ export default createStore({
       delete state.episodic[id];
     },
     resetEpisodic(state, ep) {
-      state.episodic[ep.data.episodic.id] = ep.data;
+      state.episodic[ep.id] = ep;
     },
     resetEpisodics(state, eps) {
-      let episodics = eps.data.episodics;
-      let meta = eps.data.meta;
-
-      episodics.forEach((v) => {
-        v.meta = meta[v.id];
-      });
-      state.episodics = episodics;
+      state.episodics = eps;
     },
     resetFilesystems(state, fs) {
       state.filesystems = fs.data;
@@ -42,6 +36,10 @@ export default createStore({
     },
     allIntegrations: state => {
       return state.integrations;
+    },
+
+    episodicById: (state) => (id) => {
+      return state.episodic[id];
     },
   },
 
@@ -78,7 +76,7 @@ export default createStore({
       return new Promise((resolve) => {
         apiClient.getEpisodic(id).then((data) => {
           if (data.errors.length < 1 && data.meta.errors < 1) {
-            commit('resetEpisodic', data);
+            commit('resetEpisodic', data.data);
           }
           resolve();
         });
@@ -89,7 +87,7 @@ export default createStore({
       return new Promise((resolve) => {
         apiClient.getEpisodics().then((data) => {
           if (data.errors.length < 1 && data.meta.errors < 1) {
-            commit('resetEpisodics', data);
+            commit('resetEpisodics', data.data);
           }
           resolve();
         });
