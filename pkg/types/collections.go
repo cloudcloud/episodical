@@ -1,11 +1,8 @@
 package types
 
 import (
-	"fmt"
-	"strings"
 	"time"
 
-	"github.com/cloudcloud/episodical/pkg/integrations/tvmaze"
 	"github.com/segmentio/ksuid"
 )
 
@@ -190,27 +187,4 @@ func (e *Episodic) ProvisionEpisode(f *File) ([]*Episode, error) {
 	}
 
 	return eps, nil
-}
-
-func (e *Episodic) ProvisionFromTVMaze(s tvmaze.Episode) (*Episode, error) {
-	ep := &Episode{}
-
-	uid, err := ksuid.NewRandom()
-	if err != nil {
-		return nil, err
-	}
-	ep.ID = uid.String()
-	ep.DateAdded = time.Now()
-	ep.EpisodicID = e.ID
-
-	ep.SeasonID = s.Season
-	ep.EpisodeNumber = s.Number
-	ep.Title = s.Name
-	ep.Overview = s.Summary
-	ep.IntegrationIdentifier = fmt.Sprintf("%d", s.ID)
-
-	t, _ := time.Parse("2006-01-02T15:04:05", strings.TrimSuffix(s.AirStamp, "+00:00"))
-	ep.DateReleased = t
-
-	return ep, nil
 }

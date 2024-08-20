@@ -1,40 +1,16 @@
 package types
 
 import (
-	"fmt"
-	"regexp"
-	"strconv"
 	"time"
 
 	"github.com/segmentio/ksuid"
 )
-
-type AddFilesystem struct {
-	Check bool   `json:"check,omitempty"`
-	Path  string `json:"path"`
-	Title string `json:"title"`
-}
 
 type AddIntegration struct {
 	Key   string `json:"key"`
 	Model string `json:"model"`
 	Title string `json:"title"`
 	Type  string `json:"type"`
-}
-
-type Filesystem struct {
-	ID          string    `json:"id"`
-	Title       string    `json:"title"`
-	BasePath    string    `json:"base_path"`
-	AutoUpdate  bool      `json:"auto_update"`
-	LastChecked time.Time `json:"last_checked"`
-}
-
-type File struct {
-	Type string
-	Path string
-
-	tokens []map[string]any
 }
 
 type Integration struct {
@@ -45,37 +21,20 @@ type Integration struct {
 	CollectionType string `json:"collection_type"`
 }
 
-func (f *AddFilesystem) Convert() (*Filesystem, error) {
-	n := &Filesystem{
-		Title:      f.Title,
-		BasePath:   f.Path,
-		AutoUpdate: f.Check,
-	}
-
-	uid, err := ksuid.NewRandom()
-	if err != nil {
-		return n, err
-	}
-	n.ID = uid.String()
-
-	return n, nil
+type Token struct {
+	ID            string    `json:"id"`
+	IntegrationID string    `json:"integration_id"`
+	IsValid       bool      `json:"is_valid"`
+	Value         string    `json:"value"`
+	DateAdded     time.Time `json:"date_added"`
+	DateExpires   time.Time `json:"date_expires"`
 }
 
-func (f *Filesystem) Named() map[string]any {
-	d := map[string]any{
-		"@id":           f.ID,
-		"@title":        f.Title,
-		"@base_path":    f.BasePath,
-		"@last_checked": f.LastChecked,
-	}
-
-	if f.AutoUpdate {
-		d["@auto_update"] = 1
-	} else {
-		d["@auto_update"] = 0
-	}
-
-	return d
+type TVDBLoginResult struct {
+	Data struct {
+		Token string `json:"token"`
+	} `json:"data"`
+	Status string `json:"status"`
 }
 
 func (i *AddIntegration) Convert() (*Integration, error) {
@@ -95,6 +54,24 @@ func (i *AddIntegration) Convert() (*Integration, error) {
 	return n, nil
 }
 
+func (t *TVDBLoginResult) Convert() (*Token, error) {
+	k := &Token{
+		IntegrationID: "",
+		IsValid:       true,
+		Value:         t.Data.Token,
+		DateAdded:     time.Now(),
+		DateExpires:   time.Now().Add(time.Duration(24*29) * time.Hour),
+	}
+
+	uid, err := ksuid.NewRandom()
+	if err != nil {
+		return k, err
+	}
+	k.ID = uid.String()
+
+	return k, nil
+}
+
 func (i *Integration) Named() map[string]any {
 	d := map[string]any{
 		"@id":              i.ID,
@@ -107,69 +84,19 @@ func (i *Integration) Named() map[string]any {
 	return d
 }
 
-var (
-	matchesPatternSlim    = regexp.MustCompile(`.*S\d+E\d+.*\.[a-zA-Z0-9]+$`)
-	pullPatternSlim       = regexp.MustCompile(`\d*E(\d+)`)
-	pullPatternSlimShared = regexp.MustCompile(`.*S(\d+)E\d+.*\.([a-zA-Z0-9]+)$`)
-
-	matchesPatternSpaced    = regexp.MustCompile(`.*\s+\d+x\d+\s+.*\.[a-zA-Z0-9]+$`)
-	pullPatternSpaced       = regexp.MustCompile(`\s+\d+x(\d+)\s+`)
-	pullPatternSpacedShared = regexp.MustCompile(`.*\s+(\d+)x\d+\s+.*\.([a-zA-Z0-9]+)$`)
-
-	matchesPatternDots    = regexp.MustCompile(`.*\.\d+x\d+\.?.*\.[a-zA-Z0-9]+$`)
-	pullPatternDots       = regexp.MustCompile(`[^.]x(\d+)|-(\d+)`)
-	pullPatternDotsShared = regexp.MustCompile(`.*\.(\d+)x\d+\.?.*\.([a-zA-Z0-9]+)$`)
-)
-
-func TokeniseEpisodical(s string) (*File, error) {
-	f := &File{Type: "episodical", Path: s, tokens: make([]map[string]any, 0)}
-
-	var err error
-	if matchesPatternSlim.MatchString(s) {
-		err = f.findMatches(s, pullPatternSlimShared, pullPatternSlim)
-	} else if matchesPatternSpaced.MatchString(s) {
-		err = f.findMatches(s, pullPatternSpacedShared, pullPatternSpaced)
-	} else if matchesPatternDots.MatchString(s) {
-		err = f.findMatches(s, pullPatternDotsShared, pullPatternDots)
+func (t *Token) Named() map[string]any {
+	d := map[string]any{
+		"@id":             t.ID,
+		"@integration_id": t.IntegrationID,
+		"@date_added":     t.DateAdded.Format(time.RFC3339),
+		"@date_expires":   t.DateExpires.Format(time.RFC3339),
+		"@value":          t.Value,
 	}
 
-	return f, err
-}
-
-func (f *File) findMatches(s string, common, episode *regexp.Regexp) error {
-	matches := common.FindAllStringSubmatch(s, -1)
-
-	season, _ := strconv.Atoi(matches[0][1])
-	format := matches[0][2]
-
-	matched := episode.FindAllStringSubmatch(s, -1)
-	for _, x := range matched {
-		ep, _ := strconv.Atoi(x[1])
-		if ep == 0 && len(x) > 1 {
-			ep, _ = strconv.Atoi(x[2])
-		}
-
-		f.tokens = append(f.tokens, map[string]any{
-			"Season":  season,
-			"Episode": ep,
-			"Format":  format,
-		})
+	d["@is_valid"] = 0
+	if t.IsValid {
+		d["@is_valid"] = 1
 	}
 
-	return nil
-}
-
-func (f *File) FoundCount() int {
-	return len(f.tokens)
-}
-
-func (f *File) GetToken(idx int, n string) (any, error) {
-	if idx >= f.FoundCount() {
-		return nil, fmt.Errorf("idx out of range of episode numbers found")
-	}
-	if _, ok := f.tokens[idx][n]; !ok {
-		return nil, fmt.Errorf("Unable to find token '%s'", n)
-	}
-
-	return f.tokens[idx][n], nil
+	return d
 }

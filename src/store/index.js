@@ -68,8 +68,8 @@ export default createStore({
       return apiClient.episodicIntegrationIdentifier(id, payload);
     },
 
-    episodicSearchIntegration(_, {title}) {
-      return apiClient.episodicSearchIntegration(title);
+    episodicSearchIntegration(_, {id, title}) {
+      return apiClient.episodicSearchIntegration(id, title);
     },
 
     getEpisodic({commit}, {id}) {

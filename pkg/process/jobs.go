@@ -1,11 +1,13 @@
 package process
 
 import (
+	"strconv"
 	"strings"
 	"time"
 
 	"github.com/cloudcloud/episodical/pkg/data"
 	"github.com/cloudcloud/episodical/pkg/filesystem"
+	"github.com/cloudcloud/episodical/pkg/integrations/tvdb"
 	"github.com/cloudcloud/episodical/pkg/integrations/tvmaze"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
@@ -76,7 +78,7 @@ func BackgroundEpisodicProcess(ctx *gin.Context) {
 			}
 
 			for _, e := range episodes {
-				episode, err := ep.ProvisionFromTVMaze(e)
+				episode, err := tvmaze.ProvisionEpisode(e)
 				if err != nil {
 					log.With("error", err).Error("Couldn't provision from TVMaze")
 					continue
@@ -106,7 +108,24 @@ func BackgroundEpisodicProcess(ctx *gin.Context) {
 			}
 
 		case "thetvdb":
+			// get the identifier too, and the token from the DB
+			tv, err := tvdb.New(tvdb.Opts{DB: db, Log: log, Integration: integ}, ctx)
+			if err != nil {
+				log.With("error", err, "id", ep.ID, "public_db_id", ep.PublicDBID).Error("Unable to get tvdb prepared")
+				return
+			}
 
+			i, _ := strconv.Atoi(ep.PublicDBID)
+			show, err := tv.GetShow(i)
+			if err != nil {
+				log.With("error", err, "id", ep.ID, "show", show, "public_db_id", ep.PublicDBID).Error("Unable to get Show details")
+				return
+			}
+
+			ep, err = tv.TakeSeriesDetails(ctx, ep, show)
+			if err != nil {
+				log.With("error", err, "id", ep.ID).Info("Unable to GenerateEpisodic() on show")
+			}
 		}
 	}
 

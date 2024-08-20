@@ -1,11 +1,15 @@
 package server
 
 import (
+	"fmt"
+
 	"github.com/cloudcloud/episodical/pkg/data"
+	"github.com/cloudcloud/episodical/pkg/integrations/tvdb"
 	"github.com/cloudcloud/episodical/pkg/integrations/tvmaze"
 	"github.com/cloudcloud/episodical/pkg/process"
 	"github.com/cloudcloud/episodical/pkg/types"
 	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 )
 
 func routeAPI(g *gin.Engine) {
@@ -31,7 +35,7 @@ func routeAPI(g *gin.Engine) {
 	api.POST("episodic/integration/:id", postEpisodicIntegration)
 	api.GET("episodic/:id/watched/:episode", getEpisodicWatched)
 
-	api.GET("search/episodic/:title", getSearchEpisodic)
+	api.GET("search/episodic/:id/:title", getSearchEpisodic)
 }
 
 func getEpisodicRefresh(c *gin.Context) {
@@ -82,13 +86,50 @@ func getIntegrations(c *gin.Context) {
 
 func getSearchEpisodic(c *gin.Context) {
 	wrap(c, func(ctx *gin.Context) (interface{}, []string, int) {
+		db := ctx.MustGet("db").(*data.Base)
+		id := ctx.Param("id")
 		title := ctx.Param("title")
 
-		res, err := tvmaze.Search(title)
+		// get episodic detail for 'id'
+		ep, err := db.GetEpisodicByID(ctx, id)
 		if err != nil {
 			return bad(err)
 		}
-		return good(res)
+		if ep.IntegrationID == "" {
+			return good(gin.H{"invalid": "no_integration_configured"})
+		}
+
+		// look at provider config
+		integration, err := db.GetIntegrationByID(ctx, ep.IntegrationID)
+		if err != nil {
+			return bad(err)
+		}
+
+		// TODO: Use an interface with a loader to consolidate the logic
+		// switch of the BaseModel.
+		// TODO: Remove title in favour of pulling from the DB by ID.
+		switch integration.BaseModel {
+		case "tvmaze":
+			res, err := tvmaze.Search(title)
+			if err != nil {
+				return bad(err)
+			}
+			return good(res)
+
+		case "thetvdb":
+			tv, err := tvdb.New(tvdb.Opts{DB: db, ID: integration.ID, Log: ctx.MustGet("log").(*zap.SugaredLogger)}, ctx)
+			if err != nil {
+				return bad(err)
+			}
+
+			res, err := tv.Search(ep)
+			if err != nil {
+				return bad(err)
+			}
+			return good(res)
+		}
+
+		return bad(fmt.Errorf("Unknown integration configured"))
 	})
 }
 

@@ -3,6 +3,12 @@ package tvmaze
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
+	"strings"
+	"time"
+
+	"github.com/cloudcloud/episodical/pkg/types"
+	"github.com/segmentio/ksuid"
 )
 
 type Externals struct {
@@ -45,15 +51,47 @@ type Episode struct {
 	Summary  string `json:"summary"`
 }
 
-func Search(t string) ([]SearchResult, error) {
+func ProvisionEpisode(e Episode) (*types.Episode, error) {
+	ep := &types.Episode{}
+
+	uid, err := ksuid.NewRandom()
+	if err != nil {
+		return nil, err
+	}
+	ep.ID = uid.String()
+	ep.DateAdded = time.Now()
+	ep.EpisodicID = fmt.Sprintf("%d", e.ID)
+
+	ep.SeasonID = e.Season
+	ep.EpisodeNumber = e.Number
+	ep.Title = e.Name
+	ep.Overview = e.Summary
+	ep.IntegrationIdentifier = fmt.Sprintf("%d", e.ID)
+
+	t, _ := time.Parse("2006-01-02T15:04:05", strings.TrimSuffix(e.AirStamp, "+00:00"))
+	ep.DateReleased = t
+
+	return ep, nil
+}
+
+func Search(t string) ([]types.SearchEntry, error) {
 	s := []SearchResult{}
 	body, err := Query(urlBase + fmt.Sprintf(urlSearch, t))
 	if err != nil {
-		return s, err
+		return nil, err
 	}
 
 	err = json.Unmarshal(body, &s)
-	return s, err
+	if err != nil {
+		return nil, err
+	}
+
+	res := []types.SearchEntry{}
+	for _, x := range s {
+		year, _ := strconv.Atoi(strings.Split(x.Show.DateFirstAired, "-")[0])
+		res = append(res, types.SearchEntry{Title: x.Show.Name, ReleaseYear: year, ID: x.Show.ShowID})
+	}
+	return res, err
 }
 
 func GetShow(id string) (Show, error) {
