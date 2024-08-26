@@ -136,23 +136,3 @@ func TestLoadIntegration(t *testing.T) {
 		a.Equal(ep.AccessKey, "key", "AccessKey should provide the returned value")
 	})
 }
-
-func TestLoadToken(t *testing.T) {
-	a := assert.New(t)
-	ctrl := gomock.NewController(t)
-	stmt := NewMockStmt(ctrl)
-
-	stmt.EXPECT().GetText(gomock.Eq("date_added")).Return(time.RFC3339).Times(1)
-	stmt.EXPECT().GetText(gomock.Eq("date_expires")).Return(time.RFC3339).Times(1)
-	stmt.EXPECT().GetText(gomock.Eq("id")).Return("id").Times(1)
-	stmt.EXPECT().GetText(gomock.Eq("integration_id")).Return("").Times(1)
-	stmt.EXPECT().GetBool(gomock.Eq("is_valid")).Return(true).Times(1)
-
-	a.NotPanics(func() {
-		ep, err := loadToken(stmt)
-
-		a.Nil(err, "No error should be generated from loadToken()")
-		a.Equal(ep.ID, "id", "ID should provide the returned value")
-		a.Equal(ep.IsValid, true, "IsValid should provide the returned value")
-	})
-}

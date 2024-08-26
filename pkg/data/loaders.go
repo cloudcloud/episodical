@@ -96,16 +96,3 @@ func loadIntegration(stmt types.Stmt) (types.Integration, error) {
 		CollectionType: stmt.GetText("collection_type"),
 	}, nil
 }
-
-func loadToken(stmt types.Stmt) (types.Token, error) {
-	da, _ := time.Parse(time.RFC3339, stmt.GetText("date_added"))
-	de, _ := time.Parse(time.RFC3339, stmt.GetText("date_expires"))
-
-	return types.Token{
-		ID:            stmt.GetText("id"),
-		IntegrationID: stmt.GetText("integration_id"),
-		IsValid:       stmt.GetBool("is_valid"),
-		DateAdded:     da,
-		DateExpires:   de,
-	}, nil
-}
