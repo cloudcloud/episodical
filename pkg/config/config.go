@@ -2,7 +2,6 @@ package config
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"strconv"
 )
@@ -32,7 +31,7 @@ func New() *Config {
 func findDataFile() string {
 	file := os.Getenv("DATA_FILE")
 	if len(file) < 1 || file == "" {
-		log.Fatal("DATA_FILE is required for episodical to function!")
+		panic("DATA_FILE is required for episodical to function!")
 	}
 	return file
 }
@@ -40,7 +39,7 @@ func findDataFile() string {
 func findDataPassphrase() string {
 	pass := os.Getenv("DATA_PASSPHRASE")
 	if len(pass) < 1 || pass == "" {
-		log.Fatal("DATA_PASSPHRASE is required for episodical to function!")
+		panic("DATA_PASSPHRASE is required for episodical to function!")
 	}
 	return pass
 }

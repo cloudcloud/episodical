@@ -4,10 +4,9 @@ import (
 	"time"
 
 	"github.com/cloudcloud/episodical/pkg/types"
-	"zombiezen.com/go/sqlite"
 )
 
-func loadEpisode(stmt *sqlite.Stmt) (*types.Episode, error) {
+func loadEpisode(stmt types.Stmt) (*types.Episode, error) {
 	ep := &types.Episode{}
 
 	da, _ := time.Parse(time.RFC3339, stmt.GetText("date_added"))
@@ -34,7 +33,7 @@ func loadEpisode(stmt *sqlite.Stmt) (*types.Episode, error) {
 	return ep, nil
 }
 
-func loadEpisodic(stmt *sqlite.Stmt) (*types.Episodic, error) {
+func loadEpisodic(stmt types.Stmt) (*types.Episodic, error) {
 	ep := &types.Episodic{
 		Episodes: []*types.Episode{},
 	}
@@ -62,7 +61,7 @@ func loadEpisodic(stmt *sqlite.Stmt) (*types.Episodic, error) {
 	return ep, nil
 }
 
-func loadEpisodicMeta(stmt *sqlite.Stmt) *types.EpisodicMeta {
+func loadEpisodicMeta(stmt types.Stmt) *types.EpisodicMeta {
 	dn, _ := time.Parse(time.RFC3339, stmt.GetText("next_episode_date"))
 
 	return &types.EpisodicMeta{
@@ -76,7 +75,7 @@ func loadEpisodicMeta(stmt *sqlite.Stmt) *types.EpisodicMeta {
 	}
 }
 
-func loadFilesystem(stmt *sqlite.Stmt) (types.Filesystem, error) {
+func loadFilesystem(stmt types.Stmt) (types.Filesystem, error) {
 	lc, _ := time.Parse(time.RFC3339, stmt.GetText("last_checked"))
 
 	return types.Filesystem{
@@ -88,7 +87,7 @@ func loadFilesystem(stmt *sqlite.Stmt) (types.Filesystem, error) {
 	}, nil
 }
 
-func loadIntegration(stmt *sqlite.Stmt) (types.Integration, error) {
+func loadIntegration(stmt types.Stmt) (types.Integration, error) {
 	return types.Integration{
 		ID:             stmt.GetText("id"),
 		Title:          stmt.GetText("title"),
