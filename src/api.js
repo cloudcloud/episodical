@@ -27,8 +27,8 @@ export default {
     return this.perform('post', `/api/v1/episodic/integration/${id}`, payload);
   },
 
-  episodicSearchIntegration(title) {
-    return this.perform('get', `/api/v1/search/episodic/${title}`);
+  episodicSearchIntegration(id, title) {
+    return this.perform('get', `/api/v1/search/episodic/${id}/${title}`);
   },
 
   getEpisodic(id) {

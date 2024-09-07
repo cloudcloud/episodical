@@ -28,17 +28,23 @@ func Background() {
 func Push(p Proc, ctx *gin.Context) {
 	log := ctx.MustGet("log").(*zap.SugaredLogger)
 	s := make(chan time.Time, 2)
-	wp.Submit(func() {
+	wp.Submit(jobSubmission(p, ctx, s))
+
+	// push a goroutine to get the timing without blocking the main routine
+	go captureJob(log, s)
+}
+
+func jobSubmission(p Proc, ctx *gin.Context, s chan time.Time) func() {
+	return func() {
 		s <- time.Now()
 		p(ctx)
 		s <- time.Now()
-	})
+	}
+}
 
-	// push a goroutine to get the timing without blocking the main routine
-	go func(s chan time.Time) {
-		start := <-s
-		stop := <-s
+func captureJob(log *zap.SugaredLogger, s chan time.Time) {
+	start := <-s
+	stop := <-s
 
-		log.With("time_taken", stop.Sub(start)).Info("background_process_complete")
-	}(s)
+	log.With("time_taken", stop.Sub(start)).Info("background_process_complete")
 }

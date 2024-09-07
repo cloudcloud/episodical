@@ -180,7 +180,7 @@ func (d *Base) GetEpisodeSearch(ctx context.Context, ep *types.Episode) (*types.
 
 	sql := "SELECT * FROM episodic_episode WHERE "
 	args, where := []any{ep.EpisodicID}, []string{"episodic_id = ?"}
-	if ep.SeasonID != 0 {
+	if ep.SeasonID >= 0 {
 		args = append(args, ep.SeasonID)
 		where = append(where, "season_id = ?")
 	}

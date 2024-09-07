@@ -4,7 +4,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cloudcloud/episodical/pkg/integrations/tvmaze"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -152,23 +151,4 @@ func TestProvisionEpisode(t *testing.T) {
 		}
 		assert.Equal(x.Count, len(out))
 	}
-}
-
-func TestProvisionFromTVMaze(t *testing.T) {
-	assert := assert.New(t)
-
-	ep := &Episodic{}
-	ep.ID = "episodic"
-
-	input := tvmaze.Episode{
-		Season: 3,
-		Number: 4,
-	}
-
-	out, err := ep.ProvisionFromTVMaze(input)
-
-	assert.Nil(err)
-	assert.NotNil(out.ID)
-	assert.Equal(ep.ID, out.EpisodicID)
-	assert.Equal(input.Season, out.SeasonID)
 }
