@@ -120,6 +120,10 @@ export default createStore({
       return apiClient.markEpisodeWatched(id, episode_id);
     },
 
+    markSeasonWatched(_, {id, season_id}) {
+      return apiClient.markSeasonWatched(id, season_id);
+    },
+
     refreshEpisodic(_, {id}) {
       return apiClient.refreshEpisodic(id);
     },

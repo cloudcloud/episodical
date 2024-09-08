@@ -34,6 +34,7 @@ func routeAPI(g *gin.Engine) {
 	api.GET("episodic/refresh/:id", getEpisodicRefresh)
 	api.POST("episodic/integration/:id", postEpisodicIntegration)
 	api.GET("episodic/:id/watched/:episode", getEpisodicWatched)
+	api.GET("episodic/:id/season/watched/:season", getEpisodicSeasonWatched)
 
 	api.GET("search/episodic/:id/:title", getSearchEpisodic)
 }
@@ -53,6 +54,20 @@ func getEpisodicWatched(c *gin.Context) {
 		episodeID := ctx.Param("episode")
 
 		err := db.MarkEpisodeWatched(ctx, id, episodeID)
+		if err != nil {
+			return bad(err)
+		}
+		return good(gin.H{"mark_watched": true})
+	})
+}
+
+func getEpisodicSeasonWatched(c *gin.Context) {
+	wrap(c, func(ctx *gin.Context) (interface{}, []string, int) {
+		db := ctx.MustGet("db").(*data.Base)
+		id := ctx.Param("id")
+		season := ctx.Param("season")
+
+		err := db.MarkEpisodicSeasonWatched(ctx, id, season)
 		if err != nil {
 			return bad(err)
 		}

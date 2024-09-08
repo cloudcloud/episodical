@@ -19,6 +19,7 @@ const (
 	sqlGetEpisodesByEpisodic     = `SELECT * FROM episodic_episode WHERE episodic_episode.episodic_id = ?;`
 	sqlInsertEpisode             = `INSERT INTO episodic_episode (id, episodic_id, title, season_id, episode_number, date_added, date_updated, is_watched, date_watched, file_entry, integration_identifier, date_first_aired, overview) VALUES (@id, @episodic_id, @title, @season_id, @episode_number, @date_added, @date_updated, @is_watched, @date_watched, @file_entry, @integration_identifier, @date_first_aired, @overview);`
 	sqlMarkEpisodeWatched        = `UPDATE episodic_episode SET is_watched = ((is_watched - 1) * (-1)) WHERE id = ? AND episodic_id = ?;`
+	sqlMarkEpisodicSeasonWatched = `UPDATE episodic_episode SET is_watched = 1 WHERE season_id = ? AND episodic_id = ?;`
 	sqlRemoveAllEpisodes         = `DELETE FROM episodic_episode WHERE episodic_id = ?;`
 	sqlRemoveEpisodic            = `DELETE FROM episodic WHERE episodic.id = ?;`
 	sqlUpdateEpisode             = `UPDATE episodic_episode SET title = @title, season_id = @season_id, episode_number = @episode_number, date_updated = @date_updated, is_watched = @is_watched, date_watched = @date_watched, file_entry = @file_entry, integration_identifier = @integration_identifier, date_first_aired = @date_first_aired, overview = @overview WHERE id = @id;`
@@ -222,6 +223,19 @@ func (d *Base) MarkEpisodeWatched(ctx context.Context, id, episodeID string) err
 		sqlMarkEpisodeWatched,
 		&sqlitex.ExecOptions{
 			Args: []any{episodeID, id},
+		},
+	)
+}
+
+func (d *Base) MarkEpisodicSeasonWatched(ctx context.Context, id, season string) error {
+	conn := d.conn.Get(ctx)
+	defer d.conn.Put(conn)
+
+	return sqlitex.Execute(
+		conn,
+		sqlMarkEpisodicSeasonWatched,
+		&sqlitex.ExecOptions{
+			Args: []any{season, id},
 		},
 	)
 }
