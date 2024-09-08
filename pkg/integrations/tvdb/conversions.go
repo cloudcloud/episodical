@@ -50,6 +50,7 @@ func (t *TVDB) generateEpisode(e *Episode) (*types.Episode, error) {
 	ep.ID = uid.String()
 	ep.DateAdded = time.Now()
 	ep.DateUpdated = ep.DateAdded
+	ep.DateReleased, _ = time.Parse("2006-01-02", e.Aired)
 
 	return ep, nil
 }
