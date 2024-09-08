@@ -39,7 +39,17 @@
             :items="item.episodes"
             :custom-filter="filterForSeason"
             search="0"
+            :sort-by="[{key: 'episode_number', order: 'asc'}]"
             item-value="season_id">
+
+            <template v-slot:item.is_watched="{ item }">
+              <v-btn
+                variant="outlined"
+                density="comfortable"
+                :text="item.is_watched ? 'Watched' : 'Not watched'"
+                :color="item.is_watched ? 'success' : 'primary'"
+                @click="watched(item.id)" />
+            </template>
 
           </v-data-table-virtual>
         </v-card>
