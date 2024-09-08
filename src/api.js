@@ -51,6 +51,10 @@ export default {
     return this.perform('get', `/api/v1/episodic/${id}/watched/${episode_id}`);
   },
 
+  markSeasonWatched(id, season_id) {
+    return this.perform('get', `/api/v1/episodic/${id}/season/watched/${season_id}`);
+  },
+
   refreshEpisodic(id) {
     return this.perform('get', `/api/v1/episodic/refresh/${id}`);
   },

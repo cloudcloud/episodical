@@ -34,6 +34,15 @@
 
       <v-col cols="12" v-if="meta.total_specials_count > 0">
         <v-card title="Specials" shaped>
+          <template v-slot:append>
+            <v-btn
+              text="Mark all watched"
+              color="primary"
+              @click="allWatched(''+0)"
+              variant="outlined"
+              density="comfortable" />
+          </template>
+
           <v-data-table-virtual
             :headers="headers"
             :items="item.episodes"
@@ -57,6 +66,15 @@
 
       <v-col cols="12" v-for="idx in seasons">
         <v-card :title="'Season '+idx" shaped>
+          <template v-slot:append>
+            <v-btn
+              text="Mark all watched"
+              color="primary"
+              @click="allWatched(''+idx)"
+              variant="outlined"
+              density="comfortable" />
+          </template>
+
           <v-data-table-virtual
             :headers="headers"
             :items="item.episodes"
@@ -143,6 +161,12 @@ export default {
 
     watched(id) {
       this.$store.dispatch('markEpisodeWatched', { id: this.id, episode_id: id }).then((data) => {
+        this.loadEpisodic();
+      });
+    },
+
+    allWatched(season) {
+      this.$store.dispatch('markSeasonWatched', { id: this.id, season_id: season }).then((data) => {
         this.loadEpisodic();
       });
     },
