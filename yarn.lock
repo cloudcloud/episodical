@@ -1010,7 +1010,7 @@ __metadata:
     eslint-plugin-vue: "npm:9.28.0"
     sass: "npm:1.79.1"
     stylus: "npm:0.63.0"
-    stylus-loader: "npm:8.1.0"
+    stylus-loader: "npm:8.1.1"
     vite: "npm:5.4.6"
     vue: "npm:3.5.6"
     vue-router: "npm:4.4.5"
@@ -2550,9 +2550,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"stylus-loader@npm:8.1.0":
-  version: 8.1.0
-  resolution: "stylus-loader@npm:8.1.0"
+"stylus-loader@npm:8.1.1":
+  version: 8.1.1
+  resolution: "stylus-loader@npm:8.1.1"
   dependencies:
     fast-glob: "npm:^3.3.2"
     normalize-path: "npm:^3.0.0"
@@ -2565,7 +2565,7 @@ __metadata:
       optional: true
     webpack:
       optional: true
-  checksum: 10c0/3e33157cae98f23ad4bc3e3aff66b8841c4172e0e050644401243800823f3acead2ec3c62576d5134ca84806ca42c8e18b864b69e7ddd27bc5294221d7329f9b
+  checksum: 10c0/c8792a1ed392ec874fc239ec8f4dec80f398720b7bb3d45fb04dc9f9cc0172c3fbb46f0e1580884452b018fb5177b268b79952d2ed4fe2937a383bea6eb8d4ab
   languageName: node
   linkType: hard
 
