@@ -8,6 +8,7 @@ import (
 
 	"github.com/cloudcloud/episodical/pkg/config"
 	"github.com/cloudcloud/episodical/pkg/data"
+	"github.com/cloudcloud/episodical/pkg/sock"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
@@ -25,9 +26,10 @@ type Server struct {
 	conf *config.Config
 	db   *data.Base
 	g    *gin.Engine
+	s    *sock.Socket
 }
 
-func New(c *config.Config) *Server {
+func New(c *config.Config, sk *sock.Socket) *Server {
 	z, _ := zap.NewProduction()
 	l := z.Sugar().With("app", "episodical")
 
@@ -36,7 +38,7 @@ func New(c *config.Config) *Server {
 		log.Fatalf(err.Error())
 	}
 
-	s := &Server{conf: c, db: db}
+	s := &Server{conf: c, db: db, s: sk}
 
 	g := gin.New()
 	g.Use(
@@ -54,6 +56,7 @@ func New(c *config.Config) *Server {
 	)
 	g.SetTrustedProxies(nil)
 
+	g.GET("/ws", s.s.Handle)
 	routeEmbeds(g)
 	routeAPI(g)
 

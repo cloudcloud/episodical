@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <Header></Header>
+    <Header />
 
     <v-main>
       <v-container fluid>

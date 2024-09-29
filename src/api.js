@@ -9,6 +9,49 @@ client.defaults.timeout = 2500;
 client.defaults.headers.post['Content-Type'] = 'application/json';
 client.defaults.headers.common['X-Client'] = 'episodical 1.0';
 
+const StateConn = 'connected';
+const StateDisc = 'disconnected';
+const StateMess = 'message';
+
+// TODO: Should be wss for https connections.
+const sockBase = url + 'ws';
+const ws = new Object({
+  state: StateDisc,
+  responses: [],
+  connect() {
+    console.log('Connecting...');
+    if (this.state === StateConn) {
+      return;
+    }
+    this.sock = new WebSocket(sockBase);
+    this.sock.onopen = (ev) => {
+      this.state = StateConn;
+    };
+    this.sock.onmessage = (ev) => {
+      console.log('Received', ev);
+      // TODO: Find the ev.data.id in this.responses to then call
+      // resp.callback(ev) for finalising the process.
+    };
+  },
+  disconnect() {
+    if (this.state === StateDisc) {
+      return;
+    }
+    this.sock.close();
+    this.state = StateDisc;
+  },
+  message(payload, callback) {
+    // Wrap the payload with an identifier, then we can validate
+    // the identifier on the way back to call the payload with the
+    // response.
+    const id = Math.floor(Math.random() * Date.now()).toString(36);
+    this.sock.send(JSON.stringify({id, payload}));
+    console.log('Sent', {id, payload});
+    this.responses.push({id, payload, cb: callback});
+  },
+});
+ws.connect();
+
 export default {
 
   addEpisodic(payload) {
@@ -56,7 +99,7 @@ export default {
   },
 
   refreshEpisodic(id) {
-    return this.perform('get', `/api/v1/episodic/refresh/${id}`);
+    ws.message({id, type: 'refresh/episodic'}, (data) => { console.log('Callback:', data); });
   },
 
   removeEpisodic(id) {
