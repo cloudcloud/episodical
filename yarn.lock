@@ -1199,7 +1199,7 @@ __metadata:
     sass: "npm:1.80.3"
     stylus: "npm:0.64.0"
     stylus-loader: "npm:8.1.1"
-    vite: "npm:5.4.9"
+    vite: "npm:5.4.10"
     vue: "npm:3.5.12"
     vue-router: "npm:4.4.5"
     vuetify: "npm:^3.7.3"
@@ -2869,9 +2869,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite@npm:5.4.9":
-  version: 5.4.9
-  resolution: "vite@npm:5.4.9"
+"vite@npm:5.4.10":
+  version: 5.4.10
+  resolution: "vite@npm:5.4.10"
   dependencies:
     esbuild: "npm:^0.21.3"
     fsevents: "npm:~2.3.3"
@@ -2908,7 +2908,7 @@ __metadata:
       optional: true
   bin:
     vite: bin/vite.js
-  checksum: 10c0/e9c59f2c639047e37c79bbbb151c7a55a3dc27932957cf4cf0447ee0bdcc1ddfd9b1fb3ba0465371c01ba3616d62561327855794c2d652213c3a10a32e6d369d
+  checksum: 10c0/4ef4807d2fd166a920de244dbcec791ba8a903b017a7d8e9f9b4ac40d23f8152c1100610583d08f542b47ca617a0505cfc5f8407377d610599d58296996691ed
   languageName: node
   linkType: hard
 
