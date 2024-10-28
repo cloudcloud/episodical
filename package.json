@@ -23,7 +23,7 @@
   },
   "devDependencies": {
     "eslint": "9.13.0",
-    "eslint-plugin-vue": "9.29.1",
+    "eslint-plugin-vue": "9.30.0",
     "stylus": "0.64.0",
     "stylus-loader": "8.1.1"
   },
