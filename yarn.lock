@@ -681,13 +681,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vitejs/plugin-vue@npm:5.1.4":
-  version: 5.1.4
-  resolution: "@vitejs/plugin-vue@npm:5.1.4"
+"@vitejs/plugin-vue@npm:5.2.0":
+  version: 5.2.0
+  resolution: "@vitejs/plugin-vue@npm:5.2.0"
   peerDependencies:
     vite: ^5.0.0
     vue: ^3.2.25
-  checksum: 10c0/e5294bfd6d1491bee76091807933769dc49a8e752f17ed50f6894340ffbc53c51ba436ac395df9e7a0a0e446bcde8e5e5ee77411800fb14559f48927bdb86cf3
+  checksum: 10c0/cdd1850b9dfb4a4548731420381bcfea0912a4dac2392bef0ca0448d5689eefd08e7cfd928f12fccbf7c4a72dd8355fc5d5e8dc61d58853eabb95c96172eb529
   languageName: node
   linkType: hard
 
@@ -1191,7 +1191,7 @@ __metadata:
   dependencies:
     "@mdi/font": "npm:^7.4.47"
     "@mdi/js": "npm:^7.4.47"
-    "@vitejs/plugin-vue": "npm:5.1.4"
+    "@vitejs/plugin-vue": "npm:5.2.0"
     axios: "npm:1.7.7"
     elliptic: "npm:6.6.1"
     eslint: "npm:9.13.0"
