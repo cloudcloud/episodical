@@ -1,0 +1,13 @@
+<.simple_form :let={f} for={@changeset} action={@action}>
+  <.error :if={@changeset.action}>
+    Oops, something went wrong! Please check the errors below.
+  </.error>
+  <.input field={f[:name]} type="text" label="Name" />
+  <.input field={f[:formed_year]} type="number" label="Formed year" />
+  <.input field={f[:base_location]} type="text" label="Base location" />
+  <.input field={f[:last_checked_at]} type="text" label="Last checked at" />
+  <.input field={f[:should_auto_check]} type="checkbox" label="Should auto check" />
+  <:actions>
+    <.button>Save Artist</.button>
+  </:actions>
+</.simple_form>

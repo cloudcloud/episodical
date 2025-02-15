@@ -1,0 +1,29 @@
+<.header>
+  Provider {@provider.id}
+  <:subtitle>This is a provider record from your database.</:subtitle>
+  <:actions>
+    <.link href={~p"/providers/#{@provider}/edit"}>
+      <.button>Edit provider</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Name">{@provider.name}</:item>
+  <:item title="Base URL">{@provider.base_url}</:item>
+  <:item title="Model Type">{@provider.model_type}</:item>
+  <:item title="Access Key">{@provider.access_key}</:item>
+</.list>
+
+<.table id="tokens" rows={@provider.token}>
+  <:col :let={token} label="Token Is Valid?">{token.is_valid}</:col>
+  <:col :let={token} label="Value">{token.value}</:col>
+  <:col :let={token} label="Expires At">{token.expires_at}</:col>
+  <:action :let={token}>
+    <.link href={~p"/providers/#{token}"} method="delete" data-confirm="Are you sure?">
+      Delete
+    </.link>
+  </:action>
+</.table>
+
+<.back navigate={~p"/providers"}>Back to providers</.back>

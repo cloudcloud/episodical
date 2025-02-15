@@ -1,0 +1,25 @@
+<.header>
+  Listing Providers
+  <:actions>
+    <.link href={~p"/providers/new"}>
+      <.button>New Provider</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table id="providers" rows={@providers} row_click={&JS.navigate(~p"/providers/#{&1}")}>
+  <:col :let={provider} label="Name">{provider.name}</:col>
+  <:col :let={provider} label="Base URL">{provider.base_url}</:col>
+  <:col :let={provider} label="Model Type">{provider.model_type}</:col>
+  <:action :let={provider}>
+    <div class="sr-only">
+      <.link navigate={~p"/providers/#{provider}"}>Show</.link>
+    </div>
+    <.link navigate={~p"/providers/#{provider}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={provider}>
+    <.link href={~p"/providers/#{provider}"} method="delete" data-confirm="Are you sure?">
+      Delete
+    </.link>
+  </:action>
+</.table>

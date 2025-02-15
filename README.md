@@ -29,3 +29,8 @@ For a relatively quick development cycle, the following command works well:
 make clean install && HOSTNAME=localhost PORT=8088 DATA_FILE=/var/episodical/episodical.db DATA_PASSPHRASE=no ./episodical
 ```
 
+## Generating keys
+
+```elixir
+:crypto.strong_rand_bytes(32) |> :base64.encode
+```

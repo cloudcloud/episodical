@@ -1,0 +1,19 @@
+<.header>
+  Episodic {@episodic.id}
+  <:subtitle>This is a episodic record from your database.</:subtitle>
+  <:actions>
+    <.link href={~p"/episodics/#{@episodic}/edit"}>
+      <.button>Edit episodic</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Title">{@episodic.title}</:item>
+  <:item title="Release year">{@episodic.release_year}</:item>
+  <:item title="Status">{@episodic.status}</:item>
+  <:item title="Last checked at">{@episodic.last_checked_at}</:item>
+  <:item title="Should auto check">{@episodic.should_auto_check}</:item>
+</.list>
+
+<.back navigate={~p"/episodics"}>Back to episodics</.back>

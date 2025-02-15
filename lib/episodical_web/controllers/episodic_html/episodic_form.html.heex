@@ -1,0 +1,13 @@
+<.simple_form :let={f} for={@changeset} action={@action}>
+  <.error :if={@changeset.action}>
+    Oops, something went wrong! Please check the errors below.
+  </.error>
+  <.input field={f[:title]} type="text" label="Title" />
+  <.input field={f[:release_year]} type="number" label="Release year" />
+  <.input field={f[:status]} type="text" label="Status" />
+  <.input field={f[:last_checked_at]} type="text" label="Last checked at" />
+  <.input field={f[:should_auto_check]} type="checkbox" label="Should auto check" />
+  <:actions>
+    <.button>Save Episodic</.button>
+  </:actions>
+</.simple_form>

@@ -1,0 +1,27 @@
+<.header>
+  Listing Episodics
+  <:actions>
+    <.link href={~p"/episodics/new"}>
+      <.button>New Episodic</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table id="episodics" rows={@episodics} row_click={&JS.navigate(~p"/episodics/#{&1}")}>
+  <:col :let={episodic} label="Title">{episodic.title}</:col>
+  <:col :let={episodic} label="Release year">{episodic.release_year}</:col>
+  <:col :let={episodic} label="Status">{episodic.status}</:col>
+  <:col :let={episodic} label="Last checked at">{episodic.last_checked_at}</:col>
+  <:col :let={episodic} label="Should auto check">{episodic.should_auto_check}</:col>
+  <:action :let={episodic}>
+    <div class="sr-only">
+      <.link navigate={~p"/episodics/#{episodic}"}>Show</.link>
+    </div>
+    <.link navigate={~p"/episodics/#{episodic}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={episodic}>
+    <.link href={~p"/episodics/#{episodic}"} method="delete" data-confirm="Are you sure?">
+      Delete
+    </.link>
+  </:action>
+</.table>

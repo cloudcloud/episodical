@@ -1,0 +1,27 @@
+<.header>
+  Listing Artists
+  <:actions>
+    <.link href={~p"/artists/new"}>
+      <.button>New Artist</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table id="artists" rows={@artists} row_click={&JS.navigate(~p"/artists/#{&1}")}>
+  <:col :let={artist} label="Name">{artist.name}</:col>
+  <:col :let={artist} label="Formed year">{artist.formed_year}</:col>
+  <:col :let={artist} label="Base location">{artist.base_location}</:col>
+  <:col :let={artist} label="Last checked at">{artist.last_checked_at}</:col>
+  <:col :let={artist} label="Should auto check">{artist.should_auto_check}</:col>
+  <:action :let={artist}>
+    <div class="sr-only">
+      <.link navigate={~p"/artists/#{artist}"}>Show</.link>
+    </div>
+    <.link navigate={~p"/artists/#{artist}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={artist}>
+    <.link href={~p"/artists/#{artist}"} method="delete" data-confirm="Are you sure?">
+      Delete
+    </.link>
+  </:action>
+</.table>

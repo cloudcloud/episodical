@@ -1,0 +1,20 @@
+<.header>
+  Document {@document.id}
+  <:subtitle>This is a document record from your database.</:subtitle>
+  <:actions>
+    <.link href={~p"/documents/#{@document}/edit"}>
+      <.button>Edit document</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Title">{@document.title}</:item>
+  <:item title="Author">{@document.author}</:item>
+  <:item title="Released at">{@document.released_at}</:item>
+  <:item title="Is read">{@document.is_read}</:item>
+  <:item title="Last checked at">{@document.last_checked_at}</:item>
+  <:item title="Should auto check">{@document.should_auto_check}</:item>
+</.list>
+
+<.back navigate={~p"/documents"}>Back to documents</.back>

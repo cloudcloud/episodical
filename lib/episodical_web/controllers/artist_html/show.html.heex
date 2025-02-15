@@ -1,0 +1,19 @@
+<.header>
+  Artist {@artist.id}
+  <:subtitle>This is a artist record from your database.</:subtitle>
+  <:actions>
+    <.link href={~p"/artists/#{@artist}/edit"}>
+      <.button>Edit artist</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Name">{@artist.name}</:item>
+  <:item title="Formed year">{@artist.formed_year}</:item>
+  <:item title="Base location">{@artist.base_location}</:item>
+  <:item title="Last checked at">{@artist.last_checked_at}</:item>
+  <:item title="Should auto check">{@artist.should_auto_check}</:item>
+</.list>
+
+<.back navigate={~p"/artists"}>Back to artists</.back>
