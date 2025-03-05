@@ -1,10 +1,11 @@
 C		:= $(shell printf "\033[35;1m-->\033[0m")
 PROJECT := episodical
 V 		:= $(if $v,,@)
+ENC     := ${ENCRYPTION_KEYS:-"GKDb00WP3YjH7YwEwkLZZjVHNhQU6lDSx58TZBJAG+Y="}
 
 .PHONY: start
 start: ; $(info $(C) starting the dev interactive server...)
-	$V iex -S mix phx.server
+	$V ENCRYPTION_KEYS=${ENC} iex -S mix phx.server
 
 .PHONY: test
 test: ; $(info $(C) running tests...)

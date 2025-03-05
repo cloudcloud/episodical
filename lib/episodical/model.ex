@@ -7,6 +7,12 @@ defmodule Episodical.Model do
   alias Episodical.Repo
 
   alias Episodical.Model.Episodic
+  alias Episodical.Model.Artist
+  alias Episodical.Model.Document
+  alias Episodical.Model.Episodic.Episode
+  alias Episodical.Model.Artist.Album
+  alias Episodical.Model.Artist.Song
+  alias Episodical.Model.Config
 
   @doc """
   Returns the list of episodics.
@@ -102,7 +108,6 @@ defmodule Episodical.Model do
     Episodic.changeset(episodic, attrs)
   end
 
-  alias Episodical.Model.Artist
 
   @doc """
   Returns the list of artists.
@@ -198,7 +203,6 @@ defmodule Episodical.Model do
     Artist.changeset(artist, attrs)
   end
 
-  alias Episodical.Model.Document
 
   @doc """
   Returns the list of documents.
@@ -294,7 +298,6 @@ defmodule Episodical.Model do
     Document.changeset(document, attrs)
   end
 
-  alias Episodical.Model.Episodic.Episode
 
   @doc """
   Returns the list of episodic_episodes.
@@ -390,7 +393,6 @@ defmodule Episodical.Model do
     Episode.changeset(episode, attrs)
   end
 
-  alias Episodical.Model.Artist.Album
 
   @doc """
   Returns the list of artist_albums.
@@ -486,7 +488,6 @@ defmodule Episodical.Model do
     Album.changeset(album, attrs)
   end
 
-  alias Episodical.Model.Artist.Song
 
   @doc """
   Returns the list of artist_songs.
@@ -505,29 +506,11 @@ defmodule Episodical.Model do
   Gets a single song.
 
   Raises `Ecto.NoResultsError` if the Song does not exist.
-
-  ## Examples
-
-      iex> get_song!(123)
-      %Song{}
-
-      iex> get_song!(456)
-      ** (Ecto.NoResultsError)
-
   """
   def get_song!(id), do: Repo.get!(Song, id)
 
   @doc """
   Creates a song.
-
-  ## Examples
-
-      iex> create_song(%{field: value})
-      {:ok, %Song{}}
-
-      iex> create_song(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
   """
   def create_song(attrs \\ %{}) do
     %Song{}
@@ -537,15 +520,6 @@ defmodule Episodical.Model do
 
   @doc """
   Updates a song.
-
-  ## Examples
-
-      iex> update_song(song, %{field: new_value})
-      {:ok, %Song{}}
-
-      iex> update_song(song, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
   """
   def update_song(%Song{} = song, attrs) do
     song
@@ -555,15 +529,6 @@ defmodule Episodical.Model do
 
   @doc """
   Deletes a song.
-
-  ## Examples
-
-      iex> delete_song(song)
-      {:ok, %Song{}}
-
-      iex> delete_song(song)
-      {:error, %Ecto.Changeset{}}
-
   """
   def delete_song(%Song{} = song) do
     Repo.delete(song)
@@ -571,14 +536,24 @@ defmodule Episodical.Model do
 
   @doc """
   Returns an `%Ecto.Changeset{}` for tracking song changes.
-
-  ## Examples
-
-      iex> change_song(song)
-      %Ecto.Changeset{data: %Song{}}
-
   """
   def change_song(%Song{} = song, attrs \\ %{}) do
     Song.changeset(song, attrs)
   end
+
+  @doc """
+  List all of the config options.
+  """
+  def list_config, do: Repo.all(Config)
+
+  def get_config!(id), do: Repo.get!(Config, id)
+  def get_config_by_name!(name), do: Repo.get_by!(Config, name: name)
+
+  def update_config(%Config{} = config, attrs) do
+    config
+    |> Config.changeset(attrs)
+    |> Repo.update()
+  end
+
+  def change_config(%Config{} = config, attrs \\ %{}), do: Config.changeset(config, attrs)
 end

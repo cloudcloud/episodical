@@ -19,7 +19,7 @@ defmodule Episodical.External.Token do
   @doc false
   def changeset(token, attrs) do
     token
-    |> cast(attrs, [:value, :is_valid, :expires_at])
-    |> validate_required([:value, :is_valid, :expires_at])
+    |> cast(attrs, [:value, :is_valid, :expires_at, :provider_id])
+    |> validate_required([:value, :is_valid, :expires_at, :provider_id])
   end
 end

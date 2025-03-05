@@ -8,7 +8,7 @@
 </.header>
 
 <.table id="providers" rows={@providers} row_click={&JS.navigate(~p"/providers/#{&1}")}>
-  <:col :let={provider} label="Name">{provider.name}</:col>
+  <:col :let={provider} label="Name"><b>{provider.name}</b></:col>
   <:col :let={provider} label="Base URL">{provider.base_url}</:col>
   <:col :let={provider} label="Model Type">{provider.model_type}</:col>
   <:action :let={provider}>

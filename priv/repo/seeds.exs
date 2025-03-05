@@ -1,11 +1,15 @@
-# Script for populating the database. You can run it as:
-#
-#     mix run priv/repo/seeds.exs
-#
-# Inside the script, you can read and write to any of your
-# repositories directly:
-#
-#     Episodical.Repo.insert!(%Episodical.SomeSchema{})
-#
-# We recommend using the bang functions (`insert!`, `update!`
-# and so on) as they will fail if something goes wrong.
+alias Episodical.Repo
+alias Episodical.Model.Config
+
+config = [
+  %{
+    name: "episodical_language",
+    value: "eng",
+    is_active: true
+  }
+]
+
+config
+|> Enum.each(fn data ->
+  Repo.insert!(%Config{name: data[:name], value: data[:value], is_active: data[:is_active]})
+end)

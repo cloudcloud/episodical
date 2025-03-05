@@ -35,3 +35,10 @@ config :phoenix, :plug_init_mode, :runtime
 # Enable helpful, but potentially expensive runtime checks
 config :phoenix_live_view,
   enable_expensive_runtime_checks: true
+
+# Ensure we set some encryption keys for test purposes
+try do
+  System.put_env("ENCRYPTION_KEYS", "GKDb00WP3YjH7YwEwkLZZjVHNhQU6lDSx58TZBJAG+Y=")
+rescue
+  _ -> IO.puts("Unable to set ENCRYPTION_KEYS")
+end

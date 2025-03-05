@@ -2,6 +2,17 @@ defmodule Episodical.External.Provider do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @type t :: %__MODULE__{
+          id: binary,
+          name: String.t(),
+          base_url: String.t(),
+          model_type: String.t(),
+          access_key: String.t(),
+          token: list(),
+          inserted_at: Time.t(),
+          updated_at: Time.t()
+        }
+
   alias Episodical.External.Token
   alias Episodical.Encryption.EncryptedField
 
