@@ -6,12 +6,12 @@
 
 <.table id="provider_shows" rows={@results}>
   <:col :let={result} label="Title">{result["name"]}</:col>
-  <:col :let={result} label="Released">{result["first_air_time"]}</:col>
+  <:col :let={result} label="Released">{result["date_began"]}</:col>
   <:col :let={result} label="Overview">{result["overview"]}</:col>
   <:action :let={result}>
     <.simple_form for={@changeset} action={~p"/episodics/#{@episodic}/associate"} method="post" class="mt-0 ml-1 bg-white mb-1">
       <input type="hidden" name="provider_id" value={@provider.id} />
-      <input type="hidden" name="external_id" value={result["tvdb_id"]} />
+      <input type="hidden" name="external_id" value={result["id"]} />
       <.button type="submit">Associate</.button>
     </.simple_form>
   </:action>

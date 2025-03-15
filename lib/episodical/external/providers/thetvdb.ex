@@ -6,6 +6,9 @@ defmodule Episodical.External.Provider.TheTVDB do
 
   @base_url "https://api4.thetvdb.com/v4/"
   @headers [{"User-agent", "cloudcloud/episodical v#{Episodical.Application.version()}"}, {"Accept", "application/json"}]
+  @service_type "thetvdb"
+
+  def service_type?, do: @service_type
 
   @doc """
   For a given model type, is this provider valid for it?

@@ -4,6 +4,7 @@ defmodule EpisodicalWeb.EpisodicAssociateController do
   alias Episodical.Model
   alias Episodical.External
   alias Episodical.External.Provider.TheTVDB
+  alias Episodical.Presenters.ProviderSearchResults
 
   def show(conn, %{"id" => id, "episodic_id" => episodic_id}) do
     episodic = Model.get_episodic!(episodic_id)
@@ -12,8 +13,9 @@ defmodule EpisodicalWeb.EpisodicAssociateController do
     provider = External.get_provider!(id)
 
     with %{service_type: "thetvdb"} <- provider,
-        {:ok, results} <- TheTVDB.search_by_show_title(provider, episodic.title, episodic.release_year) do
-      render(conn, :show, episodic: episodic, provider: provider, results: results, changeset: changeset)
+        {:ok, results} <- TheTVDB.search_by_show_title(provider, episodic.title, episodic.release_year),
+        {:ok, data} <- ProviderSearchResults.from_thetvdb(%ProviderSearchResults{service_type: TheTVDB.service_type?, results: results}) do
+      render(conn, :show, episodic: episodic, provider: provider, results: data, changeset: changeset)
     end
   end
 

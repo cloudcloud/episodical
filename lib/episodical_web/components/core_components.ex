@@ -598,6 +598,23 @@ defmodule EpisodicalWeb.CoreComponents do
     """
   end
 
+  @doc """
+  Render a small Pill component, accepting some text.
+
+  ## Examples
+
+      <.pill_box text="Hello" />
+  """
+  attr :text, :string, required: true
+
+  def pill_box(assigns) do
+    assigns = assign(assigns, :text, assigns.text)
+
+    ~H"""
+    <span class={"bg-zinc-600 inline-block text-gray-100 px-2 py-1 rounded-lg border-gray-300"}>{@text}</span>
+    """
+  end
+
   ## JS Commands
 
   def show(js \\ %JS{}, selector) do

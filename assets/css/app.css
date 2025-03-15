@@ -1,5 +1,6 @@
-@import "tailwindcss/base";
-@import "tailwindcss/components";
-@import "tailwindcss/utilities";
+@import "tailwindcss";
 
-/* This file is for your main application CSS */
+@theme {
+    --color-success-300: oklch(0.72, 0.11 178);
+    --color-fail-300: oklch(0.72 0.11 178);
+}

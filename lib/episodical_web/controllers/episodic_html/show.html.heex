@@ -1,26 +1,29 @@
 <.header>
-  {@episodic.title}
+  Episodic <b>{@episodic.title}</b>
+
+  <:subtitle>
+    <.pill_box text={"Released: #{@episodic.release_year}"} />
+    <.pill_box text={"Status: #{@episodic.status}"} />
+    <.pill_box text={"Auto Check: #{if @episodic.should_auto_check, do: "On", else: "Off"}"} />
+    <.pill_box text={"Last Checked: #{@episodic.last_checked_at}"} />
+    <%= if @episodic.provider != nil do %>
+      <.link href={~p"/providers/#{@episodic.provider}"}>
+        <.pill_box text={"Provider: #{@episodic.provider.name} - #{@episodic.external_id}"} />
+      </.link>
+    <% else %>
+      <.pill_box text={"Provider: Not configured!"} />
+    <% end %>
+  </:subtitle>
+
   <:actions>
     <.link href={~p"/episodics/#{@episodic}/edit"}>
       <.button>Edit episodic</.button>
     </.link>
+    <.link href={~p"/episodics/#{@episodic}/refresh"}>
+      <.button>Refresh content</.button>
+    </.link>
   </:actions>
 </.header>
-
-<.list>
-  <:item title="Title">{@episodic.title}</:item>
-  <:item title="Release year">{@episodic.release_year}</:item>
-  <:item title="Status">{@episodic.status}</:item>
-  <:item title="Last checked at">{@episodic.last_checked_at}</:item>
-  <:item title="Should auto check">{@episodic.should_auto_check}</:item>
-  <:item title="Provider">
-    <%= if @episodic.provider_id != nil do %>
-    <.link href={~p"/providers/#{@episodic.provider}"}>{@episodic.provider.name}</.link>
-    <% else %>
-    Not configured!
-    <% end %>
-  </:item>
-</.list>
 
 <!--.seasons episodes={}>
 </.seasons-->

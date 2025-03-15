@@ -65,4 +65,12 @@ defmodule EpisodicalWeb.EpisodicController do
     |> put_flash(:info, "Episodic deleted successfully.")
     |> redirect(to: ~p"/episodics")
   end
+
+  def refresh(conn, %{"episodic_id" => id}) do
+    episodic = Model.get_episodic!(id)
+
+    conn
+    |> put_flash(:info, "Content refresh begun.")
+    |> redirect(to: ~p"/episodics/#{episodic}")
+  end
 end
