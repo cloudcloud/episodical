@@ -11,6 +11,7 @@
   <:col :let={provider} label="Name"><b>{provider.name}</b></:col>
   <:col :let={provider} label="Base URL">{provider.base_url}</:col>
   <:col :let={provider} label="Model Type">{provider.model_type}</:col>
+  <:col :let={provider} label="Service Type">{provider.service_type}</:col>
   <:action :let={provider}>
     <div class="sr-only">
       <.link navigate={~p"/providers/#{provider}"}>Show</.link>

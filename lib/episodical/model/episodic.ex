@@ -28,8 +28,9 @@ defmodule Episodical.Model.Episodic do
       :status,
       :last_checked_at,
       :should_auto_check,
+      :provider_id,
       :external_id
     ])
-    |> validate_required([:title, :release_year, :status, :last_checked_at, :should_auto_check])
+    |> validate_required([:title, :release_year, :should_auto_check])
   end
 end

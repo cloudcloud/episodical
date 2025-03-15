@@ -1,8 +1,10 @@
 defmodule EpisodicalWeb.EpisodicController do
   use EpisodicalWeb, :controller
 
+  alias Episodical.External
   alias Episodical.Model
   alias Episodical.Model.Episodic
+  alias Episodical.Repo
 
   def index(conn, _params) do
     episodics = Model.list_episodics()
@@ -27,14 +29,18 @@ defmodule EpisodicalWeb.EpisodicController do
   end
 
   def show(conn, %{"id" => id}) do
-    episodic = Model.get_episodic!(id)
+    episodic =
+      Model.get_episodic!(id)
+      |> Repo.preload([:provider, :episodic_episode])
+
     render(conn, :show, episodic: episodic)
   end
 
   def edit(conn, %{"id" => id}) do
     episodic = Model.get_episodic!(id)
     changeset = Model.change_episodic(episodic)
-    render(conn, :edit, episodic: episodic, changeset: changeset)
+
+    render(conn, :edit, episodic: episodic, providers: External.list_providers_by_type("episodic"), changeset: changeset)
   end
 
   def update(conn, %{"id" => id, "episodic" => episodic_params}) do

@@ -21,7 +21,9 @@ defmodule EpisodicalWeb.Router do
 
     resources "/artists", ArtistController
     resources "/documents", DocumentController
-    resources "/episodics", EpisodicController
+    resources "/episodics", EpisodicController do
+      resources "/associate", EpisodicAssociateController, only: [:show, :create]
+    end
 
     resources "/providers", ProviderController
 

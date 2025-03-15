@@ -2,7 +2,7 @@
 
 <.table id="config" rows={@config} row_click={&JS.navigate(~p"/config/#{&1}/edit")}>
   <:col :let={config} label="Name"><b>{config.name}</b></:col>
-  <:col :let={config} label="Value">{config.value}</:col>
+  <:col :let={config} label="Value"><pre>{config.value}</pre></:col>
   <:col :let={config} label="Is Active?">{config.is_active}</:col>
   <:action :let={config}>
     <.link navigate={~p"/config/#{config}/edit"}>Edit</.link>

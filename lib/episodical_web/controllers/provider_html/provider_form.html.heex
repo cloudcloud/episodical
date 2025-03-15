@@ -11,7 +11,8 @@
     multiple={false}
     options={@options}
   />
-  <.input name="provider[access_key]" value="" type="text" label="Access Key" />
+  <.input field={f[:access_key]} type="text" label="Access Key" />
+  <.input field={f[:service_type]} type="text" label="Service Type" />
   <:actions>
     <.button>Save Provider</.button>
   </:actions>

@@ -214,6 +214,13 @@ defmodule Episodical.External do
   end
 
   @doc """
+  List available providers for the Episodical type.
+  """
+  def list_providers_by_type(type) do
+    Repo.all(Provider, [{:model_type, String.to_atom(type)}])
+  end
+
+  @doc """
   Gets a single provider.
 
   Raises `Ecto.NoResultsError` if the Provider does not exist.

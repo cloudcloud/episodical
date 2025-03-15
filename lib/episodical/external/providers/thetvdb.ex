@@ -23,8 +23,13 @@ defmodule Episodical.External.Provider.TheTVDB do
         title,
         year
       ) do
-    provider
-    |> api_call("#{@base_url}search?type=series&query=#{title}&year=#{year}")
+
+    query = %{"type" => "series", "query" => title, "year" => year}
+      |> URI.encode_query
+    {:ok, %{"status" => "success", "data" => data}} = provider
+      |> api_call("#{@base_url}search?#{query}")
+
+    {:ok, data}
 
     # data []
     #   image_url

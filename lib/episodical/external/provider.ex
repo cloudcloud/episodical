@@ -9,6 +9,7 @@ defmodule Episodical.External.Provider do
           model_type: String.t(),
           access_key: String.t(),
           token: list(),
+          service_type: String.t(),
           inserted_at: Time.t(),
           updated_at: Time.t()
         }
@@ -23,6 +24,7 @@ defmodule Episodical.External.Provider do
     field :base_url, :string
     field :model_type, Ecto.Enum, values: [:episodic, :artist, :document]
     field :access_key, EncryptedField
+    field :service_type, :string
     has_many :token, Token
 
     timestamps(type: :utc_datetime_usec)
@@ -33,7 +35,7 @@ defmodule Episodical.External.Provider do
   """
   def changeset(provider, attrs) do
     provider
-    |> cast(attrs, [:name, :base_url, :model_type, :access_key])
-    |> validate_required([:name, :base_url, :model_type, :access_key])
+    |> cast(attrs, [:name, :base_url, :model_type, :access_key, :service_type])
+    |> validate_required([:name, :base_url, :model_type, :access_key, :service_type])
   end
 end
