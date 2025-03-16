@@ -631,7 +631,7 @@ defmodule EpisodicalWeb.CoreComponents do
   def pill_box(assigns) do
     ~H"""
     <span class={[
-      "inline-block text-gray-100 px-2 py-1 rounded-lg border-gray-300",
+      "inline-block text-gray-100 px-2 py-1 rounded-lg border-gray-300 mt-1",
       @colour == "zinc" && "bg-zinc-600",
       @colour == "red" && "bg-ruby-600",
       @colour == "green" && "bg-emerald-600",

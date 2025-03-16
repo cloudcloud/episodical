@@ -19,7 +19,7 @@ defmodule Episodical.MixProject do
   def application do
     [
       mod: {Episodical.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger, :runtime_tools, :que]
     ]
   end
 

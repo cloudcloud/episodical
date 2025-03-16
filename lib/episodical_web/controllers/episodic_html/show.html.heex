@@ -13,6 +13,12 @@
     <% else %>
       <.pill_box text={"Provider: Not configured!"} />
     <% end %>
+    <%= if @episodic.imdb_id != "" do %>
+      <.pill_box text={"iMDB ID: #{@episodic.imdb_id}"} />
+    <% end %>
+    <%= if @episodic.next_airing != nil do %>
+      <.pill_box text={"Next Airing: #{@episodic.next_airing}"} />
+    <% end %>
   </:subtitle>
 
   <:actions>
@@ -24,6 +30,16 @@
     </.link>
   </:actions>
 </.header>
+
+<div class="font-normal mt-4 text-gray-600 text-sm content flex">
+  <%= if @episodic.image != "" do %>
+    <img src={@episodic.image} class="w-48 h-52 inline-block flex-wrap" />
+  <% end %>
+
+  <div class="flex-wrap pl-3 ml-4 border-l-2">
+    {@episodic.overview}
+  </div>
+</div>
 
 <!--.seasons episodes={}>
 </.seasons-->

@@ -5,6 +5,7 @@ defmodule EpisodicalWeb.EpisodicController do
   alias Episodical.Model
   alias Episodical.Model.Episodic
   alias Episodical.Repo
+  alias Episodical.Workers
 
   def index(conn, params) do
     {:ok, {episodics, meta}} = Model.list_episodics(params)
@@ -67,10 +68,10 @@ defmodule EpisodicalWeb.EpisodicController do
   end
 
   def refresh(conn, %{"episodic_id" => id}) do
-    episodic = Model.get_episodic!(id)
+    Que.add(Workers.EpisodicalUpdate, %{"id" => id})
 
     conn
     |> put_flash(:info, "Content refresh begun.")
-    |> redirect(to: ~p"/episodics/#{episodic}")
+    |> redirect(to: ~p"/episodics/#{id}")
   end
 end

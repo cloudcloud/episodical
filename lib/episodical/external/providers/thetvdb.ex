@@ -54,7 +54,7 @@ defmodule Episodical.External.Provider.TheTVDB do
   @doc """
   Fetch the full detail for a specific series identifier.
   """
-  @spec get_series(Provider.t(), integer()) :: map()
+  @spec get_series(Provider.t(), integer()) :: {:atom, map()}
   def get_series(%Provider{model_type: :episodic} = provider, id) do
     provider
     |> api_call("#{@base_url}series/#{id}/extended?meta=episodes&short=true")

@@ -62,6 +62,8 @@ config :phoenix, :json_library, Jason
 
 config :flop, repo: Episodical.Repo
 
+config :mnesia, dir: 'mnesia/#{Mix.env}/#{node()}'
+
 try do
   File.stream!("./.env")
   |> Stream.map(&String.trim_trailing/1)
