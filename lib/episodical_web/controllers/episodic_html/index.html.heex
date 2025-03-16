@@ -7,21 +7,18 @@
   </:actions>
 </.header>
 
-<.table id="episodics" rows={@episodics} row_click={&JS.navigate(~p"/episodics/#{&1}")}>
-  <:col :let={episodic} label="Title">{episodic.title}</:col>
-  <:col :let={episodic} label="Release year">{episodic.release_year}</:col>
-  <:col :let={episodic} label="Status">{episodic.status}</:col>
-  <:col :let={episodic} label="Last checked at">{episodic.last_checked_at}</:col>
-  <:col :let={episodic} label="Should auto check">{episodic.should_auto_check}</:col>
-  <:action :let={episodic}>
+<Flop.Phoenix.table items={@episodics} meta={@meta} path={~p"/episodics"} row_click={&JS.navigate(~p"/episodics/#{&1}")} opts={floptions()}>
+  <:col :let={episodic} label="Title" field={:title} tbody_td_attrs={[class: "pl-2 font-bold relative hover:cursor-pointer"]}>{episodic.title}</:col>
+  <:col :let={episodic} label="Release year" field={:release_year} col_class="relative hover:cursor-pointer">{episodic.release_year}</:col>
+  <:col :let={episodic} label="Status" field={:status} col_class="relative hover:cursor-pointer">{episodic.status}</:col>
+  <:col :let={episodic} label="Last checked at" field={:last_checked_at} col_class="relative hover:cursor-pointer">{episodic.last_checked_at}</:col>
+  <:col :let={episodic} label="Should auto check" field={:should_auto_check} col_class="relative hover:cursor-pointer">{episodic.should_auto_check}</:col>
+
+  <:action :let={episodic} tbody_td_attrs={[{:class, "text-zinc-500 font-bold my-3"}]}>
     <div class="sr-only">
-      <.link navigate={~p"/episodics/#{episodic}"}>Show</.link>
+      <.link navigate={~p"/episodics/#{episodic}"} class="pr-2">Show</.link>
     </div>
-    <.link navigate={~p"/episodics/#{episodic}/edit"}>Edit</.link>
+    <.link navigate={~p"/episodics/#{episodic}/edit"} class="pr-2">Edit</.link>
+    <.link href={~p"/episodics/#{episodic}"} method="delete" data-confirm="Are you sure?">Delete</.link>
   </:action>
-  <:action :let={episodic}>
-    <.link href={~p"/episodics/#{episodic}"} method="delete" data-confirm="Are you sure?">
-      Delete
-    </.link>
-  </:action>
-</.table>
+</Flop.Phoenix.table>

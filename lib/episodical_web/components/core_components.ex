@@ -319,7 +319,7 @@ defmodule EpisodicalWeb.CoreComponents do
           name={@name}
           value="true"
           checked={@checked}
-          class="rounded border-zinc-300 text-zinc-900 focus:ring-0"
+          class="rounded p-1 pl-2 border-zinc-400 text-zinc-900 focus:ring-0"
           {@rest}
         />
         {@label}
@@ -336,7 +336,7 @@ defmodule EpisodicalWeb.CoreComponents do
       <select
         id={@id}
         name={@name}
-        class="mt-2 block w-full rounded-md border border-gray-300 bg-white shadow-sm focus:border-zinc-400 focus:ring-0 sm:text-sm"
+        class="mt-2 p-1 pl-2 border block w-full rounded-md border border-gray-300 bg-white shadow-sm focus:border-zinc-400 focus:ring-0 sm:text-sm"
         multiple={@multiple}
         {@rest}
       >
@@ -356,7 +356,7 @@ defmodule EpisodicalWeb.CoreComponents do
         id={@id}
         name={@name}
         class={[
-          "mt-2 block w-full rounded-lg text-zinc-900 focus:ring-0 sm:text-sm sm:leading-6 min-h-[6rem]",
+          "mt-2 p-1 pl-2 border block w-full rounded-lg text-zinc-900 focus:ring-0 sm:text-sm sm:leading-6 min-h-[6rem]",
           @errors == [] && "border-zinc-300 focus:border-zinc-400",
           @errors != [] && "border-rose-400 focus:border-rose-400"
         ]}
@@ -378,8 +378,8 @@ defmodule EpisodicalWeb.CoreComponents do
         id={@id}
         value={Phoenix.HTML.Form.normalize_value(@type, @value)}
         class={[
-          "mt-2 block w-full rounded-lg text-zinc-900 focus:ring-0 sm:text-sm sm:leading-6",
-          @errors == [] && "border-zinc-300 focus:border-zinc-400",
+          "mt-2 p-1 pl-2 border block w-full rounded-lg text-zinc-900 focus:ring-0 focus:border sm:text-sm sm:leading-6",
+          @errors == [] && "border-zinc-400 focus:border-zinc-500",
           @errors != [] && "border-rose-400 focus:border-rose-400"
         ]}
         {@rest}
@@ -521,6 +521,25 @@ defmodule EpisodicalWeb.CoreComponents do
   end
 
   @doc """
+  Return the keyword list of options that are used for making the Flop.Phoenix.table look nice.
+  """
+  def floptions do
+    [
+      {:container, true},
+      {:container_attrs, [class: "overflow-y-auto px-4 sm:overflow-visible sm:px-0"]},
+      {:table_attrs, [class: "w-[40rem] mt-11 sm:w-full"]},
+      {:thead_attrs, [class: "text-sm text-left leading-6 text-zinc-500"]},
+      {:th_wrapper_attrs, [class: "font-bold"]},
+      {:thead_th_attrs, [class: "p-0 pb-4 pr-6 font-normal"]},
+      {:tbody_attrs, [id: "episodics", class: "relative divide-y divide-zinc-100 border-t border-zinc-200 text-sm leading-6 text-zinc-700"]},
+      {:tbody_td_attrs, [class: "relative p-0 py-4 pr-6 hover:cursor-pointer"]},
+      {:tbody_tr_attrs, [class: "group hover:bg-zinc-50"]},
+      {:thead_th_attrs, [class: "p-0 pb-4 pr-6 font-normal"]},
+      {:thead_tr_attrs, [class: ""]},
+    ]
+  end
+
+  @doc """
   Renders a data list.
 
   ## Examples
@@ -599,19 +618,24 @@ defmodule EpisodicalWeb.CoreComponents do
   end
 
   @doc """
-  Render a small Pill component, accepting some text.
+  Render a small Pill component, accepting some text and optional colour.
 
   ## Examples
 
       <.pill_box text="Hello" />
+      <.pill_box text="Success" colour="green" />
   """
   attr :text, :string, required: true
+  attr :colour, :string, default: "zinc"
 
   def pill_box(assigns) do
-    assigns = assign(assigns, :text, assigns.text)
-
     ~H"""
-    <span class={"bg-zinc-600 inline-block text-gray-100 px-2 py-1 rounded-lg border-gray-300"}>{@text}</span>
+    <span class={[
+      "inline-block text-gray-100 px-2 py-1 rounded-lg border-gray-300",
+      @colour == "zinc" && "bg-zinc-600",
+      @colour == "red" && "bg-ruby-600",
+      @colour == "green" && "bg-emerald-600",
+    ]}>{@text}</span>
     """
   end
 

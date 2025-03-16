@@ -19,12 +19,13 @@ defmodule Episodical.Model do
 
   ## Examples
 
-      iex> list_episodics()
+      iex> list_episodics(params)
       [%Episodic{}, ...]
 
   """
-  def list_episodics do
-    Repo.all(Episodic)
+  def list_episodics(params) do
+    Episodic
+      |> Flop.validate_and_run(params, for: Episodic, replace_invalid_params: true)
   end
 
   @doc """

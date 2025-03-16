@@ -6,9 +6,9 @@ defmodule EpisodicalWeb.EpisodicController do
   alias Episodical.Model.Episodic
   alias Episodical.Repo
 
-  def index(conn, _params) do
-    episodics = Model.list_episodics()
-    render(conn, :index, episodics: episodics)
+  def index(conn, params) do
+    {:ok, {episodics, meta}} = Model.list_episodics(params)
+    render(conn, :index, meta: meta, episodics: episodics)
   end
 
   def new(conn, _params) do

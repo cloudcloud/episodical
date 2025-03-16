@@ -2,6 +2,12 @@ defmodule Episodical.Model.Episodic do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @derive {
+    Flop.Schema,
+    filterable: [:title],
+    sortable: [:title, :release_year, :last_checked_at]
+  }
+
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "episodics" do

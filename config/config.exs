@@ -60,6 +60,8 @@ config :logger, :console,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
+config :flop, repo: Episodical.Repo
+
 try do
   File.stream!("./.env")
   |> Stream.map(&String.trim_trailing/1)
