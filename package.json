@@ -11,7 +11,7 @@
   "dependencies": {
     "@mdi/font": "^7.4.47",
     "@mdi/js": "^7.4.47",
-    "@vitejs/plugin-vue": "5.2.1",
+    "@vitejs/plugin-vue": "5.2.2",
     "axios": "1.7.9",
     "elliptic": "6.6.1",
     "sass": "1.84.0",
