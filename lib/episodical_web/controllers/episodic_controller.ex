@@ -32,7 +32,7 @@ defmodule EpisodicalWeb.EpisodicController do
   def show(conn, %{"id" => id}) do
     episodic =
       Model.get_episodic!(id)
-      |> Repo.preload([:provider, :episodic_episode])
+      |> Repo.preload([:provider, :genres, :episodes])
 
     render(conn, :show, episodic: episodic)
   end

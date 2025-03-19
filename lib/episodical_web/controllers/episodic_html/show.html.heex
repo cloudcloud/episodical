@@ -3,9 +3,13 @@
 
   <:subtitle>
     <.pill_box text={"Released: #{@episodic.release_year}"} />
-    <.pill_box text={"Status: #{@episodic.status}"} />
+    <%= if @episodic.status != "" && @episodic.status != nil do %>
+      <.pill_box text={"Status: #{@episodic.status}"} />
+    <% end %>
     <.pill_box text={"Auto Check: #{if @episodic.should_auto_check, do: "On", else: "Off"}"} />
-    <.pill_box text={"Last Checked: #{@episodic.last_checked_at}"} />
+    <%= if @episodic.last_checked_at != nil do %>
+      <.pill_box text={"Last Checked: #{@episodic.last_checked_at}"} />
+    <% end %>
     <%= if @episodic.provider != nil do %>
       <.link href={~p"/providers/#{@episodic.provider}"}>
         <.pill_box text={"Provider: #{@episodic.provider.name} - #{@episodic.external_id}"} />
@@ -13,7 +17,7 @@
     <% else %>
       <.pill_box text={"Provider: Not configured!"} />
     <% end %>
-    <%= if @episodic.imdb_id != "" do %>
+    <%= if @episodic.imdb_id != nil do %>
       <.pill_box text={"iMDB ID: #{@episodic.imdb_id}"} />
     <% end %>
     <%= if @episodic.next_airing != nil do %>
@@ -32,13 +36,17 @@
 </.header>
 
 <div class="font-normal mt-4 text-gray-600 text-sm content flex">
-  <%= if @episodic.image != "" do %>
+  <%= if @episodic.image != nil do %>
     <img src={@episodic.image} class="w-48 h-52 inline-block flex-wrap" />
   <% end %>
 
-  <div class="flex-wrap pl-3 ml-4 border-l-2">
+  <div class="flex-wrap pl-2 ml-4 border-l-2 border-gray-300">
     {@episodic.overview}
   </div>
+</div>
+
+<div :for={episode <- @episodic.episodes}>
+  {episode.title}
 </div>
 
 <!--.seasons episodes={}>

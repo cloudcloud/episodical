@@ -7,6 +7,7 @@ defmodule Episodical.External do
   alias Episodical.Repo
 
   alias Episodical.External.Genre
+  alias Episodical.External.EpisodicGenre
 
   @doc """
   Returns the list of genres.
@@ -36,6 +37,20 @@ defmodule Episodical.External do
 
   """
   def get_genre!(id), do: Repo.get!(Genre, id)
+
+  def get_or_insert_genre(%{"name" => name, "external_id" => external_id, "provider_id" => provider_id}) do
+    Repo.insert!(
+      %Genre{genre: name, external_id: Integer.to_string(external_id), provider_id: provider_id},
+      on_conflict: [set: [genre: name, external_id: Integer.to_string(external_id), provider_id: provider_id]],
+      conflict_target: :external_id
+    )
+  end
+
+  def associate_genre_episodic(attrs \\ %{}) do
+    %EpisodicGenre{}
+    |> EpisodicGenre.changeset(attrs)
+    |> Repo.insert()
+  end
 
   @doc """
   Creates a genre.

@@ -129,7 +129,6 @@ defmodule Episodical.External.Provider.TheTVDB do
   end
 
   defp retrieve_token(%Provider{access_key: key} = provider) do
-    Logger.debug("Fetching ourselves a token!")
     response =
       "#{@base_url}login"
       |> HTTPoison.post(Jason.encode!(%{"apikey" => key}), [{"Content-type", "application/json"} | @headers])
@@ -143,7 +142,6 @@ defmodule Episodical.External.Provider.TheTVDB do
            provider_id: provider.id
          }) do
 
-      Logger.debug("Got through to the token piece!")
       true
     else
       _ -> false
@@ -158,7 +156,6 @@ defmodule Episodical.External.Provider.TheTVDB do
 
   defp handle_response({:ok, %{status_code: 200, body: body}}) do
     Logger.info("Successful response!")
-    Logger.debug(fn -> inspect(body) end)
 
     {:ok, Jason.decode!(body)}
   end

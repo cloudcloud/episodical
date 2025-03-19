@@ -14,9 +14,12 @@ defmodule Episodical.Model.Episodic.Episode do
     field :is_watched, :boolean, default: false
     field :watched_at, :utc_datetime_usec
     field :overview, :string
+    field :external_id, :string
+
+    belongs_to :provider, Episodical.External.Provider
     belongs_to :episodic, Episodic
 
-    timestamps(type: :utc_datetime)
+    timestamps(type: :utc_datetime_usec)
   end
 
   @doc false

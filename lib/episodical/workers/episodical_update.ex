@@ -5,6 +5,7 @@ defmodule Episodical.Workers.EpisodicalUpdate do
   alias Episodical.Model
   alias Episodical.External
   alias Episodical.External.Provider.TheTVDB
+  alias Episodical.Model.Episodic
 
   def perform(input) do
     episodic =
@@ -14,14 +15,17 @@ defmodule Episodical.Workers.EpisodicalUpdate do
     provider =
       External.get_provider!(episodic.provider_id)
       |> Repo.preload([:token])
+    provider_id = provider.id
 
     {:ok, episodic} =
       provider
       |> query_provider(:main_episodic, episodic)
-      |> update_episodic(episodic)
-      |> capture_episodes(episodic)
+      |> update_episodic
+      |> capture_genres(provider_id)
+      |> capture_episodes(provider_id)
+      |> store_full_episodic(episodic)
 
-    IO.inspect episodic
+    episodic
   end
 
   defp query_provider(%{service_type: "thetvdb"} = provider, type, episodic) do
@@ -46,7 +50,7 @@ defmodule Episodical.Workers.EpisodicalUpdate do
       "overview" => overview,
       "originalLanguage" => original_language,
     },
-  } = results}, episodic) do
+  } = results}) do
 
     %{"id" => imdb_id} = Enum.find(remotes, fn x -> x["sourceName"] == "IMDB" end)
     date = case Date.from_iso8601(next_airing) do
@@ -56,38 +60,54 @@ defmodule Episodical.Workers.EpisodicalUpdate do
         nil
     end
 
-    case Model.update_episodic(episodic, %{
-      image: image,
-      status: status,
-      last_checked_at: DateTime.now!("Etc/UTC"),
-      overview: overview,
-      original_language: original_language,
-      next_airing: date,
-      imdb_id: imdb_id,
-    }) do
-      {:ok, _} ->
-        {:ok, results}
-
-      {:error, %Ecto.Changeset{}} ->
-        {:error, results}
-    end
+    {:ok, %{
+      :image => image,
+      :status => status,
+      :last_checked_at => DateTime.now!("Etc/UTC"),
+      :overview => overview,
+      :original_language => original_language,
+      :next_airing => date,
+      :imdb_id => imdb_id,
+    }, results}
   end
 
-  defp capture_genres({:ok, %{
-    "data" => %{
-      "genres" => _genres,
-    }
-  }}, episodic) do
+  defp capture_genres({:ok, change, %{"data" => %{"id" => series_id, "genres" => genres}} = results}, provider_id) do
+    genre_changes = Enum.map(genres, fn v -> %{
+      :external_id => "#{Integer.to_string(series_id)}.#{Integer.to_string(v["id"])}",
+      :genre => v["name"],
+      :provider_id => provider_id,
+    } end)
 
-    {:ok, episodic}
+    {:ok, Map.put_new(change, :genres, genre_changes), results}
   end
 
-  defp capture_episodes({:ok, %{
-    "data" => %{
-      "episodes" => _episodes,
-    }
-  }}, episodic) do
+  defp capture_episodes({:ok, change, %{"data" => %{"id" => series_id, "episodes" => episodes}} = results}, provider_id) do
+    episode_changes = Enum.map(episodes, fn v ->
+      released_at = case Date.from_iso8601(v["aired"]) do
+        {:ok, released} ->
+          DateTime.new!(released, ~T[00:00:00])
+        _ ->
+          nil
+      end
 
-    {:ok, episodic}
+      %{
+        :provider_id => provider_id,
+        :external_id => "#{Integer.to_string(series_id)}.#{Integer.to_string(v["id"])}",
+        :title => v["name"],
+        :season => v["seasonNumber"],
+        :released_at => released_at,
+        :is_watched => false,
+        :watched_at => nil,
+        :overview => v["overview"],
+        :index => v["number"],
+      }
+    end )
+
+    {:ok, Map.put_new(change, :episodes, episode_changes), results}
+  end
+
+  defp store_full_episodic({:ok, change, _}, episodic) do
+    Episodic.full_changeset(episodic, change)
+    |> Repo.update()
   end
 end
