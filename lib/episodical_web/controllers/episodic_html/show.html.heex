@@ -1,55 +1,64 @@
 <.header>
-  Episodic <b>{@episodic.title}</b>
+  Episodic <b>{@episodic.episodic.title}</b>
 
   <:subtitle>
-    <.pill_box text={"Released: #{@episodic.release_year}"} />
-    <%= if @episodic.status != "" && @episodic.status != nil do %>
-      <.pill_box text={"Status: #{@episodic.status}"} />
+    <.pill_box text={"Released: #{@episodic.episodic.release_year}"} />
+    <%= if @episodic.episodic.status != "" && @episodic.episodic.status != nil do %>
+      <.pill_box text={"Status: #{@episodic.episodic.status}"} />
     <% end %>
-    <.pill_box text={"Auto Check: #{if @episodic.should_auto_check, do: "On", else: "Off"}"} />
-    <%= if @episodic.last_checked_at != nil do %>
-      <.pill_box text={"Last Checked: #{@episodic.last_checked_at}"} />
+    <.pill_box text={"Auto Check: #{if @episodic.episodic.should_auto_check, do: "On", else: "Off"}"} />
+    <%= if @episodic.episodic.last_checked_at != nil do %>
+      <.pill_box text={"Last Checked: #{@episodic.episodic.last_checked_at}"} />
     <% end %>
-    <%= if @episodic.provider != nil do %>
-      <.link href={~p"/providers/#{@episodic.provider}"}>
-        <.pill_box text={"Provider: #{@episodic.provider.name} - #{@episodic.external_id}"} />
+    <%= if @episodic.episodic.provider != nil do %>
+      <.link href={~p"/providers/#{@episodic.episodic.provider}"}>
+        <.pill_box text={"Provider: #{@episodic.episodic.provider.name} - #{@episodic.episodic.external_id}"} />
       </.link>
     <% else %>
       <.pill_box text={"Provider: Not configured!"} />
     <% end %>
-    <%= if @episodic.imdb_id != nil do %>
-      <.pill_box text={"iMDB ID: #{@episodic.imdb_id}"} />
+    <%= if @episodic.episodic.imdb_id != nil do %>
+      <.pill_box text={"iMDB ID: #{@episodic.episodic.imdb_id}"} />
     <% end %>
-    <%= if @episodic.next_airing != nil do %>
-      <.pill_box text={"Next Airing: #{@episodic.next_airing}"} />
+    <%= if @episodic.episodic.next_airing != nil do %>
+      <.pill_box text={"Next Airing: #{@episodic.episodic.next_airing}"} />
     <% end %>
   </:subtitle>
 
   <:actions>
-    <.link href={~p"/episodics/#{@episodic}/edit"}>
+    <.link href={~p"/episodics/#{@episodic.episodic}/edit"}>
       <.button>Edit episodic</.button>
     </.link>
-    <.link href={~p"/episodics/#{@episodic}/refresh"}>
+    <.link href={~p"/episodics/#{@episodic.episodic}/refresh"}>
       <.button>Refresh content</.button>
     </.link>
   </:actions>
 </.header>
 
-<div class="font-normal mt-4 text-gray-600 text-sm content flex">
-  <%= if @episodic.image != nil do %>
-    <img src={@episodic.image} class="w-48 h-52 inline-block flex-wrap" />
+<div class="font-normal mt-4 text-gray-600 text-sm content flex mb-3">
+  <%= if @episodic.episodic.image != nil do %>
+    <img src={@episodic.episodic.image} class="w-48 h-52 inline-block flex-wrap" />
   <% end %>
 
   <div class="flex-wrap pl-2 ml-4 border-l-2 border-gray-300">
-    {@episodic.overview}
+    {@episodic.episodic.overview}
   </div>
 </div>
 
-<div :for={episode <- @episodic.episodes}>
-  {episode.title}
-</div>
+<div :for={{season, episodes} <- @episodic.seasons} class="text-zinc-800 pb-2">
+  <.header>
+    Season {season}
+  </.header>
 
-<!--.seasons episodes={}>
-</.seasons-->
+  <.table rows={episodes} id={"season-#{season}"}>
+    <:col :let={episode} label="Number"><b>{episode.index}</b></:col>
+    <:col :let={episode} label="Title">{episode.title}</:col>
+    <:col :let={episode} label="Air Date">{episode.released_at}</:col>
+    <:col :let={episode} label="Watched?">{episode.is_watched}</:col>
+    <:action :let={episode}>
+      <.link navigate={~p"/episodics/#{@episodic.episodic}"}>Watched</.link>
+    </:action>
+  </.table>
+</div>
 
 <.back navigate={~p"/episodics"}>Back to episodics</.back>
