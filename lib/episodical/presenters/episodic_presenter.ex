@@ -5,8 +5,18 @@ defmodule Episodical.Presenters.Episodic do
   defstruct [:seasons, :episodic, :genres]
 
   def present(%Episodic{} = input) do
-    input
+    input = input
       |> populate_seasons(input)
+
+    Map.replace(input, :seasons, sort_seasons(input.seasons))
+  end
+
+  defp sort_seasons(seasons) do
+    seasons
+      |> Enum.sort(&(&1 >= &2))
+      |> Enum.map(fn {k, v} ->
+          {k, Enum.sort(v, &(&1.index >= &2.index))}
+        end)
   end
 
   defp populate_seasons(%Episodic{} = episodic, %Episodic{episodic: %{episodes: []}}), do: episodic

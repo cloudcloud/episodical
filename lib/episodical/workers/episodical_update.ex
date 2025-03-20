@@ -83,11 +83,16 @@ defmodule Episodical.Workers.EpisodicalUpdate do
 
   defp capture_episodes({:ok, change, %{"data" => %{"id" => series_id, "episodes" => episodes}} = results}, provider_id) do
     episode_changes = Enum.map(episodes, fn v ->
-      released_at = case Date.from_iso8601(v["aired"]) do
-        {:ok, released} ->
-          DateTime.new!(released, ~T[00:00:00])
-        _ ->
-          nil
+
+      released_at = try do
+        case Date.from_iso8601(v["aired"]) do
+          {:ok, released} ->
+            DateTime.new!(released, ~T[00:00:00])
+          _ ->
+            nil
+        end
+      rescue
+        FunctionClauseError -> nil
       end
 
       %{
