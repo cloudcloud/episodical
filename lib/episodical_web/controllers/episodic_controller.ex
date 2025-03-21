@@ -9,7 +9,13 @@ defmodule EpisodicalWeb.EpisodicController do
 
   def index(conn, params) do
     {:ok, {episodics, meta}} = Model.list_episodics(params)
-    render(conn, :index, meta: meta, episodics: episodics)
+
+    eps = Enum.map(episodics, fn x ->
+      presenter = %Episodical.Presenters.Episodic{episodic: x}
+      Episodical.Presenters.Episodic.basic(presenter)
+    end)
+
+    render(conn, :index, meta: meta, episodics: eps)
   end
 
   def new(conn, _params) do

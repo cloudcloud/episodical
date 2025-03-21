@@ -20,12 +20,15 @@ defmodule Episodical.Model do
   ## Examples
 
       iex> list_episodics(params)
-      [%Episodic{}, ...]
+      {:ok, {[%Episodic{}, ...], %{}}
 
   """
+  @spec list_episodics(map) :: {:ok, {[Pet.t()], Flop.Meta.t()}} | {:error, Flop.Meta.t()}
   def list_episodics(params) do
-    Episodic
+    {:ok, {episodes, meta}} = Episodic
       |> Flop.validate_and_run(params, for: Episodic, replace_invalid_params: true)
+
+    {:ok, {Repo.preload(episodes, [:episodes, :genres]), meta}}
   end
 
   @doc """

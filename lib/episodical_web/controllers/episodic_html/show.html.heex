@@ -47,16 +47,20 @@
 
 <div :for={{season, episodes} <- @episodic.seasons} class="text-zinc-800 pb-2 mt-2">
   <.header class="pb-0 mt-4 gap-1.5">
-    Season {season}
+    <%= if season == 0 do %>
+      Specials
+    <% else %>
+      Season {season}
+    <% end %>
   </.header>
 
   <.table rows={episodes} id={"season-#{season}"}>
     <:col :let={episode} label="Number"><b>{episode.index}</b></:col>
     <:col :let={episode} label="Title">{episode.title}</:col>
-    <:col :let={episode} label="Air Date">{episode.released_at}</:col>
+    <:col :let={episode} label="Air Date">{just_date(episode.released_at)}</:col>
     <:col :let={episode} label="Watched?">{episode.is_watched}</:col>
     <:action :let={episode}>
-      <.link navigate={~p"/episodics/#{@episodic.episodic}"}>Watched</.link>
+      <.link navigate={~p"/episodics/#{@episodic}/watch/#{episode.id}"}>Watched</.link>
     </:action>
   </.table>
 </div>

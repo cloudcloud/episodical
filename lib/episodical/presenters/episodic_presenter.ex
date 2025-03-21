@@ -2,13 +2,28 @@ defmodule Episodical.Presenters.Episodic do
   alias __MODULE__
 
   @enforce_keys [:episodic]
-  defstruct [:seasons, :episodic, :genres]
+  defstruct [:seasons, :episodic, :genres, :episode_metadata, :id]
+
+  def basic(%Episodic{} = input) do
+    input
+      |> populate_episode_metadata
+  end
 
   def present(%Episodic{} = input) do
     input = input
       |> populate_seasons(input)
 
-    Map.replace(input, :seasons, sort_seasons(input.seasons))
+    input = input
+      |> Map.replace(:seasons, sort_seasons(input.seasons))
+      |> Map.replace(:id, input.episodic.id)
+  end
+
+  defp populate_episode_metadata(%Episodic{episodic: %Episodical.Model.Episodic{id: id, episodes: episodes}} = input) do
+    input
+      |> Map.replace(:episode_metadata, %{
+          total_episode_count: length(episodes),
+        })
+      |> Map.replace(:id, id)
   end
 
   defp sort_seasons(seasons) do
