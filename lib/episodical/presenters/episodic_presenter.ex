@@ -1,19 +1,29 @@
 defmodule Episodical.Presenters.Episodic do
   alias __MODULE__
 
+  @type t :: %__MODULE__{
+            seasons: map,
+            episodic: Episodical.Model.Episodic.t(),
+            genres: list,
+            episode_metadata: map,
+            id: String.t()
+          }
+
   @enforce_keys [:episodic]
   defstruct [:seasons, :episodic, :genres, :episode_metadata, :id]
 
+  @spec basic(Episodic.t()) :: Episodic.t()
   def basic(%Episodic{} = input) do
     input
       |> populate_episode_metadata
   end
 
+  @spec present(Episodic.t()) :: Episodic.t()
   def present(%Episodic{} = input) do
     input = input
       |> populate_seasons(input)
 
-    input = input
+    input
       |> Map.replace(:seasons, sort_seasons(input.seasons))
       |> Map.replace(:id, input.episodic.id)
   end

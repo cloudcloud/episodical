@@ -7,6 +7,10 @@ defmodule Episodical.Workers.EpisodicalUpdate do
   alias Episodical.External.Provider.TheTVDB
   alias Episodical.Model.Episodic
 
+  @doc """
+  The EpisodicalUpdate worker will perform changes for a full Episodic.
+  """
+  @spec perform(map) :: Eposodic.t()
   def perform(input) do
     episodic =
       Model.get_episodic!(input["id"])

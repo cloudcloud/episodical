@@ -8,16 +8,13 @@ defmodule Episodical.External do
 
   alias Episodical.External.Genre
   alias Episodical.External.EpisodicGenre
+  alias Episodical.External.Token
+  alias Episodical.External.Provider
 
   @doc """
   Returns the list of genres.
-
-  ## Examples
-
-      iex> list_genres()
-      [%Genre{}, ...]
-
   """
+  @spec list_genres() :: [Genre.t()]
   def list_genres do
     Repo.all(Genre)
   end
@@ -26,18 +23,14 @@ defmodule Episodical.External do
   Gets a single genre.
 
   Raises `Ecto.NoResultsError` if the Genre does not exist.
-
-  ## Examples
-
-      iex> get_genre!(123)
-      %Genre{}
-
-      iex> get_genre!(456)
-      ** (Ecto.NoResultsError)
-
   """
+  @spec get_genre!(String.t()) :: Genre.t()
   def get_genre!(id), do: Repo.get!(Genre, id)
 
+  @doc """
+  Upsert a Genre, based on the external_id for it.
+  """
+  @spec get_or_insert_genre(map) :: Genre.t()
   def get_or_insert_genre(%{"name" => name, "external_id" => external_id, "provider_id" => provider_id}) do
     Repo.insert!(
       %Genre{genre: name, external_id: Integer.to_string(external_id), provider_id: provider_id},
@@ -46,6 +39,7 @@ defmodule Episodical.External do
     )
   end
 
+  @spec associate_genre_episodic(map) :: {:ok, EpisodicGenre.t()} | {:error, Ecto.Changeset.t()}
   def associate_genre_episodic(attrs \\ %{}) do
     %EpisodicGenre{}
     |> EpisodicGenre.changeset(attrs)
@@ -54,16 +48,8 @@ defmodule Episodical.External do
 
   @doc """
   Creates a genre.
-
-  ## Examples
-
-      iex> create_genre(%{field: value})
-      {:ok, %Genre{}}
-
-      iex> create_genre(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
   """
+  @spec create_genre(map) :: {:ok, Genre.t()} | {:error, Ecto.Changeset.t()}
   def create_genre(attrs \\ %{}) do
     %Genre{}
     |> Genre.changeset(attrs)
@@ -72,16 +58,8 @@ defmodule Episodical.External do
 
   @doc """
   Updates a genre.
-
-  ## Examples
-
-      iex> update_genre(genre, %{field: new_value})
-      {:ok, %Genre{}}
-
-      iex> update_genre(genre, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
   """
+  @spec update_genre(Genre.t(), map) :: {:ok, Genre.t()} | {:error, Ecto.Changeset.t()}
   def update_genre(%Genre{} = genre, attrs) do
     genre
     |> Genre.changeset(attrs)
@@ -90,44 +68,24 @@ defmodule Episodical.External do
 
   @doc """
   Deletes a genre.
-
-  ## Examples
-
-      iex> delete_genre(genre)
-      {:ok, %Genre{}}
-
-      iex> delete_genre(genre)
-      {:error, %Ecto.Changeset{}}
-
   """
+  @spec delete_genre(Genre.t()) :: {:ok, Genre.t()} | {:error, Ecto.Changeset.t()}
   def delete_genre(%Genre{} = genre) do
     Repo.delete(genre)
   end
 
   @doc """
   Returns an `%Ecto.Changeset{}` for tracking genre changes.
-
-  ## Examples
-
-      iex> change_genre(genre)
-      %Ecto.Changeset{data: %Genre{}}
-
   """
+  @spec change_genre(Genre.t(), map) :: Ecto.Changeset.t()
   def change_genre(%Genre{} = genre, attrs \\ %{}) do
     Genre.changeset(genre, attrs)
   end
 
-  alias Episodical.External.Token
-
   @doc """
   Returns the list of tokens.
-
-  ## Examples
-
-      iex> list_tokens()
-      [%Token{}, ...]
-
   """
+  @spec list_tokens() :: [Token.t()]
   def list_tokens do
     Repo.all(Token)
   end
@@ -136,30 +94,14 @@ defmodule Episodical.External do
   Gets a single token.
 
   Raises `Ecto.NoResultsError` if the Token does not exist.
-
-  ## Examples
-
-      iex> get_token!(123)
-      %Token{}
-
-      iex> get_token!(456)
-      ** (Ecto.NoResultsError)
-
   """
+  @spec get_token!(String.t()) :: Token.t()
   def get_token!(id), do: Repo.get!(Token, id)
 
   @doc """
   Creates a token.
-
-  ## Examples
-
-      iex> create_token(%{field: value})
-      {:ok, %Token{}}
-
-      iex> create_token(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
   """
+  @spec create_token(map) :: {:ok, Token.t()} | {:error, Ecto.Changeset.t()}
   def create_token(attrs \\ %{}) do
     %Token{}
     |> Token.changeset(attrs)
@@ -168,16 +110,8 @@ defmodule Episodical.External do
 
   @doc """
   Updates a token.
-
-  ## Examples
-
-      iex> update_token(token, %{field: new_value})
-      {:ok, %Token{}}
-
-      iex> update_token(token, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
   """
+  @spec update_token(Token.t(), map) :: {:ok, Token.t()} | {:error, Ecto.Changeset.t()}
   def update_token(%Token{} = token, attrs) do
     token
     |> Token.changeset(attrs)
@@ -186,44 +120,24 @@ defmodule Episodical.External do
 
   @doc """
   Deletes a token.
-
-  ## Examples
-
-      iex> delete_token(token)
-      {:ok, %Token{}}
-
-      iex> delete_token(token)
-      {:error, %Ecto.Changeset{}}
-
   """
+  @spec delete_token(Token.t()) :: {:ok, Token.t()} | {:error, Ecto.Changeset.t()}
   def delete_token(%Token{} = token) do
     Repo.delete(token)
   end
 
   @doc """
   Returns an `%Ecto.Changeset{}` for tracking token changes.
-
-  ## Examples
-
-      iex> change_token(token)
-      %Ecto.Changeset{data: %Token{}}
-
   """
+  @spec change_token(Token.t(), map) :: Ecto.Changeset.t()
   def change_token(%Token{} = token, attrs \\ %{}) do
     Token.changeset(token, attrs)
   end
 
-  alias Episodical.External.Provider
-
   @doc """
   Returns the list of providers.
-
-  ## Examples
-
-      iex> list_providers()
-      [%Provider{}, ...]
-
   """
+  @spec list_providers() :: [Provider.t()]
   def list_providers do
     Repo.all(Provider)
   end
@@ -231,6 +145,7 @@ defmodule Episodical.External do
   @doc """
   List available providers for the Episodical type.
   """
+  @spec list_providers_by_type(atom) :: [Provider.t()]
   def list_providers_by_type(type) do
     Repo.all(Provider, [{:model_type, String.to_atom(type)}])
   end
@@ -239,30 +154,14 @@ defmodule Episodical.External do
   Gets a single provider.
 
   Raises `Ecto.NoResultsError` if the Provider does not exist.
-
-  ## Examples
-
-      iex> get_provider!(123)
-      %Provider{}
-
-      iex> get_provider!(456)
-      ** (Ecto.NoResultsError)
-
   """
+  @spec get_provider!(String.t()) :: Provider.t()
   def get_provider!(id), do: Repo.get!(Provider, id)
 
   @doc """
   Creates a provider.
-
-  ## Examples
-
-      iex> create_provider(%{field: value})
-      {:ok, %Provider{}}
-
-      iex> create_provider(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
   """
+  @spec create_provder(map) :: {:ok, Provider.t()} | {:error, Ecto.Changeset.t()}
   def create_provider(attrs \\ %{}) do
     %Provider{}
     |> Provider.changeset(attrs)
@@ -271,16 +170,8 @@ defmodule Episodical.External do
 
   @doc """
   Updates a provider.
-
-  ## Examples
-
-      iex> update_provider(provider, %{field: new_value})
-      {:ok, %Provider{}}
-
-      iex> update_provider(provider, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
   """
+  @spec update_provider(Provider.t(), map) :: {:ok, Provider.t()} | {:error, Ecto.Changeset.t()}
   def update_provider(%Provider{} = provider, attrs) do
     provider
     |> Provider.changeset(attrs)
@@ -289,29 +180,16 @@ defmodule Episodical.External do
 
   @doc """
   Deletes a provider.
-
-  ## Examples
-
-      iex> delete_provider(provider)
-      {:ok, %Provider{}}
-
-      iex> delete_provider(provider)
-      {:error, %Ecto.Changeset{}}
-
   """
+  @spec delete_provider(Provider.t()) :: {:ok, Provider.t()} | {:error, Ecto.Changeset.t()}
   def delete_provider(%Provider{} = provider) do
     Repo.delete(provider)
   end
 
   @doc """
   Returns an `%Ecto.Changeset{}` for tracking provider changes.
-
-  ## Examples
-
-      iex> change_provider(provider)
-      %Ecto.Changeset{data: %Provider{}}
-
   """
+  @spec change_provider(Provider.t(), map) :: Ecto.Changeset.t()
   def change_provider(%Provider{} = provider, attrs \\ %{}) do
     Provider.changeset(provider, attrs)
   end

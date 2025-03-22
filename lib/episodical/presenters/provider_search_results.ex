@@ -5,6 +5,11 @@ defmodule Episodical.Presenters.ProviderSearchResults do
   @enforce_keys [:service_type, :results]
   defstruct [:service_type, :results]
 
+  @doc """
+  Present the results from TheTVDB API call in a way that's easier to consume and
+  use for selection via the UI.
+  """
+  @spec from_thetvdb(ProviderSearchResults.t()) {:ok, ProviderSearchResults.t()} | {:error, String.t()}
   def from_thetvdb(%ProviderSearchResults{} = input) do
     if input.service_type != TheTVDB.service_type? do
       {:error, "Invalid results for presenting"}

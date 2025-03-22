@@ -7,6 +7,26 @@ defmodule Episodical.Model.Episodic do
   alias Episodical.External.Genre
   alias Episodical.Model.Episodic.Episode
 
+  @type t :: %__MODULE__{
+            id: binary,
+            status: String.t(),
+            title: String.t(),
+            release_year: Integer.t(),
+            last_checked_at: Time.t(),
+            should_auto_check: Boolean.t(),
+            external_id: String.t(),
+            image: String.t(),
+            overview: String.t(),
+            original_language: String.t(),
+            next_airing: Time.t(),
+            imdb_id: String.t(),
+            provider: Provider.t(),
+            episodes: [Episode.t()],
+            genres: [Genre.t()],
+            inserted_at: Time.t(),
+            updated_at: Time.t()
+          }
+
   @derive {
     Flop.Schema,
     filterable: [:title],

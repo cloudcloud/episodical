@@ -4,19 +4,15 @@ defmodule Episodical.Local do
   """
 
   import Ecto.Query, warn: false
-  alias Episodical.Repo
 
+  alias Episodical.Repo
   alias Episodical.Local.Path
+  alias Episodical.Local.File
 
   @doc """
   Returns the list of paths.
-
-  ## Examples
-
-      iex> list_paths()
-      [%Path{}, ...]
-
   """
+  @spec list_paths() :: [Path.t()]
   def list_paths do
     Repo.all(Path)
   end
@@ -25,30 +21,14 @@ defmodule Episodical.Local do
   Gets a single path.
 
   Raises `Ecto.NoResultsError` if the Path does not exist.
-
-  ## Examples
-
-      iex> get_path!(123)
-      %Path{}
-
-      iex> get_path!(456)
-      ** (Ecto.NoResultsError)
-
   """
+  @spec get_path!(String.t()) :: Path.t()
   def get_path!(id), do: Repo.get!(Path, id)
 
   @doc """
   Creates a path.
-
-  ## Examples
-
-      iex> create_path(%{field: value})
-      {:ok, %Path{}}
-
-      iex> create_path(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
   """
+  @spec create_path(map) :: {:ok, Path.t()} | {:error, Ecto.Changeset.t()}
   def create_path(attrs \\ %{}) do
     %Path{}
     |> Path.changeset(attrs)
@@ -57,16 +37,8 @@ defmodule Episodical.Local do
 
   @doc """
   Updates a path.
-
-  ## Examples
-
-      iex> update_path(path, %{field: new_value})
-      {:ok, %Path{}}
-
-      iex> update_path(path, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
   """
+  @spec update_path(Path.t(), map) :: {:ok, Path.t()} | {:error, Ecto.Changeset.t()}
   def update_path(%Path{} = path, attrs) do
     path
     |> Path.changeset(attrs)
@@ -75,44 +47,24 @@ defmodule Episodical.Local do
 
   @doc """
   Deletes a path.
-
-  ## Examples
-
-      iex> delete_path(path)
-      {:ok, %Path{}}
-
-      iex> delete_path(path)
-      {:error, %Ecto.Changeset{}}
-
   """
+  @spec delete_path(Path.t()) :: {:ok, Path.t()} | {:error, Ecto.Changeset.t()}
   def delete_path(%Path{} = path) do
     Repo.delete(path)
   end
 
   @doc """
   Returns an `%Ecto.Changeset{}` for tracking path changes.
-
-  ## Examples
-
-      iex> change_path(path)
-      %Ecto.Changeset{data: %Path{}}
-
   """
+  @spec change_path(Path.t(), map) :: Ecto.Changeset.t()
   def change_path(%Path{} = path, attrs \\ %{}) do
     Path.changeset(path, attrs)
   end
 
-  alias Episodical.Local.File
-
   @doc """
   Returns the list of files.
-
-  ## Examples
-
-      iex> list_files()
-      [%File{}, ...]
-
   """
+  @spec list_files() :: [File.t()]
   def list_files do
     Repo.all(File)
   end
@@ -121,30 +73,14 @@ defmodule Episodical.Local do
   Gets a single file.
 
   Raises `Ecto.NoResultsError` if the File does not exist.
-
-  ## Examples
-
-      iex> get_file!(123)
-      %File{}
-
-      iex> get_file!(456)
-      ** (Ecto.NoResultsError)
-
   """
+  @spec get_file!(String.t()) :: File.t()
   def get_file!(id), do: Repo.get!(File, id)
 
   @doc """
   Creates a file.
-
-  ## Examples
-
-      iex> create_file(%{field: value})
-      {:ok, %File{}}
-
-      iex> create_file(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
   """
+  @spec create_file(map) :: {:ok, File.t()} | {:error, Ecto.Changeset.t()}
   def create_file(attrs \\ %{}) do
     %File{}
     |> File.changeset(attrs)
@@ -153,16 +89,8 @@ defmodule Episodical.Local do
 
   @doc """
   Updates a file.
-
-  ## Examples
-
-      iex> update_file(file, %{field: new_value})
-      {:ok, %File{}}
-
-      iex> update_file(file, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
   """
+  @spec update_file(File.t(), map) :: {:ok, File.t()} | {:error, Ecto.Changeset.t()}
   def update_file(%File{} = file, attrs) do
     file
     |> File.changeset(attrs)
@@ -171,29 +99,16 @@ defmodule Episodical.Local do
 
   @doc """
   Deletes a file.
-
-  ## Examples
-
-      iex> delete_file(file)
-      {:ok, %File{}}
-
-      iex> delete_file(file)
-      {:error, %Ecto.Changeset{}}
-
   """
+  @spec delete_file(File.t()) :: {:ok, File.t()} | {:error, Ecto.Changeset.t()}
   def delete_file(%File{} = file) do
     Repo.delete(file)
   end
 
   @doc """
   Returns an `%Ecto.Changeset{}` for tracking file changes.
-
-  ## Examples
-
-      iex> change_file(file)
-      %Ecto.Changeset{data: %File{}}
-
   """
+  @spec change_file(File.t(), map) :: Ecto.Changeset.t()
   def change_file(%File{} = file, attrs \\ %{}) do
     File.changeset(file, attrs)
   end
