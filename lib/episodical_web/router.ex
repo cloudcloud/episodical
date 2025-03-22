@@ -31,6 +31,8 @@ defmodule EpisodicalWeb.Router do
     resources "/providers", ProviderController
 
     resources "/config", ConfigController, only: [:index, :edit, :update]
+
+    resources "/paths", PathsController
   end
 
   # Other scopes may use custom stacks.

@@ -9,6 +9,9 @@ defmodule Episodical.Local.Path do
     field :last_checked_at, :utc_datetime_usec
     field :should_auto_check, :boolean, default: false
 
+    has_many :files, Episodical.Local.File
+    has_many :episodic, Episodical.Model.Episodic
+
     timestamps(type: :utc_datetime)
   end
 
@@ -16,6 +19,6 @@ defmodule Episodical.Local.Path do
   def changeset(path, attrs) do
     path
     |> cast(attrs, [:name, :last_checked_at, :should_auto_check])
-    |> validate_required([:name, :last_checked_at, :should_auto_check])
+    |> validate_required([:name, :should_auto_check])
   end
 end

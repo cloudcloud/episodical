@@ -14,6 +14,7 @@ defmodule Episodical.Model do
   alias Episodical.Model.Artist.Album
   alias Episodical.Model.Artist.Song
   alias Episodical.Model.Config
+  alias Episodical.Local
 
   @doc """
   Returns the list of episodics.
@@ -39,9 +40,14 @@ defmodule Episodical.Model do
   """
   @spec create_episodic(map) :: {:ok, Episodic.t()} | {:error, Ecto.Changeset.t()}
   def create_episodic(attrs \\ %{}) do
+    path = Local.get_path!(attrs["path"])
+      |> Repo.preload(:episodic)
+
     %Episodic{}
-    |> Episodic.changeset(attrs)
-    |> Repo.insert()
+      |> Repo.preload(:path)
+      |> Episodic.changeset(attrs)
+      |> Episodic.assoc_path(path)
+      |> Repo.insert()
   end
 
   @doc """
@@ -49,9 +55,22 @@ defmodule Episodical.Model do
   """
   @spec update_episodic(Episodic.t(), map) :: {:ok, Episodic.t()} | {:error, Ecto.Changeset.t()}
   def update_episodic(%Episodic{} = episodic, attrs) do
-    episodic
-    |> Episodic.changeset(attrs)
-    |> Repo.update()
+    # Load the Path for associating
+    case Map.pop(attrs, "path", "") do
+      {"", _} ->
+        episodic
+          |> Episodic.changeset(attrs)
+          |> Repo.update()
+
+      {path_id, _} ->
+        path = Local.get_path!(path_id)
+          |> Repo.preload(:episodic)
+
+        episodic
+          |> Repo.preload(:path)
+          |> Episodic.assoc_path(path)
+          |> Repo.update()
+    end
   end
 
   @doc """

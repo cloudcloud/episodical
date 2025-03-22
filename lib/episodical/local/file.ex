@@ -8,6 +8,10 @@ defmodule Episodical.Local.File do
     field :name, :string
     field :last_checked_at, :utc_datetime_usec
 
+    belongs_to :path, Episodical.Local.Path
+    belongs_to :episodic, Episodical.Model.Episodic
+    belongs_to :episode, Episodical.Model.Episodic.Episode
+
     timestamps(type: :utc_datetime)
   end
 

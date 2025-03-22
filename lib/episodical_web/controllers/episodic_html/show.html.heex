@@ -25,6 +25,11 @@
     <%= if @episodic.episodic.next_airing != nil do %>
       <.pill_box text={"Next Airing: #{@episodic.episodic.next_airing}"} />
     <% end %>
+    <%= if @episodic.episodic.path != nil do %>
+      <.link href={~p"/paths/#{@episodic.episodic.path}"}>
+        <.pill_box text={"Path: #{@episodic.episodic.path.name}"} colour="green" />
+      </.link>
+    <% end %>
   </:subtitle>
 
   <:actions>

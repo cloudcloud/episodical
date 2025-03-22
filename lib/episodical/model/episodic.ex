@@ -6,6 +6,7 @@ defmodule Episodical.Model.Episodic do
   alias Episodical.Repo
   alias Episodical.External.Genre
   alias Episodical.Model.Episodic.Episode
+  alias Episodical.Local.Path
 
   @type t :: %__MODULE__{
             id: binary,
@@ -54,6 +55,8 @@ defmodule Episodical.Model.Episodic do
     many_to_many :genres, Episodical.External.Genre,
       join_through: Episodical.External.EpisodicGenre,
       on_replace: :delete
+    belongs_to :path, Episodical.Local.Path
+    has_many :files, Episodical.Local.File
 
     timestamps(type: :utc_datetime_usec)
   end
@@ -76,6 +79,12 @@ defmodule Episodical.Model.Episodic do
       :imdb_id,
     ])
     |> validate_required([:title, :release_year, :should_auto_check])
+  end
+
+  def assoc_path(episodic, %Path{} = path) do
+    episodic
+    |> changeset(%{})
+    |> put_assoc(:path, path)
   end
 
   def full_changeset(episodic, attrs) do
