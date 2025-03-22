@@ -2,6 +2,8 @@ defmodule Episodical.Local.Path do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias Episodical.Model
+
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "paths" do
@@ -20,5 +22,18 @@ defmodule Episodical.Local.Path do
     path
     |> cast(attrs, [:name, :last_checked_at, :should_auto_check])
     |> validate_required([:name, :should_auto_check])
+  end
+
+  def use_path_layout(%Model.Config{} = path_config, %Model.Episodic{} = episodic) do
+    path_config.value
+      |> String.replace(":upper_word_title", episodic.title)
+      |> String.replace(":lower_word_title", String.downcase(episodic.title))
+      |> String.replace(":upper_snake_word_title", String.replace(episodic.title, " ", "_"))
+      |> String.replace(":upper_camel_word_title", String.replace(episodic.title, " ", "-"))
+      |> String.replace(":lower_snake_word_title", String.replace(String.downcase(episodic.title), " ", "_"))
+      |> String.replace(":lower_camel_word_title", String.replace(String.downcase(episodic.title), " ", "-"))
+      |> String.replace(":upper_word_season", "Season \d+")
+      |> String.replace(":numerical_season", "\d+")
+      |> String.replace(":numerical_prefix_season", "\d+")
   end
 end

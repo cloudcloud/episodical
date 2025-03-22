@@ -18,6 +18,7 @@ defmodule Episodical.Model.Episodic.Episode do
 
     belongs_to :provider, Episodical.External.Provider
     belongs_to :episodic, Episodic
+    has_one :episode, Episodic.Episode
 
     timestamps(type: :utc_datetime_usec)
   end

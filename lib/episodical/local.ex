@@ -6,110 +6,128 @@ defmodule Episodical.Local do
   import Ecto.Query, warn: false
 
   alias Episodical.Repo
-  alias Episodical.Local.Path
-  alias Episodical.Local.File
+  alias Episodical.Local
+  alias Episodical.Model
 
   @doc """
   Returns the list of paths.
   """
-  @spec list_paths() :: [Path.t()]
+  @spec list_paths() :: [Local.Path.t()]
   def list_paths do
-    Repo.all(Path)
+    Repo.all(Local.Path)
   end
 
   @doc """
   Gets a single path.
 
-  Raises `Ecto.NoResultsError` if the Path does not exist.
+  Raises `Ecto.NoResultsError` if the Local.Path does not exist.
   """
-  @spec get_path!(String.t()) :: Path.t()
-  def get_path!(id), do: Repo.get!(Path, id)
+  @spec get_path!(String.t()) :: Local.Path.t()
+  def get_path!(id), do: Repo.get!(Local.Path, id)
 
   @doc """
   Creates a path.
   """
-  @spec create_path(map) :: {:ok, Path.t()} | {:error, Ecto.Changeset.t()}
+  @spec create_path(map) :: {:ok, Local.Path.t()} | {:error, Ecto.Changeset.t()}
   def create_path(attrs \\ %{}) do
-    %Path{}
-    |> Path.changeset(attrs)
+    %Local.Path{}
+    |> Local.Path.changeset(attrs)
     |> Repo.insert()
   end
 
   @doc """
   Updates a path.
   """
-  @spec update_path(Path.t(), map) :: {:ok, Path.t()} | {:error, Ecto.Changeset.t()}
-  def update_path(%Path{} = path, attrs) do
+  @spec update_path(Local.Path.t(), map) :: {:ok, Local.Path.t()} | {:error, Ecto.Changeset.t()}
+  def update_path(%Local.Path{} = path, attrs) do
     path
-    |> Path.changeset(attrs)
+    |> Local.Path.changeset(attrs)
     |> Repo.update()
   end
 
   @doc """
   Deletes a path.
   """
-  @spec delete_path(Path.t()) :: {:ok, Path.t()} | {:error, Ecto.Changeset.t()}
-  def delete_path(%Path{} = path) do
+  @spec delete_path(Local.Path.t()) :: {:ok, Local.Path.t()} | {:error, Ecto.Changeset.t()}
+  def delete_path(%Local.Path{} = path) do
     Repo.delete(path)
   end
 
   @doc """
   Returns an `%Ecto.Changeset{}` for tracking path changes.
   """
-  @spec change_path(Path.t(), map) :: Ecto.Changeset.t()
-  def change_path(%Path{} = path, attrs \\ %{}) do
-    Path.changeset(path, attrs)
+  @spec change_path(Local.Path.t(), map) :: Ecto.Changeset.t()
+  def change_path(%Local.Path{} = path, attrs \\ %{}) do
+    Local.Path.changeset(path, attrs)
   end
 
   @doc """
   Returns the list of files.
   """
-  @spec list_files() :: [File.t()]
+  @spec list_files() :: [Local.File.t()]
   def list_files do
-    Repo.all(File)
+    Repo.all(Local.File)
   end
 
   @doc """
   Gets a single file.
 
-  Raises `Ecto.NoResultsError` if the File does not exist.
+  Raises `Ecto.NoResultsError` if the Local.File does not exist.
   """
-  @spec get_file!(String.t()) :: File.t()
-  def get_file!(id), do: Repo.get!(File, id)
+  @spec get_file!(String.t()) :: Local.File.t()
+  def get_file!(id), do: Repo.get!(Local.File, id)
 
   @doc """
   Creates a file.
   """
-  @spec create_file(map) :: {:ok, File.t()} | {:error, Ecto.Changeset.t()}
+  @spec create_file(map) :: {:ok, Local.File.t()} | {:error, Ecto.Changeset.t()}
   def create_file(attrs \\ %{}) do
-    %File{}
-    |> File.changeset(attrs)
+    %Local.File{}
+    |> Local.File.changeset(attrs)
     |> Repo.insert()
   end
 
   @doc """
   Updates a file.
   """
-  @spec update_file(File.t(), map) :: {:ok, File.t()} | {:error, Ecto.Changeset.t()}
-  def update_file(%File{} = file, attrs) do
+  @spec update_file(Local.File.t(), map) :: {:ok, Local.File.t()} | {:error, Ecto.Changeset.t()}
+  def update_file(%Local.File{} = file, attrs) do
     file
-    |> File.changeset(attrs)
+    |> Local.File.changeset(attrs)
     |> Repo.update()
   end
 
   @doc """
   Deletes a file.
   """
-  @spec delete_file(File.t()) :: {:ok, File.t()} | {:error, Ecto.Changeset.t()}
-  def delete_file(%File{} = file) do
+  @spec delete_file(Local.File.t()) :: {:ok, Local.File.t()} | {:error, Ecto.Changeset.t()}
+  def delete_file(%Local.File{} = file) do
     Repo.delete(file)
   end
 
   @doc """
   Returns an `%Ecto.Changeset{}` for tracking file changes.
   """
-  @spec change_file(File.t(), map) :: Ecto.Changeset.t()
-  def change_file(%File{} = file, attrs \\ %{}) do
-    File.changeset(file, attrs)
+  @spec change_file(Local.File.t(), map) :: Ecto.Changeset.t()
+  def change_file(%Local.File{} = file, attrs \\ %{}) do
+    Local.File.changeset(file, attrs)
+  end
+
+  @doc """
+  Taken a path, find files that match a particular pattern.
+  """
+  @spec discover_files(Local.Path.t(), Model.Episodic.t()) :: list()
+  def discover_files(%Local.Path{} = path, %Model.Episodic{} = episodic) do
+    layout = Model.get_config_by_name!("episodic_path_layout")
+      |> Local.Path.use_path_layout(episodic)
+
+    with true <- File.dir?(path.name) do
+      #
+
+    else
+      false ->
+        {:error, "Path is not a valid location."}
+
+    end
   end
 end
