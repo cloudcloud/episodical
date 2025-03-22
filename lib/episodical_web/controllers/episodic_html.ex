@@ -8,6 +8,8 @@ defmodule EpisodicalWeb.EpisodicHTML do
   """
   attr :changeset, Ecto.Changeset, required: true
   attr :action, :string, required: true
+  attr :paths, :list, required: true
+  attr :episodic, :any, required: true
 
   def episodic_form(assigns)
 

@@ -98,7 +98,7 @@ defmodule EpisodicalWeb.EpisodicController do
   end
 
   defp list_paths do
-    paths = Local.list_paths
+    Local.list_paths
       |> Enum.map(fn x -> {x.name, x.id} end)
   end
 end
