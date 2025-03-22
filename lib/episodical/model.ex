@@ -1,6 +1,7 @@
 defmodule Episodical.Model do
   @moduledoc """
-  The Model context.
+  The Model context. This context wraps the base Models across Episodical, giving
+  nice ways of interacting with them from the outside.
   """
 
   import Ecto.Query, warn: false
@@ -16,12 +17,6 @@ defmodule Episodical.Model do
 
   @doc """
   Returns the list of episodics.
-
-  ## Examples
-
-      iex> list_episodics(params)
-      {:ok, {[%Episodic{}, ...], %{}}
-
   """
   @spec list_episodics(map) :: {:ok, {[Pet.t()], Flop.Meta.t()}} | {:error, Flop.Meta.t()}
   def list_episodics(params) do
@@ -35,30 +30,14 @@ defmodule Episodical.Model do
   Gets a single episodic.
 
   Raises `Ecto.NoResultsError` if the Episodic does not exist.
-
-  ## Examples
-
-      iex> get_episodic!(123)
-      %Episodic{}
-
-      iex> get_episodic!(456)
-      ** (Ecto.NoResultsError)
-
   """
+  @spec get_episodic!(String.t()) :: Episodic.t()
   def get_episodic!(id), do: Repo.get!(Episodic, id)
 
   @doc """
   Creates a episodic.
-
-  ## Examples
-
-      iex> create_episodic(%{field: value})
-      {:ok, %Episodic{}}
-
-      iex> create_episodic(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
   """
+  @spec create_episodic(map) :: {:ok, Episodic.t()} | {:error, Ecto.Changeset.t()}
   def create_episodic(attrs \\ %{}) do
     %Episodic{}
     |> Episodic.changeset(attrs)
@@ -67,16 +46,8 @@ defmodule Episodical.Model do
 
   @doc """
   Updates a episodic.
-
-  ## Examples
-
-      iex> update_episodic(episodic, %{field: new_value})
-      {:ok, %Episodic{}}
-
-      iex> update_episodic(episodic, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
   """
+  @spec update_episodic(Episodic.t(), map) :: {:ok, Episodic.t()} | {:error, Ecto.Changeset.t()}
   def update_episodic(%Episodic{} = episodic, attrs) do
     episodic
     |> Episodic.changeset(attrs)
@@ -85,43 +56,24 @@ defmodule Episodical.Model do
 
   @doc """
   Deletes a episodic.
-
-  ## Examples
-
-      iex> delete_episodic(episodic)
-      {:ok, %Episodic{}}
-
-      iex> delete_episodic(episodic)
-      {:error, %Ecto.Changeset{}}
-
   """
+  @spec delete_episodic(Episodic.t()) :: {:ok, Episodic.t()} | {:error, Ecto.Changeset.t()}
   def delete_episodic(%Episodic{} = episodic) do
     Repo.delete(episodic)
   end
 
   @doc """
   Returns an `%Ecto.Changeset{}` for tracking episodic changes.
-
-  ## Examples
-
-      iex> change_episodic(episodic)
-      %Ecto.Changeset{data: %Episodic{}}
-
   """
+  @spec change_episodic(Episodic.t(), map) :: Ecto.Changeset.t()
   def change_episodic(%Episodic{} = episodic, attrs \\ %{}) do
     Episodic.changeset(episodic, attrs)
   end
 
-
   @doc """
   Returns the list of artists.
-
-  ## Examples
-
-      iex> list_artists()
-      [%Artist{}, ...]
-
   """
+  @spec list_artists() :: [Artist.t()]
   def list_artists do
     Repo.all(Artist)
   end
@@ -130,30 +82,14 @@ defmodule Episodical.Model do
   Gets a single artist.
 
   Raises `Ecto.NoResultsError` if the Artist does not exist.
-
-  ## Examples
-
-      iex> get_artist!(123)
-      %Artist{}
-
-      iex> get_artist!(456)
-      ** (Ecto.NoResultsError)
-
   """
+  @spec get_artist!(String.t()) :: Artist.t()
   def get_artist!(id), do: Repo.get!(Artist, id)
 
   @doc """
   Creates a artist.
-
-  ## Examples
-
-      iex> create_artist(%{field: value})
-      {:ok, %Artist{}}
-
-      iex> create_artist(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
   """
+  @spec create_artist(map) :: {:ok, Artist.t()} | {:error, Ecto.Changeset.t()}
   def create_artist(attrs \\ %{}) do
     %Artist{}
     |> Artist.changeset(attrs)
@@ -162,16 +98,8 @@ defmodule Episodical.Model do
 
   @doc """
   Updates a artist.
-
-  ## Examples
-
-      iex> update_artist(artist, %{field: new_value})
-      {:ok, %Artist{}}
-
-      iex> update_artist(artist, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
   """
+  @spec update_artist(Artist.t(), map) :: {:ok, Artist.t()} | {:error, Ecto.Changeset.t()}
   def update_artist(%Artist{} = artist, attrs) do
     artist
     |> Artist.changeset(attrs)
@@ -180,29 +108,16 @@ defmodule Episodical.Model do
 
   @doc """
   Deletes a artist.
-
-  ## Examples
-
-      iex> delete_artist(artist)
-      {:ok, %Artist{}}
-
-      iex> delete_artist(artist)
-      {:error, %Ecto.Changeset{}}
-
   """
+  @spec delete_artist(Artist.t()) :: {:ok, Artist.t()} | {:error, Ecto.Changeset.t()}
   def delete_artist(%Artist{} = artist) do
     Repo.delete(artist)
   end
 
   @doc """
   Returns an `%Ecto.Changeset{}` for tracking artist changes.
-
-  ## Examples
-
-      iex> change_artist(artist)
-      %Ecto.Changeset{data: %Artist{}}
-
   """
+  @spec change_artist(Artist.t(), map) :: Ecto.Changeset.t()
   def change_artist(%Artist{} = artist, attrs \\ %{}) do
     Artist.changeset(artist, attrs)
   end
@@ -210,13 +125,8 @@ defmodule Episodical.Model do
 
   @doc """
   Returns the list of documents.
-
-  ## Examples
-
-      iex> list_documents()
-      [%Document{}, ...]
-
   """
+  @spec list_documents() :: [Document.t()]
   def list_documents do
     Repo.all(Document)
   end
@@ -225,30 +135,14 @@ defmodule Episodical.Model do
   Gets a single document.
 
   Raises `Ecto.NoResultsError` if the Document does not exist.
-
-  ## Examples
-
-      iex> get_document!(123)
-      %Document{}
-
-      iex> get_document!(456)
-      ** (Ecto.NoResultsError)
-
   """
+  @spec get_document!(String.t()) :: Document.t()
   def get_document!(id), do: Repo.get!(Document, id)
 
   @doc """
   Creates a document.
-
-  ## Examples
-
-      iex> create_document(%{field: value})
-      {:ok, %Document{}}
-
-      iex> create_document(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
   """
+  @spec create_document(map) :: {:ok, Document.t()} | {:error, Ecto.Changeset.t()}
   def create_document(attrs \\ %{}) do
     %Document{}
     |> Document.changeset(attrs)
@@ -257,16 +151,8 @@ defmodule Episodical.Model do
 
   @doc """
   Updates a document.
-
-  ## Examples
-
-      iex> update_document(document, %{field: new_value})
-      {:ok, %Document{}}
-
-      iex> update_document(document, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
   """
+  @spec update_document(Document.t(), map) :: {:ok, Document.t()} | {:error, Ecto.Changeset.t()}
   def update_document(%Document{} = document, attrs) do
     document
     |> Document.changeset(attrs)
@@ -275,75 +161,38 @@ defmodule Episodical.Model do
 
   @doc """
   Deletes a document.
-
-  ## Examples
-
-      iex> delete_document(document)
-      {:ok, %Document{}}
-
-      iex> delete_document(document)
-      {:error, %Ecto.Changeset{}}
-
   """
+  @spec delete_document(Document.t()) :: {:ok, Document.t()} | {:error, Ecto.Changeset.t()}
   def delete_document(%Document{} = document) do
     Repo.delete(document)
   end
 
   @doc """
   Returns an `%Ecto.Changeset{}` for tracking document changes.
-
-  ## Examples
-
-      iex> change_document(document)
-      %Ecto.Changeset{data: %Document{}}
-
   """
+  @spec change_document(Document.t(), map) :: Ecto.Changeset.t()
   def change_document(%Document{} = document, attrs \\ %{}) do
     Document.changeset(document, attrs)
   end
 
-
   @doc """
   Returns the list of episodic_episodes.
-
-  ## Examples
-
-      iex> list_episodic_episodes()
-      [%Episode{}, ...]
-
   """
+  @spec list_episodic_episodes() :: [Episode.t()]
   def list_episodic_episodes do
     Repo.all(Episode)
   end
 
   @doc """
   Gets a single episode.
-
-  Raises `Ecto.NoResultsError` if the Episode does not exist.
-
-  ## Examples
-
-      iex> get_episode!(123)
-      %Episode{}
-
-      iex> get_episode!(456)
-      ** (Ecto.NoResultsError)
-
   """
+  @spec get_episode!(String.t()) :: Episode.t()
   def get_episode!(id), do: Repo.get!(Episode, id)
 
   @doc """
   Creates a episode.
-
-  ## Examples
-
-      iex> create_episode(%{field: value})
-      {:ok, %Episode{}}
-
-      iex> create_episode(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
   """
+  @spec create_episode(map) :: {:ok, Episode.t()} | {:error, Ecto.Changeset.t()}
   def create_episode(attrs \\ %{}) do
     %Episode{}
     |> Episode.changeset(attrs)
@@ -352,16 +201,8 @@ defmodule Episodical.Model do
 
   @doc """
   Updates a episode.
-
-  ## Examples
-
-      iex> update_episode(episode, %{field: new_value})
-      {:ok, %Episode{}}
-
-      iex> update_episode(episode, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
   """
+  @spec update_episode(Episode.t(), map) :: {:ok, Episode.t()} | {:error, Ecto.Changeset.t()}
   def update_episode(%Episode{} = episode, attrs) do
     episode
     |> Episode.changeset(attrs)
@@ -370,43 +211,24 @@ defmodule Episodical.Model do
 
   @doc """
   Deletes a episode.
-
-  ## Examples
-
-      iex> delete_episode(episode)
-      {:ok, %Episode{}}
-
-      iex> delete_episode(episode)
-      {:error, %Ecto.Changeset{}}
-
   """
+  @spec delete_episode(Episode.t()) :: {:ok, Episode.t()} | {:error, Ecto.Changeset.t()}
   def delete_episode(%Episode{} = episode) do
     Repo.delete(episode)
   end
 
   @doc """
   Returns an `%Ecto.Changeset{}` for tracking episode changes.
-
-  ## Examples
-
-      iex> change_episode(episode)
-      %Ecto.Changeset{data: %Episode{}}
-
   """
+  @spec change_episode(Episode.t(), map) :: {:ok, Ecto.Changeset.t()}
   def change_episode(%Episode{} = episode, attrs \\ %{}) do
     Episode.changeset(episode, attrs)
   end
 
-
   @doc """
   Returns the list of artist_albums.
-
-  ## Examples
-
-      iex> list_artist_albums()
-      [%Album{}, ...]
-
   """
+  @spec list_artist_albums() :: [Album.t()]
   def list_artist_albums do
     Repo.all(Album)
   end
@@ -415,30 +237,14 @@ defmodule Episodical.Model do
   Gets a single album.
 
   Raises `Ecto.NoResultsError` if the Album does not exist.
-
-  ## Examples
-
-      iex> get_album!(123)
-      %Album{}
-
-      iex> get_album!(456)
-      ** (Ecto.NoResultsError)
-
   """
+  @spec get_album!(String.t()) :: Album.t()
   def get_album!(id), do: Repo.get!(Album, id)
 
   @doc """
   Creates a album.
-
-  ## Examples
-
-      iex> create_album(%{field: value})
-      {:ok, %Album{}}
-
-      iex> create_album(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
   """
+  @spec create_album(map) :: {:ok, Album.t()} | {:error, Ecto.Changeset.t()}
   def create_album(attrs \\ %{}) do
     %Album{}
     |> Album.changeset(attrs)
@@ -447,16 +253,8 @@ defmodule Episodical.Model do
 
   @doc """
   Updates a album.
-
-  ## Examples
-
-      iex> update_album(album, %{field: new_value})
-      {:ok, %Album{}}
-
-      iex> update_album(album, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
   """
+  @spec update_album(Album.t(), map) :: {:ok, Album.t()} | {:error, Ecto.Changeset.t()}
   def update_album(%Album{} = album, attrs) do
     album
     |> Album.changeset(attrs)
@@ -465,43 +263,24 @@ defmodule Episodical.Model do
 
   @doc """
   Deletes a album.
-
-  ## Examples
-
-      iex> delete_album(album)
-      {:ok, %Album{}}
-
-      iex> delete_album(album)
-      {:error, %Ecto.Changeset{}}
-
   """
+  @spec delete_album(Album.t()) :: {:ok, Album.t()} | {:error, Ecto.Changeset.t()}
   def delete_album(%Album{} = album) do
     Repo.delete(album)
   end
 
   @doc """
   Returns an `%Ecto.Changeset{}` for tracking album changes.
-
-  ## Examples
-
-      iex> change_album(album)
-      %Ecto.Changeset{data: %Album{}}
-
   """
+  @spec change_album(Album.t(), map) :: Ecto.Changeset.t()
   def change_album(%Album{} = album, attrs \\ %{}) do
     Album.changeset(album, attrs)
   end
 
-
   @doc """
   Returns the list of artist_songs.
-
-  ## Examples
-
-      iex> list_artist_songs()
-      [%Song{}, ...]
-
   """
+  @spec list_artist_songs() :: [Song.t()]
   def list_artist_songs do
     Repo.all(Song)
   end
@@ -511,11 +290,13 @@ defmodule Episodical.Model do
 
   Raises `Ecto.NoResultsError` if the Song does not exist.
   """
+  @spec get_song!(String.t()) :: Song.t()
   def get_song!(id), do: Repo.get!(Song, id)
 
   @doc """
   Creates a song.
   """
+  @spec create_song(map) :: {:ok, Song.t()} | {:error, Ecto.Changeset.t()}
   def create_song(attrs \\ %{}) do
     %Song{}
     |> Song.changeset(attrs)
@@ -525,6 +306,7 @@ defmodule Episodical.Model do
   @doc """
   Updates a song.
   """
+  @spec update_song(Song.t(), map) :: {:ok, Song.t()} | {:error, Ecto.Changeset.t()}
   def update_song(%Song{} = song, attrs) do
     song
     |> Song.changeset(attrs)
@@ -534,6 +316,7 @@ defmodule Episodical.Model do
   @doc """
   Deletes a song.
   """
+  @spec delete_song(Song.t()) :: {:ok, Song.t()} | {:error, Ecto.Changeset.t()}
   def delete_song(%Song{} = song) do
     Repo.delete(song)
   end
@@ -541,6 +324,7 @@ defmodule Episodical.Model do
   @doc """
   Returns an `%Ecto.Changeset{}` for tracking song changes.
   """
+  @spec change_song(Song.t(), map) :: Ecto.Changeset.t()
   def change_song(%Song{} = song, attrs \\ %{}) do
     Song.changeset(song, attrs)
   end
@@ -548,16 +332,34 @@ defmodule Episodical.Model do
   @doc """
   List all of the config options.
   """
+  @spec list_config() :: [Config.t()]
   def list_config, do: Repo.all(Config)
 
+  @doc """
+  Retrieve a single Config based on the ID.
+  """
+  @spec get_config!(String.t()) :: Config.t()
   def get_config!(id), do: Repo.get!(Config, id)
+
+  @doc """
+  Retrieve a single Config based on the visible name.
+  """
+  @spec get_config_by_name!(String.t()) :: Config.t()
   def get_config_by_name!(name), do: Repo.get_by!(Config, name: name)
 
+  @doc """
+  Update a single Config entry.
+  """
+  @spec update_config(Config.t(), map) :: {:ok, Config.t()} | {:error, Ecto.Changeset.t()}
   def update_config(%Config{} = config, attrs) do
     config
     |> Config.changeset(attrs)
     |> Repo.update()
   end
 
+  @doc """
+  Generate the Changeset for a single Config.
+  """
+  @spec change_config(Config.t(), map) :: Ecto.Changeset.t()
   def change_config(%Config{} = config, attrs \\ %{}), do: Config.changeset(config, attrs)
 end
