@@ -15,6 +15,9 @@
   <:col :let={episodic} label="Episodes" field={:episodes} col_class="relative hover:cursor-pointer">
     0 / {episodic.episode_metadata.total_episode_count}
   </:col>
+  <:col :let={episodic} label="Files" field={:files} col_class="relative hover:cursor-pointer">
+    0 / {episodic.episode_metadata.total_episode_count}
+  </:col>
   <:col :let={episodic} label="Should auto check" field={:should_auto_check} col_class="relative hover:cursor-pointer">{episodic.episodic.should_auto_check}</:col>
 
   <:action :let={episodic} tbody_td_attrs={[{:class, "text-zinc-500 font-bold my-3"}]}>

@@ -81,4 +81,13 @@ defmodule EpisodicalWeb.EpisodicController do
     |> put_flash(:info, "Content refresh begun.")
     |> redirect(to: ~p"/episodics/#{id}")
   end
+
+  def watch(conn, %{"episodic_id" => id, "episode_id" => episode_id}) do
+    episodic = Model.get_episodic!(id)
+      |> Repo.preload(:episodes)
+
+    conn
+    |> put_flash(:info, "Toggle episode as watched.")
+    |> redirect(to: ~p"/episodics/#{id}")
+  end
 end

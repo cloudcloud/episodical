@@ -25,6 +25,7 @@ defmodule EpisodicalWeb.Router do
       resources "/associate", EpisodicAssociateController, only: [:show, :create]
 
       get "/refresh", EpisodicController, :refresh
+      get "/watch/:episode_id", EpisodicController, :watch
     end
 
     resources "/providers", ProviderController

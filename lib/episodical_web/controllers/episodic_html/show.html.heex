@@ -12,13 +12,15 @@
     <% end %>
     <%= if @episodic.episodic.provider != nil do %>
       <.link href={~p"/providers/#{@episodic.episodic.provider}"}>
-        <.pill_box text={"Provider: #{@episodic.episodic.provider.name} - #{@episodic.episodic.external_id}"} />
+        <.pill_box text={"Provider: #{@episodic.episodic.provider.name} - #{@episodic.episodic.external_id}"} colour="green" />
       </.link>
     <% else %>
       <.pill_box text={"Provider: Not configured!"} />
     <% end %>
     <%= if @episodic.episodic.imdb_id != nil do %>
-      <.pill_box text={"iMDB ID: #{@episodic.episodic.imdb_id}"} />
+      <.link href={"https://dereferer.me/?https%3A//www.imdb.com/title/#{@episodic.episodic.imdb_id}"}>
+        <.pill_box text={"iMDB ID: #{@episodic.episodic.imdb_id}"} colour="green" />
+      </.link>
     <% end %>
     <%= if @episodic.episodic.next_airing != nil do %>
       <.pill_box text={"Next Airing: #{@episodic.episodic.next_airing}"} />
@@ -58,9 +60,10 @@
     <:col :let={episode} label="Number"><b>{episode.index}</b></:col>
     <:col :let={episode} label="Title">{episode.title}</:col>
     <:col :let={episode} label="Air Date">{just_date(episode.released_at)}</:col>
+    <:col :let={_episode} label="Filename">...</:col>
     <:col :let={episode} label="Watched?">{episode.is_watched}</:col>
     <:action :let={episode}>
-      <.link navigate={~p"/episodics/#{@episodic}/watch/#{episode.id}"}>Watched</.link>
+      <.link patch={~p"/episodics/#{@episodic}/watch/#{episode.id}"}>Watched</.link>
     </:action>
   </.table>
 </div>
