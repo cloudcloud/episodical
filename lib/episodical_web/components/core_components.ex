@@ -462,6 +462,7 @@ defmodule EpisodicalWeb.CoreComponents do
     doc: "the function for mapping each row before calling the :col and :action slots"
 
   slot :col, required: true do
+    attr :class, :string
     attr :label, :string
   end
 
@@ -478,8 +479,8 @@ defmodule EpisodicalWeb.CoreComponents do
       <table class="w-[40rem] mt-2 sm:w-full">
         <thead class="text-sm text-left leading-6 text-zinc-500">
           <tr>
-            <th :for={col <- @col} class="p-0 pb-2 pr-6 font-normal">{col[:label]}</th>
-            <th :if={@action != []} class="relative p-0 pb-2">
+            <th :for={col <- @col} class={["p-0 pb-2 font-normal", col[:class]]}>{col[:label]}</th>
+            <th :if={@action != []} class="relative p-0 pb-2 w-14">
               <span class="sr-only">{gettext("Actions")}</span>
             </th>
           </tr>
@@ -493,7 +494,7 @@ defmodule EpisodicalWeb.CoreComponents do
             <td
               :for={{col, i} <- Enum.with_index(@col)}
               phx-click={@row_click && @row_click.(row)}
-              class={["relative p-0", @row_click && "hover:cursor-pointer"]}
+              class={["relative p-0", @row_click && "hover:cursor-pointer", col[:class]]}
             >
               <div class="block py-2 pr-6">
                 <span class="absolute -inset-y-px right-0 -left-4 group-hover:bg-zinc-50 sm:rounded-l-xl" />

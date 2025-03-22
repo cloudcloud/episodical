@@ -57,11 +57,17 @@
   </.header>
 
   <.table rows={episodes} id={"season-#{season}"}>
-    <:col :let={episode} label="Number"><b>{episode.index}</b></:col>
-    <:col :let={episode} label="Title">{episode.title}</:col>
-    <:col :let={episode} label="Air Date">{just_date(episode.released_at)}</:col>
-    <:col :let={_episode} label="Filename">...</:col>
-    <:col :let={episode} label="Watched?">{episode.is_watched}</:col>
+    <:col :let={episode} label="Number" class="w-24 font-thin">{episode.index}</:col>
+    <:col :let={episode} label="Title" class="min-w-64">{episode.title}</:col>
+    <:col :let={episode} label="Air Date" class="w-32">{just_date(episode.released_at)}</:col>
+    <:col :let={_episode} label="Filename" class="min-w-64">...</:col>
+    <:col :let={episode} label="Watched?" class="w-24 font-thin">
+      <%= if episode.is_watched do %>
+      <.icon name="hero-check" class="text-green-600" />
+      <% else %>
+      <.icon name="hero-x-mark" class="text-red-600" />
+      <% end %>
+    </:col>
     <:action :let={episode}>
       <.link patch={~p"/episodics/#{@episodic}/watch/#{episode.id}"}>Watched</.link>
     </:action>

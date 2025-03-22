@@ -161,7 +161,7 @@ defmodule Episodical.External do
   @doc """
   Creates a provider.
   """
-  @spec create_provder(map) :: {:ok, Provider.t()} | {:error, Ecto.Changeset.t()}
+  @spec create_provider(map) :: {:ok, Provider.t()} | {:error, Ecto.Changeset.t()}
   def create_provider(attrs \\ %{}) do
     %Provider{}
     |> Provider.changeset(attrs)
