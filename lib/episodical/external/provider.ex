@@ -3,16 +3,16 @@ defmodule Episodical.External.Provider do
   import Ecto.Changeset
 
   @type t :: %__MODULE__{
-          id: binary,
-          name: String.t(),
-          base_url: String.t(),
-          model_type: String.t(),
-          access_key: String.t(),
-          token: list(),
-          service_type: String.t(),
-          inserted_at: Time.t(),
-          updated_at: Time.t()
-        }
+    id: binary,
+    name: String.t(),
+    base_url: String.t(),
+    model_type: String.t(),
+    access_key: String.t(),
+    token: list(),
+    service_type: String.t(),
+    inserted_at: DateTime.t(),
+    updated_at: DateTime.t()
+  }
 
   alias Episodical.External.Token
   alias Episodical.Encryption.EncryptedField

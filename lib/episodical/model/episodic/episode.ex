@@ -2,6 +2,23 @@ defmodule Episodical.Model.Episodic.Episode do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @type t :: %__MODULE__{
+    id: binary(),
+    index: Integer.t(),
+    title: String.t(),
+    season: Integer.t(),
+    released_at: DateTime.t(),
+    is_watched: bool(),
+    watched_at: DateTime.t(),
+    overview: String.t(),
+    external_id: String.t(),
+    provider: Episodical.External.Provider.t(),
+    episodic: Episodic.t(),
+    file: Episodical.External.File.t(),
+    inserted_at: DateTime.t(),
+    updated_at: DateTime.t()
+  }
+
   alias Episodical.Model.Episodic
 
   @primary_key {:id, :binary_id, autogenerate: true}
@@ -18,7 +35,7 @@ defmodule Episodical.Model.Episodic.Episode do
 
     belongs_to :provider, Episodical.External.Provider
     belongs_to :episodic, Episodic
-    has_one :episode, Episodic.Episode
+    has_one :file, Episodical.Local.File
 
     timestamps(type: :utc_datetime_usec)
   end

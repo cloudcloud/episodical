@@ -39,7 +39,7 @@ defmodule EpisodicalWeb.EpisodicController do
   def show(conn, %{"id" => id}) do
     episodic =
       Model.get_episodic!(id)
-        |> Repo.preload([:provider, :genres, :episodes, :path, :files])
+        |> Repo.preload([:provider, :genres, :path, :files, episodes: [:file]])
 
     presenter = %Episodical.Presenters.Episodic{episodic: episodic, seasons: %{}, genres: %{}}
     render(conn, :show, episodic: Episodical.Presenters.Episodic.present(presenter))

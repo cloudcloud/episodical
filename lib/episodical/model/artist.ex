@@ -2,6 +2,19 @@ defmodule Episodical.Model.Artist do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @type t :: %__MODULE__{
+    id: binary(),
+    name: String.t(),
+    formed_year: Integer.t(),
+    base_location: String.t(),
+    last_checked_at: DateTime.t(),
+    should_auto_check: bool(),
+    external_id: String.t(),
+    provider: Episodical.External.Provider.t(),
+    inserted_at: DateTime.t(),
+    updated_at: DateTime.t()
+  }
+
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "artists" do

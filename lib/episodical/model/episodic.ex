@@ -9,24 +9,24 @@ defmodule Episodical.Model.Episodic do
   alias Episodical.Local.Path
 
   @type t :: %__MODULE__{
-            id: binary,
-            status: String.t(),
-            title: String.t(),
-            release_year: Integer.t(),
-            last_checked_at: Time.t(),
-            should_auto_check: Boolean.t(),
-            external_id: String.t(),
-            image: String.t(),
-            overview: String.t(),
-            original_language: String.t(),
-            next_airing: Time.t(),
-            imdb_id: String.t(),
-            provider: Provider.t(),
-            episodes: [Episode.t()],
-            genres: [Genre.t()],
-            inserted_at: Time.t(),
-            updated_at: Time.t()
-          }
+    id: binary,
+    status: String.t(),
+    title: String.t(),
+    release_year: Integer.t(),
+    last_checked_at: DateTime.t(),
+    should_auto_check: Boolean.t(),
+    external_id: String.t(),
+    image: String.t(),
+    overview: String.t(),
+    original_language: String.t(),
+    next_airing: DateTime.t(),
+    imdb_id: String.t(),
+    provider: Provider.t(),
+    episodes: [Episode.t()],
+    genres: [Genre.t()],
+    inserted_at: DateTime.t(),
+    updated_at: DateTime.t()
+  }
 
   @derive {
     Flop.Schema,

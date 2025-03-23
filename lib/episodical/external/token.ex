@@ -2,6 +2,16 @@ defmodule Episodical.External.Token do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @type t :: %__MODULE__{
+    id: binary(),
+    value: String.t(),
+    is_valid: bool(),
+    expires_at: DateTime.t(),
+    provider: Provider.t(),
+    inserted_at: DateTime.t(),
+    updated_at: DateTime.t()
+  }
+
   alias Episodical.External.Provider
   alias Episodical.Encryption.EncryptedField
 

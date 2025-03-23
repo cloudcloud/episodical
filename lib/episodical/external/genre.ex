@@ -2,6 +2,16 @@ defmodule Episodical.External.Genre do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @type t :: %__MODULE__{
+    id: binary(),
+    genre: String.t(),
+    external_id: String.t(),
+    provider: Episodical.External.Provider.t(),
+    episodics: list(Episodical.Model.Episodic.t()),
+    inserted_at: DateTime.t(),
+    updated_at: DateTime.t()
+  }
+
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "genres" do

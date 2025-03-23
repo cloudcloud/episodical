@@ -2,6 +2,17 @@ defmodule Episodical.Local.File do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @type t :: %__MODULE__{
+    id: binary,
+    name: String.t(),
+    last_checked_at: DateTime.t(),
+    path: Episodical.Local.Path.t(),
+    episodic: Episodical.Model.Episodic.t(),
+    episode: Episodical.Model.Episodic.Episode.t(),
+    inserted_at: DateTime.t(),
+    updated_at: DateTime.t()
+  }
+
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "files" do
@@ -18,7 +29,15 @@ defmodule Episodical.Local.File do
   @doc false
   def changeset(file, attrs) do
     file
-    |> cast(attrs, [:name, :last_checked_at])
+    |> cast(attrs, [:name, :last_checked_at, :episode_id, :episodic_id, :path_id])
     |> validate_required([:name, :last_checked_at])
+  end
+
+  def assoc_extras(file, attrs) do
+    file
+      |> changeset(%{"last_checked_at" => DateTime.now!("Etc/UTC")})
+      |> put_assoc(:episodic, attrs["episodic"])
+      |> put_assoc(:path, attrs["path"])
+      |> put_assoc(:episode, attrs["episode"])
   end
 end

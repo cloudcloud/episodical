@@ -87,6 +87,22 @@ defmodule Episodical.Local do
     |> Repo.insert()
   end
 
+  @spec get_or_insert_file(map) :: Local.File.t()
+  def get_or_insert_file(%{"name" => name, "episodic" => episodic, "episode_id" => episode_id, "path" => path}) do
+    Repo.insert!(
+      %Local.File{name: name, episodic_id: episodic.id, episode_id: episode_id, path_id: path.id},
+      on_conflict: [set: [name: name]],
+      conflict_target: :name
+    )
+  end
+
+  def update_file_assoc(file, attrs) do
+    file
+      |> Repo.preload([:episodic, :episode, :path])
+      |> Local.File.assoc_extras(attrs)
+      |> Repo.update()
+  end
+
   @doc """
   Updates a file.
   """
@@ -116,18 +132,36 @@ defmodule Episodical.Local do
   @doc """
   Taken a path, find files that match a particular pattern.
   """
-  @spec discover_files(Local.Path.t(), Model.Episodic.t()) :: list()
-  def discover_files(%Local.Path{} = path, %Model.Episodic{} = episodic) do
-    layout = Model.get_config_by_name!("episodic_path_layout")
+  @spec discover_files(Model.Episodic.t()) :: list()
+  def discover_files(%Model.Episodic{} = episodic) do
+    {:ok, layout_regex} = Model.get_config_by_name!("episodic_path_layout")
       |> Local.Path.use_path_layout(episodic)
 
-    with true <- File.dir?(path.name) do
-      #
+    with true <- File.dir?(episodic.path.name),
+      {:ok, files} <- Local.Path.find_matching_files(episodic.path, layout_regex) do
+        {:ok, file_match} = Model.get_config_by_name!("episodic_filename_pattern")
+          |> Map.fetch!(:value)
+          |> Regex.compile
+
+        match_file_to_episode(episodic, file_match, files)
 
     else
       false ->
         {:error, "Path is not a valid location."}
 
+    end
+  end
+
+  defp match_file_to_episode(episodic, file_match, files, count \\ 0)
+  defp match_file_to_episode(_, _, [], count), do: {:ok, count}
+  defp match_file_to_episode(episodic, file_match, [file | files], count) do
+    matches = Regex.named_captures(file_match, file)
+
+    with true <- Model.file_find_matching_episode(episodic, matches, file) do
+      match_file_to_episode(episodic, file_match, files, count+1)
+    else
+      _ ->
+        match_file_to_episode(episodic, file_match, files, count)
     end
   end
 end

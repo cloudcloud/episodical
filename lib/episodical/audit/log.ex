@@ -2,6 +2,17 @@ defmodule Episodical.Audit.Log do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @type t :: %__MODULE__{
+    id: binary(),
+    debug: String.t(),
+    action_taken: String.t(),
+    entity_id: binary(),
+    entity_type: String.t(),
+    was_success: bool(),
+    inserted_at: DateTime.t(),
+    updated_at: DateTime.t()
+  }
+
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "logs" do

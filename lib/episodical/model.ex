@@ -4,9 +4,10 @@ defmodule Episodical.Model do
   nice ways of interacting with them from the outside.
   """
 
+  import Logger
   import Ecto.Query, warn: false
-  alias Episodical.Repo
 
+  alias Episodical.Repo
   alias Episodical.Model.Episodic
   alias Episodical.Model.Artist
   alias Episodical.Model.Document
@@ -381,4 +382,48 @@ defmodule Episodical.Model do
   """
   @spec change_config(Config.t(), map) :: Ecto.Changeset.t()
   def change_config(%Config{} = config, attrs \\ %{}), do: Config.changeset(config, attrs)
+
+  @doc """
+  """
+  @spec file_find_matching_episode(Episodic.t(), map(), String.t()) :: bool()
+  def file_find_matching_episode(episodic, matches, file) do
+    season = String.to_integer(matches["season"])
+    episode = String.to_integer(matches["episode"])
+
+    case file_matching_episode(episodic.episodes, season, episode) do
+      {:ok, id} ->
+        case Local.get_or_insert_file(%{"name" => file, "episodic" => episodic, "episode_id" => id, "path" => episodic.path, "last_checked_at" => DateTime.now!("Etc/UTC")}) do
+          %Local.File{} = file ->
+            episode = Episodical.Model.get_episode!(id)
+              |> Repo.preload(:file)
+
+            file
+              |> Repo.preload([:episode, :episodic, :path])
+              |> Local.update_file_assoc(%{
+                  "episode" => episode,
+                  "path" => episodic.path,
+                  "episodic" => episodic,
+                })
+              |> Repo.update
+
+            true
+          {:error, changeset} ->
+            Logger.info "Unable to create File! #{changeset}"
+            false
+        end
+
+      false ->
+        false
+    end
+  end
+
+  @spec file_matching_episode(Episodic.t(), Integer.t(), Integer.t()) :: bool()
+  defp file_matching_episode([], _, _), do: false
+  defp file_matching_episode([episode | episodes], season, index) do
+    if episode.season == season && episode.index == index do
+      {:ok, episode.id}
+    else
+      file_matching_episode(episodes, season, index)
+    end
+  end
 end

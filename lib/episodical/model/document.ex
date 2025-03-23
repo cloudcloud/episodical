@@ -4,6 +4,21 @@ defmodule Episodical.Model.Document do
 
   alias Episodical.External.Provider
 
+  @type t :: %__MODULE__{
+    id: binary,
+    title: String.t(),
+    author: String.t(),
+    released_at: DateTime.t(),
+    is_read: bool(),
+    read_at: DateTime.t(),
+    last_checked_at: DateTime.t(),
+    should_auto_check: bool(),
+    external_id: String.t(),
+    provider: Provider.t(),
+    inserted_at: DateTime.t(),
+    updated_at: DateTime.t()
+  }
+
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "documents" do
