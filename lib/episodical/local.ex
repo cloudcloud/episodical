@@ -88,19 +88,14 @@ defmodule Episodical.Local do
   end
 
   @spec get_or_insert_file(map) :: Local.File.t()
-  def get_or_insert_file(%{"name" => name, "episodic" => episodic, "episode_id" => episode_id, "path" => path}) do
-    Repo.insert!(
-      %Local.File{name: name, episodic_id: episodic.id, episode_id: episode_id, path_id: path.id},
-      on_conflict: [set: [name: name]],
-      conflict_target: :name
-    )
-  end
-
-  def update_file_assoc(file, attrs) do
-    file
-      |> Repo.preload([:episodic, :episode, :path])
-      |> Local.File.assoc_extras(attrs)
-      |> Repo.update()
+  def get_or_insert_file(attrs) do
+    %Local.File{}
+    |> Local.File.changeset(attrs)
+    |> Repo.insert(
+        on_conflict: {:replace_all_except, [:id, :created_at]},
+        conflict_target: [:name],
+        returning: true
+      )
   end
 
   @doc """

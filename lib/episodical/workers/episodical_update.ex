@@ -29,7 +29,11 @@ defmodule Episodical.Workers.EpisodicalUpdate do
       |> capture_episodes(provider_id)
       |> store_full_episodic(episodic)
 
-    episodic
+    {:ok, files_found} = episodic
+      |> Repo.preload([:episodes, :path])
+      |> Episodical.Local.discover_files
+
+    {:ok, episodic, files_found}
   end
 
   defp query_provider(%{service_type: "thetvdb"} = provider, type, episodic) do

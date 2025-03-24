@@ -29,15 +29,10 @@ defmodule Episodical.Local.File do
   @doc false
   def changeset(file, attrs) do
     file
-    |> cast(attrs, [:name, :last_checked_at, :episode_id, :episodic_id, :path_id])
-    |> validate_required([:name, :last_checked_at])
-  end
-
-  def assoc_extras(file, attrs) do
-    file
-      |> changeset(%{"last_checked_at" => DateTime.now!("Etc/UTC")})
-      |> put_assoc(:episodic, attrs["episodic"])
-      |> put_assoc(:path, attrs["path"])
-      |> put_assoc(:episode, attrs["episode"])
+    |> cast(attrs, [:name, :last_checked_at])
+    |> put_assoc(:episodic, attrs["episodic"])
+    |> put_assoc(:path, attrs["path"])
+    |> put_assoc(:episode, attrs["episode"])
+    |> validate_required([:name])
   end
 end

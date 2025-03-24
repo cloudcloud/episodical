@@ -4,7 +4,7 @@ defmodule Episodical.Model do
   nice ways of interacting with them from the outside.
   """
 
-  import Logger
+  require Logger
   import Ecto.Query, warn: false
 
   alias Episodical.Repo
@@ -384,33 +384,27 @@ defmodule Episodical.Model do
   def change_config(%Config{} = config, attrs \\ %{}), do: Config.changeset(config, attrs)
 
   @doc """
+  Given a list of found files that match the particular Episodic pattern, look for a known
+  episode that matches the specific pattern.
   """
   @spec file_find_matching_episode(Episodic.t(), map(), String.t()) :: bool()
-  def file_find_matching_episode(episodic, matches, file) do
+  def file_find_matching_episode(episodic, matches, filename) do
     season = String.to_integer(matches["season"])
     episode = String.to_integer(matches["episode"])
 
     case file_matching_episode(episodic.episodes, season, episode) do
       {:ok, id} ->
-        case Local.get_or_insert_file(%{"name" => file, "episodic" => episodic, "episode_id" => id, "path" => episodic.path, "last_checked_at" => DateTime.now!("Etc/UTC")}) do
-          %Local.File{} = file ->
-            episode = Episodical.Model.get_episode!(id)
-              |> Repo.preload(:file)
+        episode = Episodical.Model.get_episode!(id)
+          |> Repo.preload(:file)
+        Local.get_or_insert_file(%{
+          "name" => filename,
+          "episodic" => episodic,
+          "episode" => episode,
+          "path" => episodic.path,
+          "last_checked_at" => DateTime.now!("Etc/UTC")
+        })
 
-            file
-              |> Repo.preload([:episode, :episodic, :path])
-              |> Local.update_file_assoc(%{
-                  "episode" => episode,
-                  "path" => episodic.path,
-                  "episodic" => episodic,
-                })
-              |> Repo.update
-
-            true
-          {:error, changeset} ->
-            Logger.info "Unable to create File! #{changeset}"
-            false
-        end
+        true
 
       false ->
         false
