@@ -23,9 +23,5 @@ defmodule Episodical.Repo.Migrations.AddEpisodicGenreAssociationTable do
     end
 
     create unique_index(:episodic_episodes, [:external_id])
-
-    alter table(:genres) do
-      add :external_id, :text
-    end
   end
 end

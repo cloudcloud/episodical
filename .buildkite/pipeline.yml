@@ -1,0 +1,23 @@
+steps:
+  - label: ":elixir: :docker: base image"
+    key: base-image
+    env:
+      TAG: "latest"
+    command: |
+      # hub_user=$(buildkite-agent secret get hub_user)
+      # hub_pass=$(buildkite-agent secret get hub_pass)
+      # docker build --push "cloudcloud/episodical-build:${TAG}" .
+      echo "Will eventually be the base image build here."
+
+  - label: ":elixir: tests"
+    key: tests
+    command: |
+      mix test
+
+  - label: ":elixir: :docker: build"
+    key: release-build
+    depends_on: tests
+    env:
+      TAG: "latest"
+    command: |
+      # docker build --push "cloudcloud/episodical:${TAG}" .
