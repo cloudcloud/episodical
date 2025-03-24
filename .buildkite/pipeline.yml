@@ -9,6 +9,10 @@ steps:
       # docker build --push "cloudcloud/episodical-build:${TAG}" .
       echo "Will eventually be the base image build here."
 
+  # Eventually tests can be split if they're taking too long
+  #
+  # MIX_TEST_PARTITION=${NUM} mix test --partitions ${MAX}
+
   - label: ":elixir: tests"
     key: tests
     command: |
