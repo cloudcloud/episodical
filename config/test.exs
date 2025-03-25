@@ -42,7 +42,7 @@ config :buildkite_test_collector,
 
 # Ensure we set some encryption keys for test purposes
 try do
-  System.put_env("ENCRYPTION_KEYS", "GKDb00WP3YjH7YwEwkLZZjVHNhQU6lDSx58TZBJAG+Y=")
+  System.put_env("ENCRYPTION_KEYS", "GKDb00WP3YjH7YwEwkLZZjVHNhQU6lDSx58TZBJAG+Y=,FHHL6s+HH8ad4lbYxDPqh/11C8pphbwho2LDlYiSDiE=")
 rescue
   _ -> IO.puts("Unable to set ENCRYPTION_KEYS")
 end

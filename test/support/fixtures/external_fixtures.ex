@@ -23,16 +23,28 @@ defmodule Episodical.ExternalFixtures do
   Generate a token.
   """
   def token_fixture(attrs \\ %{}) do
+    provider = get_or_create_provider(attrs)
+
     {:ok, token} =
       attrs
-      |> Enum.into(%{
-        expires_at: ~U[2025-02-07 22:58:00.000000Z],
-        is_valid: true,
-        value: "some value"
-      })
-      |> Episodical.External.create_token()
+        |> Enum.into(%{
+          expires_at: ~U[2025-02-07 22:58:00.000000Z],
+          is_valid: true,
+          value: "some value",
+          provider: provider
+        })
+        |> Episodical.External.create_token()
 
-    token
+      token
+  end
+
+  defp get_or_create_provider(attrs) do
+    case Map.pop(attrs, "provider_id", "") do
+      {"", _} ->
+        provider_fixture()
+      {provider_id, _} ->
+        Episodical.External.get_provider!(provider_id)
+    end
   end
 
   @doc """
@@ -43,10 +55,10 @@ defmodule Episodical.ExternalFixtures do
       attrs
       |> Enum.into(%{
         base_url: "some base_url",
-        external_id: "some external_id",
         model_type: :episodic,
         name: "some name",
-        access_key: "access-key"
+        access_key: "access-key",
+        service_type: "thetvdb"
       })
       |> Episodical.External.create_provider()
 

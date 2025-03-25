@@ -27,13 +27,16 @@ defmodule Episodical.ModelFixtures do
     {:ok, episodic} =
       attrs
       |> Enum.into(%{
-        last_checked_at: ~U[2025-02-07 22:58:00.000000Z],
-        release_year: 42,
-        should_auto_check: true,
         status: "some status",
+        title: "some title",
+        release_year: 1942,
+        last_checked_at: ~U[2025-02-07 22:58:00.000000Z],
+        should_auto_check: true,
         external_id: "abc123",
-        provider_id: "some id",
-        title: "some title"
+        image: "https://",
+        overview: "overview of the episodic",
+        original_language: "eng",
+        imdb_id: "tt666",
       })
       |> Episodical.Model.create_episodic()
 

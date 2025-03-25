@@ -41,14 +41,22 @@ defmodule Episodical.Model do
   """
   @spec create_episodic(map) :: {:ok, Episodic.t()} | {:error, Ecto.Changeset.t()}
   def create_episodic(attrs \\ %{}) do
-    path = Local.get_path!(attrs["path"])
-      |> Repo.preload(:episodic)
+    case Map.pop(attrs, "path", "") do
+      {"", _} ->
+        %Episodic{}
+          |> Episodic.changeset(attrs)
+          |> Repo.insert()
 
-    %Episodic{}
-      |> Repo.preload(:path)
-      |> Episodic.changeset(attrs)
-      |> Episodic.assoc_path(path)
-      |> Repo.insert()
+      {path_id, _} ->
+        path = Local.get_path!(path_id)
+          |> Repo.preload(:episodic)
+
+        %Episodic{}
+          |> Repo.preload(:path)
+          |> Episodic.changeset(attrs)
+          |> Episodic.assoc_path(path)
+          |> Repo.insert()
+    end
   end
 
   @doc """

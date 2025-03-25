@@ -18,7 +18,9 @@ defmodule Episodical.ModelTest do
 
     test "list_episodics/0 returns all episodics" do
       episodic = episodic_fixture()
-      assert Model.list_episodics() == [episodic]
+
+      {:ok, {_, meta}} = Model.list_episodics(%{})
+      assert {:ok, {[episodic |> Episodical.Repo.preload([:episodes, :genres])], meta}} == Model.list_episodics(%{})
     end
 
     test "get_episodic!/1 returns the episodic with given id" do
