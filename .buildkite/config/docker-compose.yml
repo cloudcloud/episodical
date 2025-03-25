@@ -7,7 +7,7 @@ services:
 
   app:
     build:
-      dockerfile: .buildkite/config/Dockerfile.development
+      dockerfile: Dockerfile.development
     depends_on:
       - database
     environment:
