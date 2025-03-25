@@ -60,7 +60,8 @@ defmodule Episodical.MixProject do
       {:bandit, "~> 1.5"},
       {:httpoison, "~> 2.0"},
       {:que, "~> 0.10.1"},
-      {:flop_phoenix, "~> 0.24.1"}
+      {:flop_phoenix, "~> 0.24.1"},
+      {:buildkite_test_collector, "~> 0.1.0", only: [:test]}
     ]
   end
 

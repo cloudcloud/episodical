@@ -36,6 +36,10 @@ config :phoenix, :plug_init_mode, :runtime
 config :phoenix_live_view,
   enable_expensive_runtime_checks: true
 
+# Using the test collector for great power
+config :buildkite_test_collector,
+  api_key: System.get_env("TEST_ENGINE_TOKEN")
+
 # Ensure we set some encryption keys for test purposes
 try do
   System.put_env("ENCRYPTION_KEYS", "GKDb00WP3YjH7YwEwkLZZjVHNhQU6lDSx58TZBJAG+Y=")
