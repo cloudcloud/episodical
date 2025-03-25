@@ -1,26 +1,32 @@
 steps:
-  - label: ":elixir: :docker: base image"
-    key: base-image
-    env:
-      TAG: "latest"
-    command: |
-      # hub_user=$(buildkite-agent secret get hub_user)
-      # hub_pass=$(buildkite-agent secret get hub_pass)
-      # docker build --push "cloudcloud/episodical-build:${TAG}" .
-      echo "Will eventually be the base image build here."
-
-  # Eventually tests can be split if they're taking too long
-  #
-  # MIX_TEST_PARTITION=${NUM} mix test --partitions ${MAX}
+  - label: ":elixir: :docker: build"
+    key: build
+    plugins:
+      - docker-compose#v5.6.0:
+          build: app
+          config: ".buildkite/config/docker-compose.yml"
+          retry:
+            automatic:
+              - limit: 2
+                exit_status: 17
 
   - label: ":elixir: tests"
-    key: tests
-    command: |
-      mix test
+    key: test
+    depends_on: build
+    command:
+      - .buildkite/scripts/run_tests.sh
+    plugins:
+      - docker-compose#v5.6.0:
+          run: app
+          config: ".buildkite/config/docker-compose.yml"
+          retry:
+            automatic:
+              - limit: 2
+                exit_status: 17
 
   - label: ":elixir: :docker: build"
     key: release-build
-    depends_on: tests
+    depends_on: test
     env:
       TAG: "latest"
     command: |

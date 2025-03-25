@@ -1,0 +1,14 @@
+services:
+  database:
+    image: postgres:17.4-bookworm
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+  app:
+    build:
+      dockerfile: .buildkite/config/Dockerfile.development
+    depends_on:
+      - database
+    environment:
+      PGHOST: database
