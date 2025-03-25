@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
-# Remove the warning, it's just noise
 touch .env
+export BUILDKITE_ANALYTICS_TOKEN="$(buildkite-agent secret get TEST_ENGINE_TOKEN)"
+export CI="true"
 
 if [[ "${MIX_TEST_PARTITION:-0}" = "0" ]]; then
     mix test
