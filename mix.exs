@@ -55,13 +55,16 @@ defmodule Episodical.MixProject do
       {:telemetry_metrics, "~> 1.0"},
       {:telemetry_poller, "~> 1.0"},
       {:gettext, "~> 0.26"},
-      {:jason, "~> 1.2"},
+      {:jason, "~> 1.3"},
       {:dns_cluster, "~> 0.1.1"},
       {:bandit, "~> 1.5"},
       {:httpoison, "~> 2.0"},
       {:que, "~> 0.10.1"},
       {:flop_phoenix, "~> 0.24.1"},
-      {:buildkite_test_collector, "~> 0.1.0", only: [:test]}
+      {:buildkite_test_collector,
+        github: "buildkite/test_collector_elixir",
+        branch: "main",
+        only: [:test]}
     ]
   end
 
