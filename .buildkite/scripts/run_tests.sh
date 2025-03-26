@@ -15,11 +15,8 @@ cat << VARS > .env
 export ENCRYPTION_KEYS=${enc}
 export SECRET_KEY_BASE=${base}
 export TEST_ENGINE_TOKEN=${TEST_ENGINE_TOKEN}
+export BUILDKITE_ANALYTICS_TOKEN=${TEST_ENGINE_TOKEN}
 VARS
-
-echo "Prepared the .env file:"
-cat .env
-echo
 
 if [[ "${MIX_TEST_PARTITION:-0}" = "0" ]]; then
     mix test
