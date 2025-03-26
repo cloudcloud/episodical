@@ -61,10 +61,7 @@ defmodule Episodical.MixProject do
       {:httpoison, "~> 2.0"},
       {:que, "~> 0.10.1"},
       {:flop_phoenix, "~> 0.24.1"},
-      {:buildkite_test_collector,
-        github: "buildkite/test_collector_elixir",
-        branch: "main",
-        only: [:test]}
+      {:buildkite_test_collector, "~> 0.3.1"}
     ]
   end
 
