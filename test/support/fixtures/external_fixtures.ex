@@ -31,7 +31,7 @@ defmodule Episodical.ExternalFixtures do
           expires_at: ~U[2025-02-07 22:58:00.000000Z],
           is_valid: true,
           value: "some value",
-          provider: provider
+          provider_id: provider.id
         })
         |> Episodical.External.create_token()
 

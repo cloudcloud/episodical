@@ -12,3 +12,17 @@ services:
       - database
     environment:
       PGHOST: database
+
+  otel:
+    image: otel/opentelemetry-collector-contrib:0.122.1
+    container_name: otel-collector
+    volumes:
+      - ./otel-collector-config.yaml:/otel-local-config.yaml
+    command: --config /otel-local-config.yaml
+    ports:
+      - "4317:4317"
+      - "4318:4318"
+      - "55679:55679"
+    environment:
+      - HONEYCOMB_API_KEY
+      - HONEYCOMB_ENDPOINT

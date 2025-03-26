@@ -65,6 +65,7 @@ defmodule Episodical.LocalTest do
     alias Episodical.Local.File
 
     import Episodical.LocalFixtures
+    import Episodical.ModelFixtures
 
     @invalid_attrs %{name: nil, last_checked_at: nil}
 
@@ -75,7 +76,7 @@ defmodule Episodical.LocalTest do
 
     test "get_file!/1 returns the file with given id" do
       file = file_fixture()
-      assert Local.get_file!(file.id) == file
+      assert Local.get_file!(file.id) |> Episodical.Repo.preload([:episodic, :episode, :path]) == file
     end
 
     test "create_file/1 with valid data creates a file" do
@@ -91,8 +92,15 @@ defmodule Episodical.LocalTest do
     end
 
     test "update_file/2 with valid data updates the file" do
+      episode = episode_fixture()
       file = file_fixture()
-      update_attrs = %{name: "some updated name", last_checked_at: ~U[2025-02-08 22:58:00.000000Z]}
+
+      update_attrs = %{
+        name: "some updated name",
+        last_checked_at: ~U[2025-02-08 22:58:00.000000Z],
+        episode: episode,
+        path: file.path
+      }
 
       assert {:ok, %File{} = file} = Local.update_file(file, update_attrs)
       assert file.name == "some updated name"
@@ -102,7 +110,9 @@ defmodule Episodical.LocalTest do
     test "update_file/2 with invalid data returns error changeset" do
       file = file_fixture()
       assert {:error, %Ecto.Changeset{}} = Local.update_file(file, @invalid_attrs)
-      assert file == Local.get_file!(file.id)
+
+      new_file = Local.get_file!(file.id) |> Episodical.Repo.preload([:episodic, :episode, :path])
+      assert file == new_file
     end
 
     test "delete_file/1 deletes the file" do

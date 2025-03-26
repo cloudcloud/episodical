@@ -77,10 +77,12 @@ defmodule Episodical.ExternalTest do
     end
 
     test "create_token/1 with valid data creates a token" do
+      provider = provider_fixture()
       valid_attrs = %{
         value: "some value",
         is_valid: true,
-        expires_at: ~U[2025-02-07 22:58:00.000000Z]
+        expires_at: ~U[2025-02-07 22:58:00.000000Z],
+        provider_id: provider.id
       }
 
       assert {:ok, %Token{} = token} = External.create_token(valid_attrs)
@@ -149,7 +151,8 @@ defmodule Episodical.ExternalTest do
         external_id: "some external_id",
         base_url: "some base_url",
         model_type: :episodic,
-        access_key: "some-access-key"
+        access_key: "some-access-key",
+        service_type: "thetvdb"
       }
 
       assert {:ok, %Provider{} = provider} = External.create_provider(valid_attrs)

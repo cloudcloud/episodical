@@ -67,6 +67,7 @@ defmodule Episodical.Local do
   @spec list_files() :: [Local.File.t()]
   def list_files do
     Repo.all(Local.File)
+      |> Enum.map(fn x -> Repo.preload(x, [:episode, :episodic, :path]) end)
   end
 
   @doc """
