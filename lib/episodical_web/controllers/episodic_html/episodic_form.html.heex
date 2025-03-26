@@ -6,8 +6,8 @@
   <.input field={f[:release_year]} type="number" label="Release year" />
   <%= if @episodic && @episodic.path_id != nil do %>
     <.input field={f[:path]} type="select" label="Path" multiple={false} options={@paths} prompt="Select a Path" value={@episodic.path_id} />
-  <% else %>
-    <.input field={f[:path]} type="select" label="Path" multiple={false} options={@paths} prompt="Select a Path" />
+  <% else # The association here makes this kinda shitty to work with when errors have been generated %>
+    <.input name="episodic[path]" type="select" label="Path" multiple={false} options={@paths} prompt="Select a Path" value="" />
   <% end %>
   <.input field={f[:should_auto_check]} type="checkbox" label="Should auto check" />
   <:actions>

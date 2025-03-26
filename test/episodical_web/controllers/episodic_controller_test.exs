@@ -29,7 +29,7 @@ defmodule EpisodicalWeb.EpisodicControllerTest do
       assert redirected_to(conn) == ~p"/episodics/#{id}"
 
       conn = get(conn, ~p"/episodics/#{id}")
-      assert html_response(conn, 200) =~ "Episodic #{id}"
+      assert html_response(conn, 200) =~ "Episodic <b>some title</b>"
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
@@ -43,7 +43,7 @@ defmodule EpisodicalWeb.EpisodicControllerTest do
 
     test "renders form for editing chosen episodic", %{conn: conn, episodic: episodic} do
       conn = get(conn, ~p"/episodics/#{episodic}/edit")
-      assert html_response(conn, 200) =~ "Edit Episodic"
+      assert html_response(conn, 200) =~ "Editing \"some title\""
     end
   end
 
@@ -60,7 +60,7 @@ defmodule EpisodicalWeb.EpisodicControllerTest do
 
     test "renders errors when data is invalid", %{conn: conn, episodic: episodic} do
       conn = put(conn, ~p"/episodics/#{episodic}", episodic: @invalid_attrs)
-      assert html_response(conn, 200) =~ "Edit Episodic"
+      assert html_response(conn, 200) =~ "Editing \"some title\""
     end
   end
 

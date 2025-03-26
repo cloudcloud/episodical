@@ -32,7 +32,7 @@ defmodule EpisodicalWeb.EpisodicController do
           |> redirect(to: ~p"/episodics/#{episodic}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, :new, changeset: changeset)
+        render(conn, :new, changeset: changeset, paths: list_paths())
     end
   end
 
