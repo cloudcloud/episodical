@@ -3,11 +3,8 @@
 touch .env
 export CI="true"
 
-base="$(mix phx.gen.secret 32)"
-echo "Generated '${base}' for Phoenix."
-
+base="$(mix phx.gen.secret 64)"
 enc="$(elixir --eval "IO.inspect :crypto.strong_rand_bytes(32) |> :base64.encode")"
-echo "Generated '${enc}' for Encryption."
 
 if [[ "${TEST_ENGINE_TOKEN:-}" == "" ]]; then
     echo "The 'TEST_ENGINE_TOKEN' environment variable is required."
@@ -19,6 +16,10 @@ export ENCRYPTION_KEYS=${enc}
 export SECRET_KEY_BASE=${base}
 export TEST_ENGINE_TOKEN=${TEST_ENGINE_TOKEN}
 VARS
+
+echo "Prepared the .env file:"
+cat .env
+echo
 
 if [[ "${MIX_TEST_PARTITION:-0}" = "0" ]]; then
     mix test

@@ -44,5 +44,6 @@ config :episodical, Episodical.Encryption,
     keys:
       System.get_env("ENCRYPTION_KEYS")
         |> String.replace("'", "")
+        |> String.replace("\"", "")
         |> String.split(",")
         |> Enum.map(fn key -> :base64.decode(key) end)
