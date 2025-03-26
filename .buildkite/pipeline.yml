@@ -39,7 +39,4 @@ steps:
   - label: ":elixir: :docker: build"
     key: release-build
     depends_on: test
-    env:
-      TAG: "latest"
-    command: |
-      # docker build --push "cloudcloud/episodical:${TAG}" .
+    command: .buildkite/scripts/build_and_push.sh
