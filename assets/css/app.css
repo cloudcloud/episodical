@@ -1,0 +1,6 @@
+@import "tailwindcss";
+
+@theme {
+    --color-success-300: oklch(0.72, 0.11 178);
+    --color-fail-300: oklch(0.72 0.11 178);
+}

@@ -1,0 +1,8 @@
+<.header>
+  Edit Artist {@artist.id}
+  <:subtitle>Use this form to manage artist records in your database.</:subtitle>
+</.header>
+
+<.artist_form changeset={@changeset} action={~p"/artists/#{@artist}"} />
+
+<.back navigate={~p"/artists"}>Back to artists</.back>

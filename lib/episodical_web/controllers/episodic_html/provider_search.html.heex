@@ -1,0 +1,8 @@
+<.header>
+  Correlate with a Provider
+  <:subtitle>Search for and then select the appropriate Provider reference.</:subtitle>
+</.header>
+
+<%= for provider <- @providers do %>
+  {provider.name}
+<% end %>

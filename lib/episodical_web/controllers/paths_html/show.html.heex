@@ -1,0 +1,17 @@
+<.header>
+  Path <b>{@path.name}</b>
+  <:subtitle>A path is a base location for which files are surfaced.</:subtitle>
+  <:actions>
+    <.link href={~p"/paths/#{@path}/edit"}>
+      <.button>Edit path</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Name">{@path.name}</:item>
+  <:item title="Last Checked At">{@path.last_checked_at}</:item>
+  <:item title="Should Auto Check">{@path.should_auto_check}</:item>
+</.list>
+
+<.back navigate={~p"/paths"}>Back to paths</.back>

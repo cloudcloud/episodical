@@ -1,0 +1,23 @@
+<.header>
+  Listing Paths
+  <:actions>
+    <.link href={~p"/paths/new"}>
+      <.button>New Path</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table id="paths" rows={@paths} row_click={&JS.navigate(~p"/paths/#{&1}")}>
+  <:col :let={path} label="Name"><b>{path.name}</b></:col>
+  <:col :let={path} label="Last Checked At">{path.last_checked_at}</:col>
+  <:col :let={path} label="Should Auto Check?">{path.should_auto_check}</:col>
+  <:action :let={path}>
+    <div class="sr-only">
+      <.link navigate={~p"/paths/#{path}"}>Show</.link>
+    </div>
+    <.link navigate={~p"/paths/#{path}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={path}>
+    <.link href={~p"/paths/#{path}"} method="delete" data-confirm="Are you sure?">Delete</.link>
+  </:action>
+</.table>

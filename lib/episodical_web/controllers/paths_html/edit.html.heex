@@ -1,0 +1,8 @@
+<.header>
+  Edit Path {@path.id}
+  <:subtitle>Use this form to manage paths.</:subtitle>
+</.header>
+
+<.path_form changeset={@changeset} action={~p"/paths/#{@path}"} />
+
+<.back navigate={~p"/paths"}>Back to paths</.back>

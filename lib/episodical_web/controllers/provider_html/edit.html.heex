@@ -1,0 +1,8 @@
+<.header>
+  Edit Provider {@provider.id}
+  <:subtitle>Use this form to manage provider records in your database.</:subtitle>
+</.header>
+
+<.provider_form changeset={@changeset} action={~p"/providers/#{@provider}"} options={@options} />
+
+<.back navigate={~p"/providers"}>Back to providers</.back>

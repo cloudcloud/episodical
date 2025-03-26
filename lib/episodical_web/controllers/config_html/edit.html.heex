@@ -1,0 +1,8 @@
+<.header>
+  Editing configuration
+  <:subtitle>Use this form to update this configuration value.</:subtitle>
+</.header>
+
+<.config_form changeset={@changeset} action={~p"/config/#{@config.id}"} />
+
+<.back navigate={~p"/config"}>Back to Config</.back>

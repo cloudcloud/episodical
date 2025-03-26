@@ -1,0 +1,8 @@
+<.header>
+  New Episodic
+  <:subtitle>Use this form to manage episodic records in your database.</:subtitle>
+</.header>
+
+<.episodic_form changeset={@changeset} action={~p"/episodics"} paths={@paths} episodic={false} />
+
+<.back navigate={~p"/episodics"}>Back to episodics</.back>

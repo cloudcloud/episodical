@@ -1,0 +1,19 @@
+<.simple_form :let={f} for={@changeset} action={@action}>
+  <.error :if={@changeset.action}>
+    Oops, something went wrong! Please check the errors below.
+  </.error>
+  <.input field={f[:name]} type="text" label="Name" />
+  <.input field={f[:base_url]} type="text" label="Base URL" />
+  <.input
+    field={f[:model_type]}
+    type="select"
+    label="Model Type"
+    multiple={false}
+    options={@options}
+  />
+  <.input field={f[:access_key]} type="text" label="Access Key" />
+  <.input field={f[:service_type]} type="text" label="Service Type" />
+  <:actions>
+    <.button>Save Provider</.button>
+  </:actions>
+</.simple_form>

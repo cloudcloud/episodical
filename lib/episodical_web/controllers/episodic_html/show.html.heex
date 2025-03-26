@@ -1,0 +1,86 @@
+<.header>
+  Episodic <b>{@episodic.episodic.title}</b>
+
+  <:subtitle>
+    <.pill_box text={"Released: #{@episodic.episodic.release_year}"} />
+    <%= if @episodic.episodic.status != "" && @episodic.episodic.status != nil do %>
+      <.pill_box text={"Status: #{@episodic.episodic.status}"} />
+    <% end %>
+    <.pill_box text={"Auto Check: #{if @episodic.episodic.should_auto_check, do: "On", else: "Off"}"} />
+    <%= if @episodic.episodic.last_checked_at != nil do %>
+      <.pill_box text={"Last Checked: #{@episodic.episodic.last_checked_at}"} />
+    <% end %>
+    <%= if @episodic.episodic.provider != nil do %>
+      <.link href={~p"/providers/#{@episodic.episodic.provider}"}>
+        <.pill_box text={"Provider: #{@episodic.episodic.provider.name} - #{@episodic.episodic.external_id}"} colour="green" />
+      </.link>
+    <% else %>
+      <.pill_box text={"Provider: Not configured!"} />
+    <% end %>
+    <%= if @episodic.episodic.imdb_id != nil do %>
+      <.link href={"https://dereferer.me/?https%3A//www.imdb.com/title/#{@episodic.episodic.imdb_id}"}>
+        <.pill_box text={"iMDB ID: #{@episodic.episodic.imdb_id}"} colour="green" />
+      </.link>
+    <% end %>
+    <%= if @episodic.episodic.next_airing != nil do %>
+      <.pill_box text={"Next Airing: #{@episodic.episodic.next_airing}"} />
+    <% end %>
+    <%= if @episodic.episodic.path != nil do %>
+      <.link href={~p"/paths/#{@episodic.episodic.path}"}>
+        <.pill_box text={"Path: #{@episodic.episodic.path.name}"} colour="green" />
+      </.link>
+    <% end %>
+  </:subtitle>
+
+  <:actions>
+    <.link href={~p"/episodics/#{@episodic.episodic}/edit"}>
+      <.button>Edit episodic</.button>
+    </.link>
+    <.link href={~p"/episodics/#{@episodic.episodic}/refresh"}>
+      <.button>Refresh content</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<div class="font-normal mt-4 text-gray-600 text-sm content flex mb-3">
+  <%= if @episodic.episodic.image != nil do %>
+    <img src={@episodic.episodic.image} class="w-48 h-52 inline-block flex-wrap" />
+  <% end %>
+
+  <div class="flex-wrap pl-2 ml-4 border-l-2 border-gray-300">
+    {@episodic.episodic.overview}
+  </div>
+</div>
+
+<div :for={{season, episodes} <- @episodic.seasons} class="text-zinc-800 pb-2 mt-2">
+  <.header class="pb-0 mt-4 gap-1.5">
+    <%= if season == 0 do %>
+      Specials
+    <% else %>
+      Season {season}
+    <% end %>
+  </.header>
+
+  <.table rows={episodes} id={"season-#{season}"}>
+    <:col :let={episode} label="Number" class="w-24 font-thin">{episode.index}</:col>
+    <:col :let={episode} label="Title" class="min-w-64">{episode.title}</:col>
+    <:col :let={episode} label="Air Date" class="w-32">{just_date(episode.released_at)}</:col>
+    <:col :let={episode} label="Filename" class="min-w-64">
+      <%= if episode.file != nil do %>
+        {episode.file.name}
+      <% end %>
+    </:col>
+    <:col :let={episode} label="Watched?" class="w-24 font-thin">
+      <%= if episode.is_watched do %>
+      <.icon name="hero-check" class="text-green-600" />
+      <% else %>
+      <.icon name="hero-x-mark" class="text-red-600" />
+      <% end %>
+    </:col>
+    <:action :let={episode}>
+      <.link patch={~p"/episodics/#{@episodic}/watch/#{episode.id}"}>Watched</.link>
+    </:action>
+  </.table>
+</div>
+
+<.back navigate={~p"/episodics"}>Back to episodics</.back>

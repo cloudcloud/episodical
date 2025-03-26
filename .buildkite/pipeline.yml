@@ -1,0 +1,42 @@
+steps:
+  - label: ":elixir: :docker: build"
+    key: build
+    plugins:
+      - docker-compose#v5.6.0:
+          build: app
+          config: "./docker-compose.test.yml"
+          retry:
+            automatic:
+              - limit: 2
+                exit_status: 17
+
+  - label: ":elixir: tests"
+    key: test
+    depends_on: build
+    command:
+      - .buildkite/scripts/run_tests.sh
+    plugins:
+      - cluster-secrets#v1.0.0:
+          variables:
+            TEST_ENGINE_TOKEN: TEST_ENGINE_TOKEN
+      - docker-compose#v5.6.0:
+          run: app
+          config: "./docker-compose.test.yml"
+          environment:
+            - BUILDKITE_BUILD_ID
+            - BUILDKITE_BUILD_NUMBER
+            - BUILDKITE_JOB_ID
+            - BUILDKITE_BRANCH
+            - BUILDKITE_COMMIT
+            - BUILDKITE_MESSAGE
+            - BUILDKITE_BUILD_URL
+            - TEST_ENGINE_TOKEN
+          retry:
+            automatic:
+              - limit: 2
+                exit_status: 17
+
+  - label: ":elixir: :docker: build"
+    key: release-build
+    depends_on: test
+    command: .buildkite/scripts/build_and_push.sh
