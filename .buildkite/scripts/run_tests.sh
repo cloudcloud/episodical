@@ -21,3 +21,7 @@ if [[ "${MIX_TEST_PARTITION:-0}" = "0" ]]; then
 else
     mix test --partitions "${MIX_TEST_PARTITIONS:-1}"
 fi
+
+echo -n "Sleep..."
+sleep 3 # Maybe wait?
+echo " Done!"
