@@ -116,4 +116,21 @@ defmodule Episodical.ModelFixtures do
 
     album
   end
+
+  @doc """
+  Generate a config of a specific type.
+  """
+  def config_fixture(atom, attrs \\ %{}) do
+    case atom do
+      :episodic_path_layout ->
+        input = attrs
+          |> Enum.into(%{
+            "name" => "episodic_path_layout",
+            "value" => ":upper_word_title/:upper_word_season/:files",
+            "is_active" => true
+          })
+
+        Episodical.Repo.insert!(%Episodical.Model.Config{name: input["name"], value: input["value"], is_active: input["is_active"]})
+    end
+  end
 end

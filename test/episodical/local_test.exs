@@ -7,6 +7,7 @@ defmodule Episodical.LocalTest do
     alias Episodical.Local.Path
 
     import Episodical.LocalFixtures
+    import Episodical.ModelFixtures
 
     @invalid_attrs %{name: nil, last_checked_at: nil, should_auto_check: nil}
 
@@ -58,6 +59,31 @@ defmodule Episodical.LocalTest do
     test "change_path/1 returns a path changeset" do
       path = path_fixture()
       assert %Ecto.Changeset{} = Local.change_path(path)
+    end
+
+    test "use_path_layout/2 will produce specific regex for different options" do
+      episodic = episodic_fixture(%{title: "Some Title"})
+      [
+        %{opt: ":upper_word_title/:upper_word_season/:files", result: ~r/Some Title\/Season \d+\/(.+)/},
+        %{opt: ":lower_word_title/:upper_word_season/:files", result: ~r/some title\/Season \d+\/(.+)/},
+        %{opt: ":upper_snake_word_title/:numerical_season/:files", result: ~r/Some_Title\/\d+\/(.+)/},
+        %{opt: ":lower_snake_word_title/:numerical_prefix_season/:files", result: ~r/some_title\/\d+\/(.+)/},
+        %{opt: ":upper_camel_word_title/:numerical_season/:files", result: ~r/Some-Title\/\d+\/(.+)/},
+        %{opt: ":lower_camel_word_title/:upper_word_season/:files", result: ~r/some-title\/Season \d+\/(.+)/}
+      ]
+        |> Enum.each(fn entry ->
+          config = %Episodical.Model.Config{name: "episodic_path_layout", value: entry[:opt]}
+          assert Path.use_path_layout(config, episodic) == {:ok, entry[:result]}
+        end)
+    end
+
+    test "find_matching_files/2 will find some files that match a given pattern" do
+      path = path_fixture(%{name: "test/test_data/"})
+
+      assert Path.find_matching_files(path, ~r/Episodic\/Season 1\/(.+)/) == {:ok, [
+        "#{path.name}Episodic/Season 1/Episodic.S01E02.mkv",
+        "#{path.name}Episodic/Season 1/Episodic.S01E01.mkv"
+      ]}
     end
   end
 

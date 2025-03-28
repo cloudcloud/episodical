@@ -51,7 +51,7 @@ defmodule Episodical.Local.Path do
   end
 
   def find_matching_files(%__MODULE__{} = path, match_path) do
-    {:ok, it} = Walker.start_link(path.name, %{matching: match_path})
+    {:ok, it} = Walker.start_link(path.name, match_path)
 
     trawl_matches(it, match_path)
   end

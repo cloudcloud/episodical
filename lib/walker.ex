@@ -16,10 +16,10 @@ defmodule Walker do
   {:ok, pid} = Walker.start_link("/some/path/here")
   """
   @spec start_link(String.t(), map()) :: {:ok, PID.t()}
-  def start_link(path, opts \\ %{})
-  def start_link(path_list, opts) when is_list(path_list) do
-    mappers = setup_mappers(opts)
-    GenServer.start_link(__MODULE__, {path_list, mappers})
+  def start_link(path_list, matching) when is_list(path_list) do
+    GenServer.start_link(__MODULE__, {path_list, %{
+      matching: fn path -> String.match?(path, matching) end,
+    }})
   end
   def start_link(path, opts) when is_binary(path), do: start_link([path], opts)
 
@@ -37,26 +37,6 @@ defmodule Walker do
   @spec stop(PID.t()) :: :ok
   def stop(server) do
     GenServer.call(server, :stop)
-  end
-
-  @doc """
-  Provide a streamed resource of the files walked.
-  """
-  @spec stream(list(String.t()), map()) :: {:ok, PID.t()}
-  def stream(path_list, opts \\ %{}) do
-    Stream.resource(
-      fn ->
-        {:ok, dirw} = Walker.start_link(path_list, opts)
-        dirw
-      end,
-      fn(dirw) ->
-        case Walker.next(dirw, 1) do
-          data when is_list(data) -> {data, dirw}
-          _ -> {:halt, dirw}
-        end
-      end,
-      fn(dirw) -> Walker.stop(dirw) end
-    )
   end
 
   @spec init(list(String.t())) :: {:ok, list(String.t())}
@@ -103,17 +83,13 @@ defmodule Walker do
         first_n([files_in(path) | rest],
           n,
           mappers,
-          mappers.include_dir_names.(mappers.include_stat.(path, stat), result))
+          result)
 
       :regular ->
-        handle_regular_file(path, stat, rest, n, mappers, result)
+        handle_regular_file(path, rest, n, mappers, result)
 
       :symlink ->
-        if include_stat?(mappers) do
-          handle_regular_file(path, stat, rest, n, mappers, result)
-        else
-          handle_symlink(path, time_opts, rest, n, mappers, result)
-        end
+        handle_symlink(path, time_opts, rest, n, mappers, result)
 
       _ ->
         first_n(rest, n, mappers, result)
@@ -141,7 +117,7 @@ defmodule Walker do
 
       {:error, :enoent} ->
         Logger.info("Dangling symlink found: #{path}")
-        handle_regular_file(path, rstat, rest, n, mappers, result)
+        handle_regular_file(path, rest, n, mappers, result)
 
       {:error, reason} ->
         Logger.info("Stat failed on #{path} with #{reason}")
@@ -155,47 +131,21 @@ defmodule Walker do
         first_n([files_in(path) | rest],
           n,
           mappers,
-          mappers.include_dir_names.(mappers.include_stat.(path, stat), result))
+          result)
 
       :regular ->
-        handle_regular_file(path, stat, rest, n, mappers, result)
+        handle_regular_file(path, rest, n, mappers, result)
 
       true ->
         first_n(rest, n-1, mappers, [result])
     end
   end
 
-  defp handle_regular_file(path, stat, rest, n, mappers, result) do
+  defp handle_regular_file(path, rest, n, mappers, result) do
     if mappers.matching.(path) do
-      first_n(rest, n-1, mappers, [mappers.include_stat.(path, stat) | result])
+      first_n(rest, n-1, mappers, [path | result])
     else
       first_n(rest, n, mappers, result)
     end
   end
-
-  defp include_stat?(mappers) do
-    mappers.include_stat.(:a, :b) == {:a, :b}
-  end
-
-  defp setup_mappers(opts) do
-    %{
-      include_stat:
-        one_of(opts[:include_stat] || false,
-          fn (path, _) -> path end,
-          fn (path, stat) -> {path, stat} end),
-
-      include_dir_names:
-        one_of(opts[:include_dir_names] || false,
-          fn (_, result) -> result end,
-          fn (path, result) -> [path | result] end),
-
-      matching:
-        one_of(!!opts[:matching] || false,
-          fn _ -> true end,
-          fn path -> String.match?(path, opts[:matching]) end),
-    }
-  end
-
-  defp one_of(true, _, func), do: func
-  defp one_of(false, func, _), do: func
 end
