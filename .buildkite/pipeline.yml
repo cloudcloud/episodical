@@ -30,8 +30,6 @@ steps:
               - limit: 2
                 exit_status: 17
           propagate-environment: true
-          workdir: /app
-          mount-checkout: true
 
   - label: ":elixir: :docker: release"
     key: release-build
