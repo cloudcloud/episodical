@@ -131,6 +131,16 @@ defmodule Episodical.ModelFixtures do
           })
 
         Episodical.Repo.insert!(%Episodical.Model.Config{name: input["name"], value: input["value"], is_active: input["is_active"]})
+
+      :episodic_filename_pattern ->
+        input = attrs
+          |> Enum.into(%{
+            "name" => "episodic_filename_pattern",
+            "value" => "",
+            "is_active" => true
+          })
+
+        Episodical.Repo.insert!(%Episodical.Model.Config{name: input["name"], value: input["value"], is_active: input["is_active"]})
     end
   end
 end
