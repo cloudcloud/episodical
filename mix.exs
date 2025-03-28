@@ -61,7 +61,7 @@ defmodule Episodical.MixProject do
       {:httpoison, "~> 2.0"},
       {:que, "~> 0.10.1"},
       {:flop_phoenix, "~> 0.24.1"},
-      {:buildkite_test_collector, path: "./vendor/test_collector_elixir", only: :test} #"~> 0.3.1", only: :test}
+      {:buildkite_test_collector, path: "#{System.get_env("PWD")}/vendor/test_collector_elixir", only: :test} #"~> 0.3.1", only: :test}
     ]
   end
 
