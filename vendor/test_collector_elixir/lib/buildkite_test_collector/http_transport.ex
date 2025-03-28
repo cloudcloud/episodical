@@ -61,7 +61,7 @@ defmodule BuildkiteTestCollector.HttpTransport do
       )
 
   defp debug(%Tesla.Env{method: method, url: url, body: body, status: status} = input) do
-    if Application.fetch_env!(:buildkite_test_collector, :debug) do
+    if Application.fetch_env!(:buildkite_test_collector, :http_debug) do
       IO.inspect %{
         method: method,
         url: url,
