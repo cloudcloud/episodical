@@ -10,7 +10,6 @@ fi
 enc="$(elixir --eval "IO.puts :crypto.strong_rand_bytes(32) |> :base64.encode")"
 cat << VARS > .env
 export ENCRYPTION_KEYS=${enc}
-export TEST_ENGINE_TOKEN=${TEST_ENGINE_TOKEN}
 export BUILDKITE_ANALYTICS_TOKEN=${TEST_ENGINE_TOKEN}
 VARS
 

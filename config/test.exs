@@ -38,7 +38,7 @@ config :phoenix_live_view,
 
 # Using the test collector for great power
 config :buildkite_test_collector,
-  api_key: System.get_env("TEST_ENGINE_TOKEN")
+  api_key: System.get_env("BUILDKITE_ANALYTICS_TOKEN")
 
 config :episodical, Episodical.Encryption,
     keys:
