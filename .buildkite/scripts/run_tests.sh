@@ -22,6 +22,9 @@ else
     mix test --partitions "${MIX_TEST_PARTITIONS:-1}"
 fi
 
-echo -n "Sleep..."
-sleep 3 # Maybe wait?
+echo -n "Sleep"
+for i in {1..8}; do
+    sleep 1
+    echo -n "."
+done
 echo " Done!"
