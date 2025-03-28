@@ -85,6 +85,22 @@ defmodule Episodical.LocalTest do
         "#{path.name}Episodic/Season 1/Episodic.S01E02.mkv"
       ]}
     end
+
+    test "find_matching_files/2 will not find non-matching files" do
+      path = path_fixture(%{name: "test/test_data/"})
+
+      assert Path.find_matching_files(path, ~r/Some Ep\/Season 1\/(.+)/) == {:ok, []}
+    end
+
+    test "find_matching_files/2 will return symlinks if found" do
+      path = path_fixture(%{name: "test/test_data/"})
+
+      assert Path.find_matching_files(path, ~r/Other Ep\/Season 1\/(.+)/) == {:ok, [
+        "#{path.name}Other Ep/Season 1/Other.Ep.S01E01.mkv",
+        "#{path.name}Other Ep/Season 1/Other.Ep.S01E02.mkv",
+        "#{path.name}Other Ep/Season 1/Other.Ep.S01E03.mkv"
+      ]}
+    end
   end
 
   describe "files" do
