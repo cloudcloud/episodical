@@ -60,11 +60,21 @@ defmodule BuildkiteTestCollector.HttpTransport do
         "https://analytics-api.buildkite.com/v1/uploads"
       )
 
+  defp debug(%Tesla.Env{method: method, url: url, body: body, status: status} = input) do
+    if Application.fetch_env!(:buildkite_test_collector, :debug) do
+      IO.inspect %{
+        method: method,
+        url: url,
+        body: body,
+        status: status,
+      }
+    end
+    input
+  end
   defp debug(input) do
-    if Application.fetch_env!(:buildkite_test_collector, :debug) == "true" do
+    if Application.fetch_env!(:buildkite_test_collector, :http_debug) do
       IO.inspect input
     end
-
     input
   end
 
