@@ -81,8 +81,8 @@ defmodule Episodical.LocalTest do
       path = path_fixture(%{name: "test/test_data/"})
 
       assert Path.find_matching_files(path, ~r/Episodic\/Season 1\/(.+)/) == {:ok, [
-        "#{path.name}Episodic/Season 1/Episodic.S01E02.mkv",
-        "#{path.name}Episodic/Season 1/Episodic.S01E01.mkv"
+        "#{path.name}Episodic/Season 1/Episodic.S01E01.mkv",
+        "#{path.name}Episodic/Season 1/Episodic.S01E02.mkv"
       ]}
     end
   end

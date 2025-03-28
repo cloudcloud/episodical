@@ -51,9 +51,12 @@ defmodule Episodical.Local.Path do
   end
 
   def find_matching_files(%__MODULE__{} = path, match_path) do
-    {:ok, it} = Walker.start_link(path.name, match_path)
+    with {:ok, it} <- Walker.start_link(path.name, match_path),
+      {:ok, results} <- trawl_matches(it, match_path),
+      output <- Enum.sort(results) do
 
-    trawl_matches(it, match_path)
+      {:ok, output}
+    end
   end
 
   defp trawl_matches(it, path, acc \\ []) do
