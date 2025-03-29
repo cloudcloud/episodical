@@ -19,7 +19,7 @@ defmodule Episodical.Presenters.ProviderSearchResults do
     if input.service_type != TheTVDB.service_type? do
       {:error, "Invalid results for presenting"}
     else
-      IO.inspect {:ok, Enum.map(input.results, fn x -> %{
+      {:ok, Enum.map(input.results, fn x -> %{
         "name" => x["name"],
         "date_began" => x["first_air_time"],
         "overview" => x["overview"],

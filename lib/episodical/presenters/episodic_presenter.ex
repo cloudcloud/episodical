@@ -36,6 +36,7 @@ defmodule Episodical.Presenters.Episodic do
       |> Map.replace(:id, id)
   end
 
+  defp sort_seasons(nil), do: []
   defp sort_seasons(seasons) do
     seasons
       |> Enum.sort(&(&1 >= &2))
