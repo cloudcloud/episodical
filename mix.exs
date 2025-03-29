@@ -63,7 +63,8 @@ defmodule Episodical.MixProject do
       {:flop_phoenix, "~> 0.24.1"},
       {:memento, "~> 0.3.1"},
       {:ex_doc, ">= 0.0.0", only: :docs },
-      {:buildkite_test_collector, path: "#{System.get_env("PWD")}/vendor/test_collector_elixir", only: :test} #"~> 0.3.1", only: :test}
+      #{:buildkite_test_collector, path: "#{System.get_env("PWD")}/vendor/test_collector_elixir", only: :test}
+      {:buildkite_test_collector, "~> 0.3.1", only: :test}
     ]
   end
 
