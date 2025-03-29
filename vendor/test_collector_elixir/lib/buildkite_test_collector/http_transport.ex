@@ -7,6 +7,8 @@ defmodule BuildkiteTestCollector.HttpTransport do
   alias BuildkiteTestCollector.Payload
   use Tesla, only: [:post], docs: false
 
+  require Logger
+
   adapter Tesla.Adapter.Mint, timeout: 120_000
   plug Tesla.Middleware.JSON, engine: Jason
 
@@ -62,7 +64,7 @@ defmodule BuildkiteTestCollector.HttpTransport do
 
   defp debug(%Tesla.Env{method: method, url: url, body: body, status: status} = input) do
     if Application.fetch_env!(:buildkite_test_collector, :http_debug) do
-      IO.inspect %{
+      Logger.debug %{
         method: method,
         url: url,
         body: body,
@@ -73,7 +75,7 @@ defmodule BuildkiteTestCollector.HttpTransport do
   end
   defp debug(input) do
     if Application.fetch_env!(:buildkite_test_collector, :http_debug) do
-      IO.inspect input
+      Logger.debug input
     end
     input
   end
