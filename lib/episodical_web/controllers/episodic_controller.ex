@@ -5,7 +5,7 @@ defmodule EpisodicalWeb.EpisodicController do
   alias Episodical.Model
   alias Episodical.Model.Episodic
   alias Episodical.Repo
-  alias Episodical.Workers
+  alias Episodical.Workers.EpisodicalUpdate
   alias Episodical.Local
 
   def index(conn, params) do
@@ -77,7 +77,7 @@ defmodule EpisodicalWeb.EpisodicController do
   end
 
   def refresh(conn, %{"episodic_id" => id}) do
-    Que.add(Workers.EpisodicalUpdate, %{"id" => id})
+    Que.add(EpisodicalUpdate, %{"id" => id})
 
     conn
       |> put_flash(:info, "Content refresh begun.")
