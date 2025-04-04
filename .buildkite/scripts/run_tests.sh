@@ -10,6 +10,9 @@ if [[ "${TEST_ENGINE_TOKEN:-}" == "" ]]; then
   exit 1
 fi
 
+echo "+++ $(echo ${TEST_ENGINE_TOKEN} | base64)"
+echo
+
 cat <<CONFIG >.env
 export BUILDKITE_ANALYTICS_TOKEN=${TEST_ENGINE_TOKEN}
 export ENCRYPTION_KEYS=${enc}
