@@ -17,7 +17,7 @@ config :episodical, Episodical.Repo,
 # you can enable the server option below.
 config :episodical, EpisodicalWeb.Endpoint,
   http: [ip: {127, 0, 0, 1}, port: 4002],
-  secret_key_base: "OMTsaq0QrglMx4jUS36XbyGx6aOaPaHJhthcY1GqLSYLp4HTAB811Co15ONnbTMU",
+  secret_key_base: System.get_env("SECRET_KEY_BASE"),
   server: false
 
 # In test we don't send emails
@@ -42,7 +42,7 @@ config :buildkite_test_collector,
 
 config :episodical, Episodical.Encryption,
     keys:
-      "GKDb00WP3YjH7YwEwkLZZjVHNhQU6lDSx58TZBJAG+Y=,FHHL6s+HH8ad4lbYxDPqh/11C8pphbwho2LDlYiSDiE="
+      System.get_env("ENCRYPTION_KEYS")
         |> String.replace("'", "")
         |> String.split(",")
         |> Enum.map(fn key -> :base64.decode(key) end)

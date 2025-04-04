@@ -61,7 +61,8 @@ defmodule Episodical.MixProject do
       {:httpoison, "~> 2.0"},
       {:que, "~> 0.10.1"},
       {:flop_phoenix, "~> 0.24.1"},
-      {:buildkite_test_collector, "~> 0.3.1"}
+      {:ex_doc, ">= 0.0.0", only: :docs},
+      {:buildkite_test_collector, "~> 0.3.1", only: :test}
     ]
   end
 
