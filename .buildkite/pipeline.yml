@@ -9,6 +9,7 @@ steps:
             automatic:
               - limit: 2
                 exit_status: 17
+            propagate-environment: true
 
   - label: ":elixir: tests"
     key: test
@@ -23,20 +24,14 @@ steps:
           run: app
           config: "./docker-compose.test.yml"
           environment:
-            - BUILDKITE_BUILD_ID
-            - BUILDKITE_BUILD_NUMBER
-            - BUILDKITE_JOB_ID
-            - BUILDKITE_BRANCH
-            - BUILDKITE_COMMIT
-            - BUILDKITE_MESSAGE
-            - BUILDKITE_BUILD_URL
             - TEST_ENGINE_TOKEN
           retry:
             automatic:
               - limit: 2
                 exit_status: 17
+          propagate-environment: true
 
-  - label: ":elixir: :docker: build"
+  - label: ":elixir: :docker: release"
     key: release-build
     depends_on: test
     command: .buildkite/scripts/build_and_push.sh
