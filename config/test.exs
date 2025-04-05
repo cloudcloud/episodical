@@ -6,7 +6,7 @@ import Config
 # to provide built-in test partitioning in CI environment.
 # Run `mix help test` for more information.
 config :episodical, Episodical.Repo,
-  username: "postgres",
+  username: System.get_env("PGUSER") || postgres",
   password: "postgres",
   hostname: System.get_env("PGHOST") || "localhost",
   database: "episodical_test#{System.get_env("MIX_TEST_PARTITION")}",

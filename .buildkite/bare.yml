@@ -1,13 +1,6 @@
 agents:
   queue: linux-with-base
 
-cache:
-  paths:
-    - ".elixir_ls"
-    - "_build"
-    - "deps"
-  size: "20g"
-
 steps:
   - label: ":elixir: build"
     key: build
@@ -18,3 +11,13 @@ steps:
       - cluster-secrets#v1.0.0:
           variables:
             TEST_ENGINE_TOKEN: TEST_ENGINE_TOKEN
+      - docker-compose#v5.6.0:
+          run: app
+          config: "./docker-compose.test.yml"
+          environment:
+            - TEST_ENGINE_TOKEN
+          retry:
+            automatic:
+              - limit: 2
+                exit_status: 17
+          propagate-environment: true

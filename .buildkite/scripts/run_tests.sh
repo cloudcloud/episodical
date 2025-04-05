@@ -2,25 +2,12 @@
 
 touch .env
 
-# Start postgres early so it's ready for testing usage
-echo -n "Starting postgres... "
-service postgresql start
-echo "Done"
-
 base="iYGKSNr0jT7Z7E6z0PpzWbYiepFEPcw+wVZ+5YkpRcwIRG5lyhsOQe+K01h922Wy"
 enc="di39k8ByviRM4HHybXbBDZzhUx/RQfzLbJhb5rdQZ2U="
 
 if [[ "${TEST_ENGINE_TOKEN:-}" == "" ]]; then
   echo "The 'TEST_ENGINE_TOKEN' environment variable is required."
   exit 1
-fi
-
-echo "Checking postgres..."
-if [[ $(pg_isready -h=localhost -p=5432 -U=postgres 2>&1 >/dev/null && echo $?) -ne 0 ]]; then
-  echo "Not ready yet, sleep a little longer..."
-  sleep 2
-else
-  echo "We can connect to postgres now!"
 fi
 
 # Provision the database, might be the problem
@@ -30,7 +17,6 @@ echo "Database should now be provisioned."
 cat <<CONFIG >.env
 export BUILDKITE_ANALYTICS_TOKEN=${TEST_ENGINE_TOKEN}
 export ENCRYPTION_KEYS=${enc}
-export PGHOST=localhost
 export SECRET_KEY_BASE=${base}
 export TEST_ENGINE_TOKEN=${TEST_ENGINE_TOKEN}
 CONFIG
