@@ -10,6 +10,9 @@ if [[ "${TEST_ENGINE_TOKEN:-}" == "" ]]; then
   exit 1
 fi
 
+mix deps.compile
+mix compile
+
 # Provision the database, might be the problem
 mix ecto.create
 echo "Database should now be provisioned."
