@@ -2,6 +2,11 @@
 
 touch .env
 
+# Start postgres early so it's ready for testing usage
+echo -n "Starting postgres... "
+systemctl restart postgresql.service
+echo "Done"
+
 base="iYGKSNr0jT7Z7E6z0PpzWbYiepFEPcw+wVZ+5YkpRcwIRG5lyhsOQe+K01h922Wy"
 enc="di39k8ByviRM4HHybXbBDZzhUx/RQfzLbJhb5rdQZ2U="
 
@@ -10,13 +15,6 @@ if [[ "${TEST_ENGINE_TOKEN:-}" == "" ]]; then
   exit 1
 fi
 
-docker run -d \
-  -e POSTGRES_USER=postgres \
-  -e POSTGRES_PASSWORD=postgres \
-  -p 5432 \
-  postgres:17.4-bookworm
-
-sleep 2
 echo "Checking postgres..."
 if [[ $(pg_isready -h=localhost -p=5432 -U=postgres 2>&1 >/dev/null && echo $?) -ne 0 ]]; then
   echo "Not ready yet, sleep a little longer..."
