@@ -4,7 +4,7 @@ touch .env
 
 # Start postgres early so it's ready for testing usage
 echo -n "Starting postgres... "
-systemctl restart postgresql.service
+service postgresql start
 echo "Done"
 
 base="iYGKSNr0jT7Z7E6z0PpzWbYiepFEPcw+wVZ+5YkpRcwIRG5lyhsOQe+K01h922Wy"
