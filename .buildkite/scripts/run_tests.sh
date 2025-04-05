@@ -10,7 +10,7 @@ if [[ "${TEST_ENGINE_TOKEN:-}" == "" ]]; then
   exit 1
 fi
 
-docker run \
+docker run -d \
   -e POSTGRES_USER=postgres \
   -e POSTGRES_PASSWORD=postgres \
   -p 5432 \
