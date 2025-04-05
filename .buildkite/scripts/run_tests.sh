@@ -27,6 +27,7 @@ fi
 
 # Provision the database, might be the problem
 mix ecto.create
+echo "Database should now be provisioned."
 
 cat <<CONFIG >.env
 export BUILDKITE_ANALYTICS_TOKEN=${TEST_ENGINE_TOKEN}
