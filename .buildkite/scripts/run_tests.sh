@@ -17,6 +17,10 @@ docker run -d \
   postgres:17.4-bookworm
 
 sleep 2
+if [[ $(pg_isready -h=localhost -p=5432 -U=postgres 2>&1 >/dev/null && echo $?) -ne 0 ]]; then
+  echo "Not ready yet, sleep a little longer..."
+  sleep 2
+fi
 
 cat <<CONFIG >.env
 export BUILDKITE_ANALYTICS_TOKEN=${TEST_ENGINE_TOKEN}
