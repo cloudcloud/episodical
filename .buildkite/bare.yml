@@ -1,0 +1,18 @@
+agents:
+  queue: linux-with-base
+
+steps:
+  - label: ":elixir: build"
+    key: build
+    command: |
+      ./.buildkite/scripts/install.sh
+
+  - label: ":elixir: test"
+    key: test
+    depends_on: build
+    command: |
+      ./.buildkite/scripts/run_tests.sh
+    plugins:
+      - cluster-secrets#v1.0.0:
+          variables:
+            TEST_ENGINE_TOKEN: TEST_ENGINE_TOKEN
