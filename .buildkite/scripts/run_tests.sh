@@ -10,6 +10,14 @@ if [[ "${TEST_ENGINE_TOKEN:-}" == "" ]]; then
   exit 1
 fi
 
+docker run \
+  -e POSTGRES_USER=postgres \
+  -e POSTGRES_PASSWORD=postgres \
+  -p 5432 \
+  postgres:17.4-bookworm
+
+sleep 2
+
 cat <<CONFIG >.env
 export BUILDKITE_ANALYTICS_TOKEN=${TEST_ENGINE_TOKEN}
 export ENCRYPTION_KEYS=${enc}
