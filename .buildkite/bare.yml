@@ -1,6 +1,13 @@
 agents:
   queue: linux-with-base
 
+cache:
+  paths:
+    - ".elixir_ls"
+    - "_build"
+    - "deps"
+  size: "20g"
+
 steps:
   - label: ":elixir: build"
     key: build
