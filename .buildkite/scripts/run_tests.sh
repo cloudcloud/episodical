@@ -13,9 +13,11 @@ export TEST_ENGINE_TOKEN=${TEST_ENGINE_TOKEN}
 CONFIG
 
 if [[ "${MIX_TEST_PARTITION:-0}" = "0" ]]; then
-  mix test
+  mix test --cover --export-coverage default
 else
-  mix test --partitions "${MIX_TEST_PARTITIONS:-1}"
+  mix test --cover --export-coverage default --partitions "${MIX_TEST_PARTITIONS:-1}"
 fi
+
+mix test.coverage
 
 sleep 3
