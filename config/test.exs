@@ -27,7 +27,7 @@ config :episodical, Episodical.Mailer, adapter: Swoosh.Adapters.Test
 config :swoosh, :api_client, false
 
 # Print only warnings and errors during test
-config :logger, level: :warning
+config :logger, level: :debug
 
 # Initialize plugs at runtime for faster test compilation
 config :phoenix, :plug_init_mode, :runtime
@@ -38,11 +38,12 @@ config :phoenix_live_view,
 
 # Using the test collector for great power
 config :buildkite_test_collector,
-  api_key: System.get_env("TEST_ENGINE_TOKEN")
+  api_key: System.get_env("TEST_ENGINE_TOKEN"),
+  activate_debug: true
 
 config :episodical, Episodical.Encryption,
-    keys:
-      System.get_env("ENCRYPTION_KEYS")
-        |> String.replace("'", "")
-        |> String.split(",")
-        |> Enum.map(fn key -> :base64.decode(key) end)
+  keys:
+    System.get_env("ENCRYPTION_KEYS")
+    |> String.replace("'", "")
+    |> String.split(",")
+    |> Enum.map(fn key -> :base64.decode(key) end)
