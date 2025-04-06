@@ -3,8 +3,6 @@ defmodule Episodical.ModelTest do
 
   alias Episodical.Model
 
-  import Logger
-
   describe "episodics" do
     alias Episodical.Model.Episodic
 
