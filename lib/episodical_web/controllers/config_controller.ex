@@ -18,7 +18,7 @@ defmodule EpisodicalWeb.ConfigController do
     config = Model.get_config!(id)
 
     case Model.update_config(config, config_params) do
-      {:ok, ^config} ->
+      {:ok, _} ->
         conn
         |> put_flash(:info, "Config updated successfully.")
         |> redirect(to: ~p"/config")

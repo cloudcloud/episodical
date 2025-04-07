@@ -7,6 +7,7 @@ defmodule Episodical.LocalTest do
     alias Episodical.Local.Path
 
     import Episodical.LocalFixtures
+    import Episodical.ModelFixtures
 
     @invalid_attrs %{name: nil, last_checked_at: nil, should_auto_check: nil}
 
@@ -21,7 +22,11 @@ defmodule Episodical.LocalTest do
     end
 
     test "create_path/1 with valid data creates a path" do
-      valid_attrs = %{name: "some name", last_checked_at: ~U[2025-02-07 22:58:00.000000Z], should_auto_check: true}
+      valid_attrs = %{
+        name: "some name",
+        last_checked_at: ~U[2025-02-07 22:58:00.000000Z],
+        should_auto_check: true
+      }
 
       assert {:ok, %Path{} = path} = Local.create_path(valid_attrs)
       assert path.name == "some name"
@@ -35,7 +40,12 @@ defmodule Episodical.LocalTest do
 
     test "update_path/2 with valid data updates the path" do
       path = path_fixture()
-      update_attrs = %{name: "some updated name", last_checked_at: ~U[2025-02-08 22:58:00.000000Z], should_auto_check: false}
+
+      update_attrs = %{
+        name: "some updated name",
+        last_checked_at: ~U[2025-02-08 22:58:00.000000Z],
+        should_auto_check: false
+      }
 
       assert {:ok, %Path{} = path} = Local.update_path(path, update_attrs)
       assert path.name == "some updated name"
@@ -59,6 +69,70 @@ defmodule Episodical.LocalTest do
       path = path_fixture()
       assert %Ecto.Changeset{} = Local.change_path(path)
     end
+
+    test "use_path_layout/2 will produce specific regex for different options" do
+      episodic = episodic_fixture(%{title: "Some Title"})
+
+      [
+        %{
+          opt: ":upper_word_title/:upper_word_season/:files",
+          result: ~r/Some Title\/Season \d+\/(.+)/
+        },
+        %{
+          opt: ":lower_word_title/:upper_word_season/:files",
+          result: ~r/some title\/Season \d+\/(.+)/
+        },
+        %{
+          opt: ":upper_snake_word_title/:numerical_season/:files",
+          result: ~r/Some_Title\/\d+\/(.+)/
+        },
+        %{
+          opt: ":lower_snake_word_title/:numerical_prefix_season/:files",
+          result: ~r/some_title\/\d+\/(.+)/
+        },
+        %{
+          opt: ":upper_camel_word_title/:numerical_season/:files",
+          result: ~r/Some-Title\/\d+\/(.+)/
+        },
+        %{
+          opt: ":lower_camel_word_title/:upper_word_season/:files",
+          result: ~r/some-title\/Season \d+\/(.+)/
+        }
+      ]
+      |> Enum.each(fn entry ->
+        config = %Episodical.Model.Config{name: "episodic_path_layout", value: entry[:opt]}
+        assert Path.use_path_layout(config, episodic) == {:ok, entry[:result]}
+      end)
+    end
+
+    test "find_matching_files/2 will find some files that match a given pattern" do
+      path = path_fixture(%{name: "test/test_data/"})
+
+      assert Path.find_matching_files(path, ~r/Episodic\/Season 1\/(.+)/) ==
+               {:ok,
+                [
+                  "#{path.name}Episodic/Season 1/Episodic.S01E01.mkv",
+                  "#{path.name}Episodic/Season 1/Episodic.S01E02.avi"
+                ]}
+    end
+
+    test "find_matching_files/2 will not find non-matching files" do
+      path = path_fixture(%{name: "test/test_data/"})
+
+      assert Path.find_matching_files(path, ~r/Some Ep\/Season 1\/(.+)/) == {:ok, []}
+    end
+
+    test "find_matching_files/2 will return symlinks if found" do
+      path = path_fixture(%{name: "test/test_data/"})
+
+      assert Path.find_matching_files(path, ~r/Other Ep\/Season 1\/(.+)/) ==
+               {:ok,
+                [
+                  "#{path.name}Other Ep/Season 1/Other.Ep.S01E01.mkv",
+                  "#{path.name}Other Ep/Season 1/Other.Ep.S01E02.mkv",
+                  "#{path.name}Other Ep/Season 1/Other.Ep.S01E03.mkv"
+                ]}
+    end
   end
 
   describe "files" do
@@ -76,7 +150,9 @@ defmodule Episodical.LocalTest do
 
     test "get_file!/1 returns the file with given id" do
       file = file_fixture()
-      assert Local.get_file!(file.id) |> Episodical.Repo.preload([:episodic, :episode, :path]) == file
+
+      assert Local.get_file!(file.id) |> Episodical.Repo.preload([:episodic, :episode, :path]) ==
+               file
     end
 
     test "create_file/1 with valid data creates a file" do

@@ -17,7 +17,7 @@ defmodule EpisodicalWeb.ProviderController do
 
     render(conn, :new,
       changeset: changeset,
-      options: [Episodic: "episodic", Artist: "artist", Document: "document"]
+      options: provider_options()
     )
   end
 
@@ -29,7 +29,7 @@ defmodule EpisodicalWeb.ProviderController do
         |> redirect(to: ~p"/providers/#{provider}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, :new, changeset: changeset)
+        render(conn, :new, changeset: changeset, options: provider_options())
     end
   end
 
@@ -48,7 +48,7 @@ defmodule EpisodicalWeb.ProviderController do
     render(conn, :edit,
       provider: provider,
       changeset: changeset,
-      options: [Episodic: "episodic", Artist: "artist", Document: "document"]
+      options: provider_options()
     )
   end
 
@@ -62,7 +62,7 @@ defmodule EpisodicalWeb.ProviderController do
         |> redirect(to: ~p"/providers/#{provider}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, :edit, provider: provider, changeset: changeset)
+        render(conn, :edit, provider: provider, changeset: changeset, options: provider_options())
     end
   end
 
@@ -74,4 +74,6 @@ defmodule EpisodicalWeb.ProviderController do
     |> put_flash(:info, "Provider deleted successfully.")
     |> redirect(to: ~p"/providers")
   end
+
+  defp provider_options(), do: [Episodic: "episodic", Artist: "artist", Document: "document"]
 end
