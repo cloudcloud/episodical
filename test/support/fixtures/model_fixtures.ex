@@ -36,7 +36,7 @@ defmodule Episodical.ModelFixtures do
         image: "https://",
         overview: "overview of the episodic",
         original_language: "eng",
-        imdb_id: "tt666",
+        imdb_id: "tt666"
       })
       |> Episodical.Model.create_episodic()
 
@@ -115,5 +115,32 @@ defmodule Episodical.ModelFixtures do
       |> Episodical.Model.create_album()
 
     album
+  end
+
+  @doc """
+  Generate a config of a specific type.
+  """
+  def config_fixture(atom, attrs \\ %{}) do
+    input =
+      attrs
+      |> Enum.into(%{
+        "name" => Atom.to_string(atom),
+        "value" => gen_config_input(atom),
+        "is_active" => true
+      })
+
+    Episodical.Repo.insert!(%Episodical.Model.Config{
+      name: input["name"],
+      value: input["value"],
+      is_active: input["is_active"]
+    })
+  end
+
+  defp gen_config_input(atom) do
+    case atom do
+      :episodic_path_layout -> ":upper_word_title/:upper_word_season/:files"
+      :episodic_filename_pattern -> ""
+      :episodical_language -> "eng"
+    end
   end
 end

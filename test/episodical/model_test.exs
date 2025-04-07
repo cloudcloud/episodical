@@ -16,7 +16,7 @@ defmodule Episodical.ModelTest do
       external_id: nil
     }
 
-    test "list_episodics/0 returns all episodics" do
+    test "list_episodics/1 returns all episodics" do
       episodic = episodic_fixture()
 
       {:ok, {_, meta}} = Model.list_episodics(%{})
@@ -445,6 +445,43 @@ defmodule Episodical.ModelTest do
     test "change_song/1 returns a song changeset" do
       song = song_fixture()
       assert %Ecto.Changeset{} = Model.change_song(song)
+    end
+  end
+
+  describe "config" do
+    alias Episodical.Model.Config
+
+    import Episodical.ModelFixtures
+
+    @invalid_attrs %{name: nil, value: nil}
+
+    test "list_config/0 lists all config" do
+      config = config_fixture(:episodic_path_layout)
+
+      assert [config] == Model.list_config()
+    end
+
+    test "get_config!/1 will return the specified config" do
+      config_one = config_fixture(:episodic_path_layout)
+      config_two = config_fixture(:episodic_filename_pattern)
+
+      assert config_one == Model.get_config!(config_one.id)
+      assert config_two == Model.get_config!(config_two.id)
+    end
+
+    test "update_config/2 will appropriately update the given config" do
+      config = config_fixture(:episodic_path_layout)
+      update_attrs = %{value: "something-else"}
+
+      assert {:ok, %Config{} = config} = Model.update_config(config, update_attrs)
+      assert config.value == "something-else"
+    end
+
+    test "update_config/2 with invalid attrs will return error changeset" do
+      config = config_fixture(:episodic_path_layout)
+
+      assert {:error, %Ecto.Changeset{}} = Model.update_config(config, @invalid_attrs)
+      assert config == Model.get_config!(config.id)
     end
   end
 end

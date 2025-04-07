@@ -10,8 +10,4 @@ defmodule EpisodicalWeb.ConfigHTML do
   attr :action, :string, required: true
 
   def config_form(assigns)
-
-  def display_slashes(value) do
-    IO.inspect String.split(value, "")
-  end
 end
