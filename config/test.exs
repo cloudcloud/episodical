@@ -6,7 +6,7 @@ import Config
 # to provide built-in test partitioning in CI environment.
 # Run `mix help test` for more information.
 config :episodical, Episodical.Repo,
-  username: "postgres",
+  username: System.get_env("PGUSER") || "postgres",
   password: "postgres",
   hostname: System.get_env("PGHOST") || "localhost",
   database: "episodical_test#{System.get_env("MIX_TEST_PARTITION")}",
@@ -38,11 +38,12 @@ config :phoenix_live_view,
 
 # Using the test collector for great power
 config :buildkite_test_collector,
-  api_key: System.get_env("TEST_ENGINE_TOKEN")
+  api_key: System.get_env("BUILDKITE_ANALYTICS_TOKEN"),
+  activate_debug: true
 
 config :episodical, Episodical.Encryption,
-    keys:
-      System.get_env("ENCRYPTION_KEYS")
-        |> String.replace("'", "")
-        |> String.split(",")
-        |> Enum.map(fn key -> :base64.decode(key) end)
+  keys:
+    System.get_env("ENCRYPTION_KEYS")
+    |> String.replace("'", "")
+    |> String.split(",")
+    |> Enum.map(fn key -> :base64.decode(key) end)
