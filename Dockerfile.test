@@ -15,6 +15,7 @@ RUN mix local.hex --force && \
     mix local.rebar --force
 
 COPY mix.exs mix.lock ./
+COPY vendor ./vendor
 RUN mix deps.get && mkdir config
 
 COPY .buildkite/scripts/build.sh config/config.exs config/test.exs config/
