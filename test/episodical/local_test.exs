@@ -112,7 +112,7 @@ defmodule Episodical.LocalTest do
                {:ok,
                 [
                   "#{path.name}Episodic/Season 1/Episodic.S01E01.mkv",
-                  "#{path.name}Episodic/Season 1/Episodic.S01E02.mkv"
+                  "#{path.name}Episodic/Season 1/Episodic.S01E02.avi"
                 ]}
     end
 

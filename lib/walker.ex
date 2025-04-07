@@ -2,17 +2,13 @@ defmodule Walker do
   @moduledoc """
   Walker is a filesystem walker that will provide an interface for discovering
   directories and files matching within a specific path system.
-
   Shamelessly borrowed from https://github.com/pragdave/dir_walker/
   """
-
   use GenServer
-
   require Logger
 
   @doc """
   Start the Walker with a given path to walk from.
-
   {:ok, pid} = Walker.start_link("/some/path/here")
   """
   @spec start_link(String.t(), map()) :: {:ok, PID.t()}
@@ -26,7 +22,7 @@ defmodule Walker do
     )
   end
 
-  def start_link(path, matching) when is_binary(path), do: start_link([path], matching)
+  def start_link(path, opts) when is_binary(path), do: start_link([path], opts)
 
   @doc """
   Retrieve the next N files, defaulting to a single file.
@@ -51,8 +47,8 @@ defmodule Walker do
 
   def handle_call({:get_next, _n}, _from, state = {[], _}), do: {:reply, nil, state}
 
-  def handle_call({:get_next, n}, _from, {path_list, matching}) do
-    {result, new_path_list} = first_n(path_list, n, matching, _result = [])
+  def handle_call({:get_next, n}, _from, {path_list, mappers}) do
+    {result, new_path_list} = first_n(path_list, n, mappers, _result = [])
 
     return_result =
       case {result, new_path_list} do
@@ -60,7 +56,7 @@ defmodule Walker do
         _ -> result
       end
 
-    {:reply, return_result, {new_path_list, matching}}
+    {:reply, return_result, {new_path_list, mappers}}
   end
 
   def handle_call(:stop, from, state) do
@@ -71,21 +67,19 @@ defmodule Walker do
   ##
   # Internal implementation and helpers.
   ##
+  defp first_n([[] | rest], n, mappers, result), do: first_n(rest, n, mappers, result)
 
-  defp first_n([[] | rest], n, matching, result), do: first_n(rest, n, matching, result)
+  defp first_n([[first] | rest], n, mappers, result),
+    do: first_n([first | rest], n, mappers, result)
 
-  defp first_n([[first] | rest], n, matching, result),
-    do: first_n([first | rest], n, matching, result)
-
-  defp first_n([[first | nested] | rest], n, matching, result),
-    do: first_n([first | [nested | rest]], n, matching, result)
+  defp first_n([[first | nested] | rest], n, mappers, result),
+    do: first_n([first | [nested | rest]], n, mappers, result)
 
   defp first_n(path_list, 0, _, result), do: {result, path_list}
   defp first_n([], _, _, result), do: {result, []}
 
-  defp first_n([path | rest], n, matching, result) do
+  defp first_n([path | rest], n, mappers, result) do
     time_opts = [time: :posix]
-
     lstat = :file.read_link_info(path, time_opts)
 
     stat =
@@ -102,18 +96,18 @@ defmodule Walker do
         first_n(
           [files_in(path) | rest],
           n,
-          matching,
+          mappers,
           result
         )
 
       :regular ->
-        handle_regular_file(path, rest, n, matching, result)
+        handle_regular_file(path, rest, n, mappers, result)
 
       :symlink ->
-        handle_symlink(path, time_opts, rest, n, matching, result)
+        handle_symlink(path, time_opts, rest, n, mappers, result)
 
       _ ->
-        first_n(rest, n, matching, result)
+        first_n(rest, n, mappers, result)
     end
   end
 
@@ -131,16 +125,16 @@ defmodule Walker do
 
   defp ignore_error({:ok, list}, _), do: list
 
-  defp handle_symlink(path, time_opts, rest, n, matching, result) do
+  defp handle_symlink(path, time_opts, rest, n, mappers, result) do
     rstat = File.stat(path, time_opts)
 
     case rstat do
       {:ok, rstat} ->
-        handle_existing_symlink(path, rstat, rest, n, matching, result)
+        handle_existing_symlink(path, rstat, rest, n, mappers, result)
 
       {:error, :enoent} ->
         Logger.info("Dangling symlink found: #{path}")
-        handle_regular_file(path, rest, n, matching, result)
+        handle_regular_file(path, rest, n, mappers, result)
 
       {:error, reason} ->
         Logger.info("Stat failed on #{path} with #{reason}")
@@ -148,29 +142,29 @@ defmodule Walker do
     end
   end
 
-  defp handle_existing_symlink(path, stat, rest, n, matching, result) do
+  defp handle_existing_symlink(path, stat, rest, n, mappers, result) do
     case stat.type do
       :directory ->
         first_n(
           [files_in(path) | rest],
           n,
-          matching,
+          mappers,
           result
         )
 
       :regular ->
-        handle_regular_file(path, rest, n, matching, result)
+        handle_regular_file(path, rest, n, mappers, result)
 
       true ->
-        first_n(rest, n - 1, matching, [result])
+        first_n(rest, n - 1, mappers, [result])
     end
   end
 
-  defp handle_regular_file(path, rest, n, matching, result) do
-    if matching.(path) do
-      first_n(rest, n - 1, matching, result)
+  defp handle_regular_file(path, rest, n, mappers, result) do
+    if mappers.matching.(path) do
+      first_n(rest, n - 1, mappers, [path | result])
     else
-      first_n(rest, n, matching, result)
+      first_n(rest, n, mappers, result)
     end
   end
 end
