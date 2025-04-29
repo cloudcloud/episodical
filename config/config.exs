@@ -62,7 +62,7 @@ config :phoenix, :json_library, Jason
 
 config :flop, repo: Episodical.Repo
 
-config :mnesia, dir: ~c"mnesia/#{Mix.env}/#{node()}"
+config :mnesia, dir: ~c"mnesia/#{Mix.env()}/#{node()}"
 
 try do
   File.stream!("./.env")
@@ -78,6 +78,9 @@ try do
 rescue
   _ -> IO.puts("no .env file found!")
 end
+
+# Use the Request module by default for HTTP calls
+config :episodical, http_adapter: Request
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
