@@ -75,5 +75,14 @@ defmodule EpisodicalWeb.ProviderController do
     |> redirect(to: ~p"/providers")
   end
 
+  def delete_token(conn, %{"provider_id" => provider_id, "id" => id}) do
+    token = External.get_token!(id)
+    {:ok, _token} = External.delete_token(token)
+
+    conn
+    |> put_flash(:info, "Token deleted successfully.")
+    |> redirect(to: ~p"/providers/#{provider_id}")
+  end
+
   defp provider_options(), do: [Episodic: "episodic", Artist: "artist", Document: "document"]
 end

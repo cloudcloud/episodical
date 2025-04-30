@@ -34,11 +34,13 @@ defmodule Episodical.External.Provider.TheTVDB do
       %{"type" => "series", "query" => title, "year" => year}
       |> URI.encode_query()
 
-    {:ok, %{"status" => "success", "data" => data}} =
-      provider
-      |> api_call("#{@base_url}search?#{query}")
+    case api_call(provider, "#{@base_url}search?#{query}") do
+      {:ok, %{"status" => "success", "data" => data}} ->
+        {:ok, data}
 
-    {:ok, data}
+      _ ->
+        :error
+    end
   end
 
   @doc """
@@ -87,7 +89,7 @@ defmodule Episodical.External.Provider.TheTVDB do
   defp retrieve_token(%Provider{access_key: key} = provider) do
     response =
       "#{@base_url}login"
-      |> @request_module.post(Jason.encode!(%{"apikey" => key}), [
+      |> @request_module.post(%{"apikey" => key}, [
         {"Content-type", "application/json"} | @headers
       ])
 
@@ -108,8 +110,13 @@ defmodule Episodical.External.Provider.TheTVDB do
 
   defp make_request(url, key) do
     url
-    |> @request_module.get([{"Authorization", "Bearer #{key}"} | @headers])
+    |> @request_module.get(%{}, [{"Authorization", "Bearer #{key}"} | @headers])
     |> handle_response
+  end
+
+  defp handle_response({:ok, %{status_code: 401, body: _}}) do
+    # token has expired, refresh it
+    {:error}
   end
 
   defp handle_response({:ok, %{status_code: 200, body: body}}) do

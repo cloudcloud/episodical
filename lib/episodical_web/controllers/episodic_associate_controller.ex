@@ -13,17 +13,40 @@ defmodule EpisodicalWeb.EpisodicAssociateController do
     provider = External.get_provider!(id)
 
     with %{service_type: "thetvdb"} <- provider,
-        {:ok, results} <- TheTVDB.search_by_show_title(provider, episodic.title, episodic.release_year),
-        {:ok, data} <- ProviderSearchResults.from_thetvdb(%ProviderSearchResults{service_type: TheTVDB.service_type?, results: results}) do
-      render(conn, :show, episodic: episodic, provider: provider, results: data, changeset: changeset)
+         {:ok, results} <-
+           TheTVDB.search_by_show_title(provider, episodic.title, episodic.release_year),
+         {:ok, data} <-
+           ProviderSearchResults.from_thetvdb(%ProviderSearchResults{
+             service_type: TheTVDB.service_type?(),
+             results: results
+           }) do
+      render(conn, :show,
+        episodic: episodic,
+        provider: provider,
+        results: data,
+        changeset: changeset
+      )
+    else
+      :error ->
+        conn
+        |> put_flash(:error, "Unable to retrieve details from API.")
+        |> redirect(to: ~p"/episodics/#{episodic}")
     end
   end
 
-  def create(conn, %{"episodic_id" => id, "external_id" => external_id, "provider_id" => provider_id}) do
+  def create(conn, %{
+        "episodic_id" => id,
+        "external_id" => external_id,
+        "provider_id" => provider_id
+      }) do
     episodic = Model.get_episodic!(id)
     provider = External.get_provider!(provider_id)
 
-    case Model.update_episodic(episodic, %{"id" => id, "external_id" => external_id, "provider_id" => provider.id}) do
+    case Model.update_episodic(episodic, %{
+           "id" => id,
+           "external_id" => external_id,
+           "provider_id" => provider.id
+         }) do
       {:ok, episodic} ->
         conn
         |> put_flash(:info, "Episodic provider updated successfully.")
