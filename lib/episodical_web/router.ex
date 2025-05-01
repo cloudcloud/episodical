@@ -21,6 +21,7 @@ defmodule EpisodicalWeb.Router do
 
     resources "/artists", ArtistController
     resources "/documents", DocumentController
+
     resources "/episodics", EpisodicController do
       resources "/associate", EpisodicAssociateController, only: [:show, :create]
 
@@ -28,7 +29,9 @@ defmodule EpisodicalWeb.Router do
       get "/watch/:episode_id", EpisodicController, :watch
     end
 
-    resources "/providers", ProviderController
+    resources "/providers", ProviderController do
+      delete "/delete_token/:id", ProviderController, :delete_token
+    end
 
     resources "/config", ConfigController, only: [:index, :edit, :update]
 

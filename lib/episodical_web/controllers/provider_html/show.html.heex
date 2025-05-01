@@ -1,6 +1,8 @@
 <.header>
   Provider <b>{@provider.name}</b>
-  <:subtitle>A provider contains credentials and configuration for an external service.</:subtitle>
+  <:subtitle>
+    A provider contains credentials and configuration for an external service.
+  </:subtitle>
   <:actions>
     <.link href={~p"/providers/#{@provider}/edit"}>
       <.button>Edit provider</.button>
@@ -20,7 +22,11 @@
   <:col :let={token} label="Value"><pre>{printable_token(token.value)}...</pre></:col>
   <:col :let={token} label="Expires At">{token.expires_at}</:col>
   <:action :let={token}>
-    <.link href={~p"/providers/#{token}"} method="delete" data-confirm="Are you sure?">
+    <.link
+      href={~p"/providers/#{@provider}/delete_token/#{token}"}
+      method="delete"
+      data-confirm="Are you sure?"
+    >
       Delete
     </.link>
   </:action>

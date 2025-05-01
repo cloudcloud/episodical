@@ -41,6 +41,9 @@ config :buildkite_test_collector,
   api_key: System.get_env("BUILDKITE_ANALYTICS_TOKEN"),
   activate_debug: false
 
+# Use the Request module by default for HTTP calls
+config :episodical, http_adapter: RequestStub
+
 config :episodical, Episodical.Encryption,
   keys:
     System.get_env("ENCRYPTION_KEYS")

@@ -5,8 +5,12 @@ defmodule Episodical.External.Provider.TheTVDB do
   alias Episodical.External.Token
 
   @base_url "https://api4.thetvdb.com/v4/"
-  @headers [{"User-agent", "cloudcloud/episodical v#{Episodical.Application.version()}"}, {"Accept", "application/json"}]
+  @headers [
+    {"User-agent", "cloudcloud/episodical v#{Episodical.Application.version()}"},
+    {"Accept", "application/json"}
+  ]
   @service_type "thetvdb"
+  @request_module Application.compile_env(:episodical, :http_adapter, Request)
 
   def service_type?, do: @service_type
 
@@ -26,29 +30,17 @@ defmodule Episodical.External.Provider.TheTVDB do
         title,
         year
       ) do
+    query =
+      %{"type" => "series", "query" => title, "year" => year}
+      |> URI.encode_query()
 
-    query = %{"type" => "series", "query" => title, "year" => year}
-      |> URI.encode_query
-    {:ok, %{"status" => "success", "data" => data}} = provider
-      |> api_call("#{@base_url}search?#{query}")
+    case api_call(provider, "#{@base_url}search?#{query}") do
+      {:ok, %{"status" => "success", "data" => data}} ->
+        {:ok, data}
 
-    {:ok, data}
-
-    # data []
-    #   image_url
-    #   tvdb_id
-    #   primary_language
-    #   first_air_time
-    #   status
-    #   year
-    #   overviews {}
-    #     "eng"
-    #   translations {}
-    #     "eng"
-    #   network
-    #   remote_ids []
-    #     id
-    #     sourceName
+      _ ->
+        :error
+    end
   end
 
   @doc """
@@ -58,30 +50,6 @@ defmodule Episodical.External.Provider.TheTVDB do
   def get_series(%Provider{model_type: :episodic} = provider, id) do
     provider
     |> api_call("#{@base_url}series/#{id}/extended?meta=episodes&short=true")
-
-    # data
-    #   id
-    #   name
-    #   image
-    #   firstAired
-    #   status
-    #     name
-    #   episodes []
-    #     id
-    #     name
-    #     aired
-    #     overview
-    #     seasonNumber
-    #     number
-    #   overview
-    #   year
-    #   genres []
-    #     id
-    #     name
-    #   remoteIds []
-    #     id
-    #     sourceName (IMDB)
-    #
   end
 
   @doc """
@@ -89,37 +57,27 @@ defmodule Episodical.External.Provider.TheTVDB do
   There are subtle differences in the response here, likely both are needed.
   """
   @spec get_series_specific_language(Provider.t(), integer(), String.t(), integer()) :: map()
-  def get_series_specific_language(%Provider{model_type: :episodic} = provider, id, lang, page \\ 0) do
+  def get_series_specific_language(
+        %Provider{model_type: :episodic} = provider,
+        id,
+        lang,
+        page \\ 0
+      ) do
     provider
     |> api_call("#{@base_url}series/#{id}/episodes/official/#{lang}?page=#{page}")
-
-    # data
-    #   id
-    #   name
-    #   image
-    #   firstAired
-    #   status
-    #     name
-    #   episodes []
-    #     id
-    #     name
-    #     aired
-    #     overview
-    #     seasonNumber
-    #     number
-    #   overview (not translated)
-    #   year
   end
 
   defp api_call(provider, url) do
     provider = Episodical.Repo.preload(provider, [:token])
-    value = with true <- Ecto.assoc_loaded?(provider.token),
-                 true <- length(provider.token) > 0,
-                 true <- List.first(provider.token).is_valid do
-      true
-    else
-      _ -> retrieve_token(provider)
-    end
+
+    value =
+      with true <- Ecto.assoc_loaded?(provider.token),
+           true <- length(provider.token) > 0,
+           true <- List.first(provider.token).is_valid do
+        true
+      else
+        _ -> retrieve_token(provider)
+      end
 
     if value == true do
       make_request(url, List.first(provider.token).value)
@@ -131,17 +89,19 @@ defmodule Episodical.External.Provider.TheTVDB do
   defp retrieve_token(%Provider{access_key: key} = provider) do
     response =
       "#{@base_url}login"
-      |> HTTPoison.post(Jason.encode!(%{"apikey" => key}), [{"Content-type", "application/json"} | @headers])
+      |> @request_module.post(%{"apikey" => key}, [
+        {"Content-type", "application/json"} | @headers
+      ])
 
     with {:ok, %{status_code: 200, body: body}} <- response,
          %{"data" => %{"token" => token}, "status" => "success"} <- Jason.decode!(body),
-         {:ok, %Token{}} <- Episodical.External.create_token(%{
-           value: token,
-           expires_at: DateTime.shift(DateTime.now!("Etc/UTC"), month: 1),
-           is_valid: true,
-           provider_id: provider.id
-         }) do
-
+         {:ok, %Token{}} <-
+           Episodical.External.create_token(%{
+             value: token,
+             expires_at: DateTime.shift(DateTime.now!("Etc/UTC"), month: 1),
+             is_valid: true,
+             provider_id: provider.id
+           }) do
       true
     else
       _ -> false
@@ -150,8 +110,13 @@ defmodule Episodical.External.Provider.TheTVDB do
 
   defp make_request(url, key) do
     url
-    |> HTTPoison.get([{"Authorization", "Bearer #{key}"} | @headers])
+    |> @request_module.get(%{}, [{"Authorization", "Bearer #{key}"} | @headers])
     |> handle_response
+  end
+
+  defp handle_response({:ok, %{status_code: 401, body: _}}) do
+    # token has expired, refresh it
+    {:error}
   end
 
   defp handle_response({:ok, %{status_code: 200, body: body}}) do
