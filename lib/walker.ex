@@ -105,9 +105,6 @@ defmodule Walker do
 
       :symlink ->
         handle_symlink(path, time_opts, rest, n, mappers, result)
-
-      _ ->
-        first_n(rest, n, mappers, result)
     end
   end
 
@@ -118,10 +115,7 @@ defmodule Walker do
     |> Enum.map(fn rel -> Path.join(path, rel) end)
   end
 
-  defp ignore_error({:error, type}, path) do
-    Logger.info("Ignore folder #{path} (#{type})")
-    []
-  end
+  defp ignore_error({:error, _}, _), do: []
 
   defp ignore_error({:ok, list}, _), do: list
 
@@ -132,13 +126,8 @@ defmodule Walker do
       {:ok, rstat} ->
         handle_existing_symlink(path, rstat, rest, n, mappers, result)
 
-      {:error, :enoent} ->
-        Logger.info("Dangling symlink found: #{path}")
+      {:error, _} ->
         handle_regular_file(path, rest, n, mappers, result)
-
-      {:error, reason} ->
-        Logger.info("Stat failed on #{path} with #{reason}")
-        {result, []}
     end
   end
 
