@@ -92,8 +92,40 @@ defmodule EpisodicalWeb.ProviderControllerTest do
     end
   end
 
+  describe "delete token" do
+    setup [:create_provider_with_token]
+
+    test "a provider token is displayed for the provider", %{
+      conn: conn,
+      provider: provider,
+      token: token
+    } do
+      conn = get(conn, ~p"/providers/#{provider}")
+      response = html_response(conn, 200)
+
+      assert response =~ "Provider <b>#{provider.name}</b>"
+      assert response =~ token.value
+    end
+
+    test "deletes the provided token", %{conn: conn, token: token, provider: provider} do
+      conn = delete(conn, ~p"/providers/#{provider}/delete_token/#{token}")
+      assert redirected_to(conn) == ~p"/providers/#{provider}"
+
+      conn = get(conn, ~p"/providers/#{provider}")
+      response = html_response(conn, 200)
+
+      assert response =~ "Provider <b>#{provider.name}</b>"
+      refute response =~ token.value
+    end
+  end
+
   defp create_provider(_) do
     provider = provider_fixture()
     %{provider: provider}
+  end
+
+  defp create_provider_with_token(_) do
+    token = token_fixture() |> Episodical.Repo.preload([:provider])
+    %{token: token, provider: token.provider}
   end
 end

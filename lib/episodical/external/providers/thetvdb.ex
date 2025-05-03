@@ -115,13 +115,11 @@ defmodule Episodical.External.Provider.TheTVDB do
   end
 
   defp handle_response({:ok, %{status_code: 401, body: _}}) do
-    # token has expired, refresh it
+    # TODO: token has expired, handle refreshing it
     {:error}
   end
 
   defp handle_response({:ok, %{status_code: 200, body: body}}) do
-    Logger.info("Successful response!")
-
     {:ok, Jason.decode!(body)}
   end
 end
