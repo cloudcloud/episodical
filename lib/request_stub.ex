@@ -6,6 +6,8 @@ defmodule RequestStub do
   end
 
   def get(url, _params \\ %{}, _options \\ []) do
+    IO.inspect("URL attempted via RequestStub: #{url}")
+
     Agent.get(__MODULE__, &Map.get(&1, {:get, url}, :ok))
   end
 
