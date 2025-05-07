@@ -484,4 +484,29 @@ defmodule Episodical.ModelTest do
       assert config == Model.get_config!(config.id)
     end
   end
+
+  describe "#file_find_matching_episode" do
+    import Episodical.ModelFixtures
+
+    setup [:setup_episodes]
+
+    @file_matches %{
+      "season" => "1",
+      "episode" => "1"
+    }
+
+    test "updates matched found episode files", %{episodic: episodic, episode: episode} do
+      _ = episodic
+      _ = episode
+    end
+
+    defp setup_episodes(_) do
+      episode = episode_fixture()
+      episode_two = episode_fixture()
+
+      episodic = episodic_fixture()
+
+      %{episodic: episodic, episode: episode, episode_two: episode_two}
+    end
+  end
 end
