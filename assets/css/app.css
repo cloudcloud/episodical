@@ -1,6 +1,17 @@
 @import "tailwindcss";
 
-@theme {
-    --color-success-300: oklch(0.72, 0.11 178);
-    --color-fail-300: oklch(0.72 0.11 178);
+.bg-colour: {
+  background-color: var(--color-gray-950);
+}
+
+@layer base {
+  .bg-colour: {
+    background-color: var(--color-gray-950);
+  }
+}
+
+@theme static {
+  --bg-colour: var(--color-slate-200);
+  --color-success-300: var(--color-blue-500);
+  --color-fail-300: var(--color-red-500);
 }
