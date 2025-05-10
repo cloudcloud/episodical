@@ -67,7 +67,7 @@ defmodule Episodical.Local do
   @spec list_files() :: [Local.File.t()]
   def list_files do
     Repo.all(Local.File)
-      |> Enum.map(fn x -> Repo.preload(x, [:episode, :episodic, :path]) end)
+    |> Enum.map(fn x -> Repo.preload(x, [:episode, :episodic, :path]) end)
   end
 
   @doc """
@@ -93,10 +93,10 @@ defmodule Episodical.Local do
     %Local.File{}
     |> Local.File.changeset(attrs)
     |> Repo.insert(
-        on_conflict: {:replace_all_except, [:id, :created_at]},
-        conflict_target: [:name],
-        returning: true
-      )
+      on_conflict: {:replace_all_except, [:id, :created_at]},
+      conflict_target: [:name],
+      returning: true
+    )
   end
 
   @doc """
@@ -130,31 +130,32 @@ defmodule Episodical.Local do
   """
   @spec discover_files(Model.Episodic.t()) :: list()
   def discover_files(%Model.Episodic{} = episodic) do
-    {:ok, layout_regex} = Model.get_config_by_name!("episodic_path_layout")
+    {:ok, layout_regex} =
+      Model.get_config_by_name!("episodic_path_layout")
       |> Local.Path.use_path_layout(episodic)
 
     with true <- File.dir?(episodic.path.name),
-      {:ok, files} <- Local.Path.find_matching_files(episodic.path, layout_regex) do
-        {:ok, file_match} = Model.get_config_by_name!("episodic_filename_pattern")
-          |> Map.fetch!(:value)
-          |> Regex.compile
+         {:ok, files} <- Local.Path.find_matching_files(episodic.path, layout_regex) do
+      {:ok, file_match} =
+        Model.get_config_by_name!("episodic_filename_pattern")
+        |> Map.fetch!(:value)
+        |> Regex.compile()
 
-        match_file_to_episode(episodic, file_match, files)
-
+      match_file_to_episode(episodic, file_match, files)
     else
       false ->
         {:error, "Path is not a valid location."}
-
     end
   end
 
   defp match_file_to_episode(episodic, file_match, files, count \\ 0)
   defp match_file_to_episode(_, _, [], count), do: {:ok, count}
+
   defp match_file_to_episode(episodic, file_match, [file | files], count) do
     matches = Regex.named_captures(file_match, file)
 
     with true <- Model.file_find_matching_episode(episodic, matches, file) do
-      match_file_to_episode(episodic, file_match, files, count+1)
+      match_file_to_episode(episodic, file_match, files, count + 1)
     else
       _ ->
         match_file_to_episode(episodic, file_match, files, count)

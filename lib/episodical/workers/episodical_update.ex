@@ -14,7 +14,7 @@ defmodule Episodical.Workers.EpisodicalUpdate do
   def perform(input) do
     episodic =
       Model.get_episodic!(input["id"])
-      |> Repo.preload([:provider])
+      |> Repo.preload([:provider, :path])
 
     provider =
       External.get_provider!(episodic.provider_id)
@@ -30,12 +30,16 @@ defmodule Episodical.Workers.EpisodicalUpdate do
       |> capture_episodes(provider_id)
       |> store_full_episodic(episodic)
 
-    {:ok, files_found} =
-      episodic
-      |> Repo.preload([:episodes, :path])
-      |> Episodical.Local.discover_files()
+    if nil != episodic.path do
+      {:ok, files_found} =
+        episodic
+        |> Repo.preload([:episodes])
+        |> Episodical.Local.discover_files()
 
-    {:ok, episodic, files_found}
+      {:ok, episodic, files_found}
+    else
+      {:ok, episodic, []}
+    end
   end
 
   defp query_provider(%{service_type: "thetvdb"} = provider, type, episodic) do
