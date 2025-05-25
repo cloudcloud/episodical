@@ -9,30 +9,24 @@ defmodule Episodical.Model.Episodic do
   alias Episodical.Local.Path
 
   @type t :: %__MODULE__{
-    id: binary,
-    status: String.t(),
-    title: String.t(),
-    release_year: Integer.t(),
-    last_checked_at: DateTime.t(),
-    should_auto_check: Boolean.t(),
-    external_id: String.t(),
-    image: String.t(),
-    overview: String.t(),
-    original_language: String.t(),
-    next_airing: DateTime.t(),
-    imdb_id: String.t(),
-    provider: Provider.t(),
-    episodes: [Episode.t()],
-    genres: [Genre.t()],
-    inserted_at: DateTime.t(),
-    updated_at: DateTime.t()
-  }
-
-  @derive {
-    Flop.Schema,
-    filterable: [:title],
-    sortable: [:title, :release_year, :last_checked_at]
-  }
+          id: binary,
+          status: String.t(),
+          title: String.t(),
+          release_year: Integer.t(),
+          last_checked_at: DateTime.t(),
+          should_auto_check: Boolean.t(),
+          external_id: String.t(),
+          image: String.t(),
+          overview: String.t(),
+          original_language: String.t(),
+          next_airing: DateTime.t(),
+          imdb_id: String.t(),
+          provider: Provider.t(),
+          episodes: [Episode.t()],
+          genres: [Genre.t()],
+          inserted_at: DateTime.t(),
+          updated_at: DateTime.t()
+        }
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
@@ -52,9 +46,11 @@ defmodule Episodical.Model.Episodic do
 
     belongs_to :provider, Episodical.External.Provider
     has_many :episodes, Episodical.Model.Episodic.Episode
+
     many_to_many :genres, Episodical.External.Genre,
       join_through: Episodical.External.EpisodicGenre,
       on_replace: :delete
+
     belongs_to :path, Episodical.Local.Path
     has_many :files, Episodical.Local.File
 
@@ -76,7 +72,7 @@ defmodule Episodical.Model.Episodic do
       :overview,
       :original_language,
       :next_airing,
-      :imdb_id,
+      :imdb_id
     ])
     |> validate_required([:title, :release_year, :should_auto_check])
   end
@@ -99,24 +95,26 @@ defmodule Episodical.Model.Episodic do
       :overview,
       :original_language,
       :next_airing,
-      :imdb_id,
+      :imdb_id
     ])
     |> put_assoc(:genres, insert_and_get_all_genres(attrs[:genres]))
     |> put_assoc(:episodes, insert_and_get_all_episodes(attrs[:episodes]))
   end
 
   defp insert_and_get_all_genres([]), do: []
+
   defp insert_and_get_all_genres(genres) do
     genre_list = Enum.map(genres, fn g -> g[:external_id] end)
 
     timestamp = DateTime.now!("Etc/UTC")
     placeholders = %{timestamp: timestamp}
 
-    maps = Enum.map(genres, fn g ->
-      g
-      |> Map.put_new(:inserted_at, {:placeholder, :timestamp})
-      |> Map.put_new(:updated_at, {:placeholder, :timestamp})
-    end)
+    maps =
+      Enum.map(genres, fn g ->
+        g
+        |> Map.put_new(:inserted_at, {:placeholder, :timestamp})
+        |> Map.put_new(:updated_at, {:placeholder, :timestamp})
+      end)
 
     Repo.insert_all(
       Genre,
@@ -129,17 +127,19 @@ defmodule Episodical.Model.Episodic do
   end
 
   defp insert_and_get_all_episodes([]), do: []
+
   defp insert_and_get_all_episodes(episodes) do
     episode_list = Enum.map(episodes, fn e -> e[:external_id] end)
 
     timestamp = DateTime.now!("Etc/UTC")
     placeholders = %{timestamp: timestamp}
 
-    maps = Enum.map(episodes, fn e ->
-      e
-      |> Map.put_new(:inserted_at, {:placeholder, :timestamp})
-      |> Map.put_new(:updated_at, {:placeholder, :timestamp})
-    end)
+    maps =
+      Enum.map(episodes, fn e ->
+        e
+        |> Map.put_new(:inserted_at, {:placeholder, :timestamp})
+        |> Map.put_new(:updated_at, {:placeholder, :timestamp})
+      end)
 
     Repo.insert_all(
       Episode,

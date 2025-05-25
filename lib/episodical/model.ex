@@ -20,12 +20,11 @@ defmodule Episodical.Model do
   @doc """
   Returns the list of episodics.
   """
-  @spec list_episodics(map) :: {:ok, {[Pet.t()], Flop.Meta.t()}} | {:error, Flop.Meta.t()}
-  def list_episodics(params) do
-    {:ok, {episodes, meta}} = Episodic
-      |> Flop.validate_and_run(params, for: Episodic, replace_invalid_params: true)
-
-    {:ok, {Repo.preload(episodes, [:episodes, :genres]), meta}}
+  @spec list_episodics() :: [Episodic.t()]
+  def list_episodics() do
+    Episodic
+    |> Repo.all()
+    |> Repo.preload([:episodes, :genres])
   end
 
   @doc """
@@ -44,18 +43,19 @@ defmodule Episodical.Model do
     case Map.pop(attrs, "path", "") do
       {"", _} ->
         %Episodic{}
-          |> Episodic.changeset(attrs)
-          |> Repo.insert()
+        |> Episodic.changeset(attrs)
+        |> Repo.insert()
 
       {path_id, _} ->
-        path = Local.get_path!(path_id)
+        path =
+          Local.get_path!(path_id)
           |> Repo.preload(:episodic)
 
         %Episodic{}
-          |> Repo.preload(:path)
-          |> Episodic.changeset(attrs)
-          |> Episodic.assoc_path(path)
-          |> Repo.insert()
+        |> Repo.preload(:path)
+        |> Episodic.changeset(attrs)
+        |> Episodic.assoc_path(path)
+        |> Repo.insert()
     end
   end
 
@@ -68,17 +68,18 @@ defmodule Episodical.Model do
     case Map.pop(attrs, "path", "") do
       {"", _} ->
         episodic
-          |> Episodic.changeset(attrs)
-          |> Repo.update()
+        |> Episodic.changeset(attrs)
+        |> Repo.update()
 
       {path_id, _} ->
-        path = Local.get_path!(path_id)
+        path =
+          Local.get_path!(path_id)
           |> Repo.preload(:episodic)
 
         episodic
-          |> Repo.preload(:path)
-          |> Episodic.assoc_path(path)
-          |> Repo.update()
+        |> Repo.preload(:path)
+        |> Episodic.assoc_path(path)
+        |> Repo.update()
     end
   end
 
@@ -149,7 +150,6 @@ defmodule Episodical.Model do
   def change_artist(%Artist{} = artist, attrs \\ %{}) do
     Artist.changeset(artist, attrs)
   end
-
 
   @doc """
   Returns the list of documents.
@@ -402,8 +402,10 @@ defmodule Episodical.Model do
 
     case file_matching_episode(episodic.episodes, season, episode) do
       {:ok, id} ->
-        episode = Episodical.Model.get_episode!(id)
+        episode =
+          Episodical.Model.get_episode!(id)
           |> Repo.preload(:file)
+
         Local.get_or_insert_file(%{
           "name" => filename,
           "episodic" => episodic,
@@ -421,6 +423,7 @@ defmodule Episodical.Model do
 
   @spec file_matching_episode(Episodic.t(), Integer.t(), Integer.t()) :: bool()
   defp file_matching_episode([], _, _), do: false
+
   defp file_matching_episode([episode | episodes], season, index) do
     if episode.season == season && episode.index == index do
       {:ok, episode.id}
