@@ -11,10 +11,14 @@
   <:col :let={episodic} sort_value="title" label="Title">
     {episodic.episodic.title}
   </:col>
-  <:col :let={episodic} label="Release Year">{episodic.episodic.release_year}</:col>
+  <:col :let={episodic} class="number" sort_value="release_year" label="Release Year">
+    {episodic.episodic.release_year}
+  </:col>
   <:col :let={episodic} label="Status">{episodic.episodic.status}</:col>
-  <:col :let={episodic} label="Last checked at">{episodic.episodic.last_checked_at}</:col>
-  <:col :let={episodic} label="Episodes">
+  <:col :let={episodic} label="Last checked at" sort_value="last_checked_at" class="date">
+    {episodic.episodic.last_checked_at}
+  </:col>
+  <:col :let={episodic} label="Episodes" sort_value="total_episode_count" class="number">
     0 / {episodic.episode_metadata.total_episode_count}
   </:col>
   <:col :let={episodic} label="Files">
