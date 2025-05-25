@@ -1,4 +1,3 @@
-
 <.header>
   Provider selection
   <:subtitle>Select the Provider reference for {@episodic.title} below</:subtitle>
@@ -9,7 +8,12 @@
   <:col :let={result} label="Released">{result["date_began"]}</:col>
   <:col :let={result} label="Overview">{result["overview"]}</:col>
   <:action :let={result}>
-    <.simple_form for={@changeset} action={~p"/episodics/#{@episodic}/associate"} method="post" class="mt-0 ml-1 bg-white mb-1">
+    <.simple_form
+      for={@changeset}
+      action={~p"/episodics/#{@episodic}/associate"}
+      method="post"
+      class="mt-0 ml-1 bg-white mb-1"
+    >
       <input type="hidden" name="provider_id" value={@provider.id} />
       <input type="hidden" name="external_id" value={result["id"]} />
       <.button type="submit">Associate</.button>
@@ -17,4 +21,9 @@
   </:action>
 </.table>
 
-<.back navigate={~p"/episodics/#{@episodic}/edit"}>Back to editing {@episodic.title}</.back>
+<.link
+  class="text-sm text-indigo-200 hover:text-indigo-500"
+  navigate={~p"/episodics/#{@episodic}/edit"}
+>
+  Back to editing {@episodic.title}
+</.link>

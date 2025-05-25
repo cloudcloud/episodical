@@ -191,7 +191,10 @@ defmodule EpisodicalWeb.CoreComponents do
   """
   attr :for, :any, required: true, doc: "the data structure for the form"
   attr :as, :any, default: nil, doc: "the server side parameter to collect all input under"
-  attr :class, :any, default: "mt-10 space-y-8 bg-white", doc: "the class value for the form wrapper"
+
+  attr :class, :any,
+    default: "mt-10 space-y-8 bg-gray-950 text-indigo-200",
+    doc: "the class value for the form wrapper"
 
   attr :rest, :global,
     include: ~w(autocomplete name rel action enctype method novalidate target multipart),
@@ -232,7 +235,7 @@ defmodule EpisodicalWeb.CoreComponents do
     <button
       type={@type}
       class={[
-        "phx-submit-loading:opacity-75 rounded-lg bg-zinc-900 hover:bg-zinc-700 py-2 px-3",
+        "phx-submit-loading:opacity-75 rounded-lg bg-slate-800 hover:bg-slate-700 py-2 px-3",
         "text-sm font-semibold leading-6 text-white active:text-white/80",
         @class
       ]}
@@ -311,7 +314,7 @@ defmodule EpisodicalWeb.CoreComponents do
 
     ~H"""
     <div>
-      <label class="flex items-center gap-4 text-sm leading-6 text-zinc-600">
+      <label class="flex items-center gap-4 text-sm leading-6 text-indigo-200">
         <input type="hidden" name={@name} value="false" disabled={@rest[:disabled]} />
         <input
           type="checkbox"
@@ -319,7 +322,7 @@ defmodule EpisodicalWeb.CoreComponents do
           name={@name}
           value="true"
           checked={@checked}
-          class="rounded p-1 pl-2 border-zinc-400 text-zinc-900 focus:ring-0"
+          class="rounded p-1 pl-2 border-zinc-400 focus:ring-0"
           {@rest}
         />
         {@label}
@@ -336,7 +339,7 @@ defmodule EpisodicalWeb.CoreComponents do
       <select
         id={@id}
         name={@name}
-        class="mt-2 p-1 pl-2 border block w-full rounded-md border border-gray-300 bg-white shadow-sm focus:border-zinc-400 focus:ring-0 sm:text-sm"
+        class="mt-2 p-1 pl-2 border block w-full rounded-md border border-gray-800 shadow-sm focus:border-zinc-400 focus:ring-0 sm:text-sm"
         multiple={@multiple}
         {@rest}
       >
@@ -356,7 +359,7 @@ defmodule EpisodicalWeb.CoreComponents do
         id={@id}
         name={@name}
         class={[
-          "mt-2 p-1 pl-2 border block w-full rounded-lg text-zinc-900 focus:ring-0 sm:text-sm sm:leading-6 min-h-[6rem]",
+          "mt-2 p-1 pl-2 border block w-full rounded-lg text-indigo-200 focus:ring-0 sm:text-sm sm:leading-6 min-h-[6rem]",
           @errors == [] && "border-zinc-300 focus:border-zinc-400",
           @errors != [] && "border-rose-400 focus:border-rose-400"
         ]}
@@ -378,7 +381,7 @@ defmodule EpisodicalWeb.CoreComponents do
         id={@id}
         value={Phoenix.HTML.Form.normalize_value(@type, @value)}
         class={[
-          "mt-2 p-1 pl-2 border block w-full rounded-lg text-zinc-900 focus:ring-0 focus:border sm:text-sm sm:leading-6",
+          "mt-2 p-1 pl-2 border border-indigo-800 block w-full rounded-lg text-indigo-200 focus:ring-0 sm:text-sm sm:leading-6",
           @errors == [] && "border-zinc-400 focus:border-zinc-500",
           @errors != [] && "border-rose-400 focus:border-rose-400"
         ]}
@@ -397,7 +400,7 @@ defmodule EpisodicalWeb.CoreComponents do
 
   def label(assigns) do
     ~H"""
-    <label for={@for} class="block text-sm font-semibold leading-6 text-zinc-800">
+    <label for={@for} class="block text-sm font-semibold leading-6 text-indigo-200">
       {render_slot(@inner_block)}
     </label>
     """
@@ -411,7 +414,7 @@ defmodule EpisodicalWeb.CoreComponents do
   def error(assigns) do
     ~H"""
     <p class="mt-3 flex gap-3 text-sm leading-6 text-rose-600">
-      <.icon name="hero-exclamation-circle-mini" class="mt-0.5 h-5 w-5 flex-none" />
+      <Heroicons.icon name="exclamation-circle" class="mt-0.5 h-5 w-5 flex-none" />
       {render_slot(@inner_block)}
     </p>
     """
@@ -430,7 +433,7 @@ defmodule EpisodicalWeb.CoreComponents do
     ~H"""
     <header class={[@actions != [] && "flex items-center justify-between gap-6", @class]}>
       <div>
-        <h1 class="text-lg font-semibold leading-8 text-zinc-800">
+        <h1 class="text-lg font-semibold leading-8 text-indigo-100">
           {render_slot(@inner_block)}
         </h1>
         <p :if={@subtitle != []} class="mt-2 text-sm leading-6 text-zinc-600">
@@ -477,7 +480,7 @@ defmodule EpisodicalWeb.CoreComponents do
     ~H"""
     <div class="overflow-y-auto px-4 sm:overflow-visible sm:px-0">
       <table class="w-[40rem] mt-2 sm:w-full">
-        <thead class="text-sm text-left leading-6 text-zinc-500">
+        <thead class="text-sm text-left leading-6 text-yellow-400">
           <tr>
             <th :for={col <- @col} class={["p-0 pb-2 font-normal", col[:class]]}>{col[:label]}</th>
             <th :if={@action != []} class="relative p-0 pb-2 w-14">
@@ -488,27 +491,27 @@ defmodule EpisodicalWeb.CoreComponents do
         <tbody
           id={@id}
           phx-update={match?(%Phoenix.LiveView.LiveStream{}, @rows) && "stream"}
-          class="relative divide-y divide-zinc-100 border-t border-zinc-200 text-sm leading-6 text-zinc-700"
+          class="relative divide-y divide-gray-800 border-t text-sm leading-6 text-indigo-300"
         >
-          <tr :for={row <- @rows} id={@row_id && @row_id.(row)} class="group hover:bg-zinc-50">
+          <tr :for={row <- @rows} id={@row_id && @row_id.(row)} class="group hover:bg-slate-900">
             <td
               :for={{col, i} <- Enum.with_index(@col)}
               phx-click={@row_click && @row_click.(row)}
               class={["relative p-0", @row_click && "hover:cursor-pointer", col[:class]]}
             >
               <div class="block py-2 pr-6">
-                <span class="absolute -inset-y-px right-0 -left-4 group-hover:bg-zinc-50 sm:rounded-l-xl" />
-                <span class={["relative", i == 0 && "font-semibold text-zinc-900"]}>
+                <span class="absolute -inset-y-px right-0 -left-4 sm:rounded-l-xl" />
+                <span class={["relative", i == 0 && "font-semibold text-indigo-200"]}>
                   {render_slot(col, @row_item.(row))}
                 </span>
               </div>
             </td>
             <td :if={@action != []} class="relative w-14 p-0">
-              <div class="relative whitespace-nowrap py-2 text-right text-sm font-medium">
-                <span class="absolute -inset-y-px -right-4 left-0 group-hover:bg-zinc-50 sm:rounded-r-xl" />
+              <div class="relative whitespace-nowrap py-2 text-right text-sm font-medium pr-2">
+                <span class="absolute -inset-y-px -right-4 left-0 sm:rounded-r-xl" />
                 <span
                   :for={action <- @action}
-                  class="relative ml-4 font-semibold leading-6 text-zinc-900 hover:text-zinc-700"
+                  class="relative ml-4 font-semibold leading-6 text-indigo-200 hover:text-slate-500"
                 >
                   {render_slot(action, @row_item.(row))}
                 </span>
@@ -528,15 +531,19 @@ defmodule EpisodicalWeb.CoreComponents do
     [
       {:container, true},
       {:container_attrs, [class: "overflow-y-auto px-4 sm:overflow-visible sm:px-0"]},
-      {:table_attrs, [class: "w-[40rem] mt-11 sm:w-full"]},
-      {:thead_attrs, [class: "text-sm text-left leading-6 text-zinc-500"]},
+      {:table_attrs, [class: "w-[40rem] mt-2 sm:w-full"]},
+      {:thead_attrs, [class: "text-sm text-left leading-6 text-yellow-400"]},
       {:th_wrapper_attrs, [class: "font-bold"]},
       {:thead_th_attrs, [class: "p-0 pb-4 pr-6 font-normal"]},
-      {:tbody_attrs, [id: "episodics", class: "relative divide-y divide-zinc-100 border-t border-zinc-200 text-sm leading-6 text-zinc-700"]},
-      {:tbody_td_attrs, [class: "relative p-0 py-4 pr-6 hover:cursor-pointer"]},
-      {:tbody_tr_attrs, [class: "group hover:bg-zinc-50"]},
+      {:tbody_attrs,
+       [
+         id: "episodics",
+         class: "relative divide-y divide-gray-800 border-t text-sm leading-6 text-indigo-300"
+       ]},
+      {:tbody_td_attrs, [class: "relative p-0 py-2 pr-6 hover:cursor-pointer"]},
+      {:tbody_tr_attrs, [class: "group hover:bg-slate-900"]},
       {:thead_th_attrs, [class: "p-0 pb-4 pr-6 font-normal"]},
-      {:thead_tr_attrs, [class: ""]},
+      {:thead_tr_attrs, [class: ""]}
     ]
   end
 
@@ -632,11 +639,13 @@ defmodule EpisodicalWeb.CoreComponents do
   def pill_box(assigns) do
     ~H"""
     <span class={[
-      "inline-block text-gray-100 px-2 py-1 rounded-lg border-gray-300 mt-1",
-      @colour == "zinc" && "bg-zinc-600",
-      @colour == "red" && "bg-ruby-600",
-      @colour == "green" && "bg-emerald-600",
-    ]}>{@text}</span>
+      "inline-block text-gray-100 px-2 py-1 rounded-lg mt-1",
+      @colour == "zinc" && "bg-zinc-800",
+      @colour == "red" && "bg-rose-800",
+      @colour == "green" && "bg-emerald-800"
+    ]}>
+      {@text}
+    </span>
     """
   end
 
