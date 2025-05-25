@@ -467,6 +467,8 @@ defmodule EpisodicalWeb.CoreComponents do
   slot :col, required: true do
     attr :class, :string
     attr :label, :string
+    attr :sort_name, :string
+    attr :sort_value, :string
   end
 
   slot :action, doc: "the slot for showing user actions in the last table column"
@@ -482,7 +484,15 @@ defmodule EpisodicalWeb.CoreComponents do
       <table class="w-[40rem] mt-2 sm:w-full">
         <thead class="text-sm text-left leading-6 text-yellow-400">
           <tr>
-            <th :for={col <- @col} class={["p-0 pb-2 font-normal", col[:class]]}>{col[:label]}</th>
+            <th :for={col <- @col} class={["p-0 pb-2 font-normal", col[:class]]}>
+              <%= if col[:sort_value] != nil do %>
+                <.button id="sort-#{:sort_value}" onclick="console.log('Hello')">
+                  {col[:label]}
+                </.button>
+              <% else %>
+                {col[:label]}
+              <% end %>
+            </th>
             <th :if={@action != []} class="relative p-0 pb-2 w-14">
               <span class="sr-only">{gettext("Actions")}</span>
             </th>
@@ -639,10 +649,10 @@ defmodule EpisodicalWeb.CoreComponents do
   def pill_box(assigns) do
     ~H"""
     <span class={[
-      "inline-block text-gray-100 px-2 py-1 rounded-lg mt-1",
-      @colour == "zinc" && "bg-zinc-800",
-      @colour == "red" && "bg-rose-800",
-      @colour == "green" && "bg-emerald-800"
+      "inline-block text-gray-100 px-2 py-1 rounded-lg border-gray-300 mt-1",
+      @colour == "zinc" && "bg-zinc-600",
+      @colour == "red" && "bg-ruby-600",
+      @colour == "green" && "bg-emerald-600"
     ]}>
       {@text}
     </span>
