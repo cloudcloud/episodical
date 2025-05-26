@@ -469,6 +469,7 @@ defmodule EpisodicalWeb.CoreComponents do
     attr :label, :string
     attr :sort_name, :string
     attr :sort_value, :string
+    attr :sort_key, :string
   end
 
   slot :action, doc: "the slot for showing user actions in the last table column"
@@ -510,16 +511,7 @@ defmodule EpisodicalWeb.CoreComponents do
               class={["relative p-0", @row_click && "hover:cursor-pointer", col[:class]]}
             >
               <div class="block py-2 pr-6">
-                <%= if col[:sort_value] != nil do %>
-                  <span
-                    data-sort-value={
-                      Map.get(@row_item.(row).episodic, String.to_existing_atom(col[:sort_value]))
-                    }
-                    class="absolute sorter -inset-y-px right-0 -left-4 sm:rounded-l-xl"
-                  />
-                <% else %>
-                  <span class="absolute -inset-y-px right-0 -left-4 sm:rounded-l-xl" />
-                <% end %>
+                {gen_td_span(assigns, @row_item.(row), col[:sort_value], col[:sort_key])}
                 <span class={["relative", i == 0 && "font-semibold text-indigo-200"]}>
                   {render_slot(col, @row_item.(row))}
                 </span>
@@ -541,6 +533,38 @@ defmodule EpisodicalWeb.CoreComponents do
       </table>
     </div>
     """
+  end
+
+  defp gen_td_span(assigns, _, nil, _) do
+    ~H"""
+    <span class="absolute -inset-y-px right-0 -left-4 sm:rounded-l-xl" />
+    """
+  end
+
+  defp gen_td_span(assigns, row, sort, key) when is_binary(sort) do
+    assigns =
+      assigns
+      |> assign(:row, row)
+      |> assign(:sort, sort)
+      |> assign(:key, key)
+
+    ~H"""
+    <span
+      data-sort-value={gen_td_span_sort_value(@row, @sort, @key)}
+      class="absolute sorter -insert-y-px right-0 -left-4 sm:rounded-l-xl"
+    />
+    """
+  end
+
+  defp gen_td_span_sort_value(row, attr, key) when is_binary(key) do
+    row
+    |> Map.get(String.to_existing_atom(key))
+    |> Map.get(String.to_existing_atom(attr))
+  end
+
+  defp gen_td_span_sort_value(row, attr, _) when is_binary(attr) do
+    row.episodic
+    |> Map.get(String.to_existing_atom(attr))
   end
 
   @doc """

@@ -6,8 +6,8 @@ const siblingIndex = (node) => {
   return count;
 },
 sortDateVal = (a, b) => {
-  const dA = Date.parse(a.value),
-    dB = Date.parse(b.value);
+  const dA = Date.parse(a.value) || 0,
+    dB = Date.parse(b.value) || 0;
   return sortNumber(dA, dB);
 },
 sortNumber = (a, b) => {
@@ -20,9 +20,11 @@ sortRows = (table, columnIdx) => {
   let rows = table.querySelectorAll("tbody tr"),
     sel = `td:nth-child(${columnIdx+1})`,
     selType = `thead th:nth-child(${columnIdx+1})`,
-    classList = table.querySelector(selType).classList,
+    curNode = table.querySelector(selType),
+    classList = curNode.classList,
     values = [],
-    cls = "";
+    cls = "",
+    direction = curNode.dataset.sortDir || "asc";
 
   if (classList) {
     if (classList.contains("date")) {
@@ -48,6 +50,13 @@ sortRows = (table, columnIdx) => {
     values.sort(sortNumberVal);
   } else {
     values.sort(sortTextVal);
+  }
+
+  if (direction == "asc") {
+    curNode.dataset.sortDir = "desc";
+  } else {
+    values.reverse();
+    curNode.dataset.sortDir = "asc";
   }
 
   for (let idx = 0; idx < values.length; idx++) {

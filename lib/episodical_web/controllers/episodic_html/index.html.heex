@@ -18,7 +18,13 @@
   <:col :let={episodic} label="Last checked at" sort_value="last_checked_at" class="date">
     {episodic.episodic.last_checked_at}
   </:col>
-  <:col :let={episodic} label="Episodes" sort_value="total_episode_count" class="number">
+  <:col
+    :let={episodic}
+    label="Episodes"
+    sort_key="episode_metadata"
+    sort_value="total_episode_count"
+    class="number"
+  >
     0 / {episodic.episode_metadata.total_episode_count}
   </:col>
   <:col :let={episodic} label="Files">
