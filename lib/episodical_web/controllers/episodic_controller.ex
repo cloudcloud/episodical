@@ -8,8 +8,8 @@ defmodule EpisodicalWeb.EpisodicController do
   alias Episodical.Workers.EpisodicalUpdate
   alias Episodical.Local
 
-  def index(conn, params) do
-    {:ok, {episodics, meta}} = Model.list_episodics(params)
+  def index(conn, _) do
+    episodics = Model.list_episodics()
 
     eps =
       Enum.map(episodics, fn x ->
@@ -17,7 +17,7 @@ defmodule EpisodicalWeb.EpisodicController do
         Episodical.Presenters.Episodic.basic(presenter)
       end)
 
-    render(conn, :index, meta: meta, episodics: eps)
+    render(conn, :index, episodics: eps)
   end
 
   def new(conn, _params) do

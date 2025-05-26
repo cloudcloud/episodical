@@ -467,6 +467,9 @@ defmodule EpisodicalWeb.CoreComponents do
   slot :col, required: true do
     attr :class, :string
     attr :label, :string
+    attr :sort_name, :string
+    attr :sort_value, :string
+    attr :sort_key, :string
   end
 
   slot :action, doc: "the slot for showing user actions in the last table column"
@@ -479,10 +482,18 @@ defmodule EpisodicalWeb.CoreComponents do
 
     ~H"""
     <div class="overflow-y-auto px-4 sm:overflow-visible sm:px-0">
-      <table class="w-[40rem] mt-2 sm:w-full">
+      <table class="w-[40rem] mt-2 sm:w-full sortable">
         <thead class="text-sm text-left leading-6 text-yellow-400">
           <tr>
-            <th :for={col <- @col} class={["p-0 pb-2 font-normal", col[:class]]}>{col[:label]}</th>
+            <th :for={col <- @col} class={["p-0 pb-2 font-normal", col[:class]]}>
+              <%= if col[:sort_value] != nil do %>
+                <span class="sortable" data-sort-value={}>
+                  {col[:label]}
+                </span>
+              <% else %>
+                {col[:label]}
+              <% end %>
+            </th>
             <th :if={@action != []} class="relative p-0 pb-2 w-14">
               <span class="sr-only">{gettext("Actions")}</span>
             </th>
@@ -500,7 +511,7 @@ defmodule EpisodicalWeb.CoreComponents do
               class={["relative p-0", @row_click && "hover:cursor-pointer", col[:class]]}
             >
               <div class="block py-2 pr-6">
-                <span class="absolute -inset-y-px right-0 -left-4 sm:rounded-l-xl" />
+                {gen_td_span(assigns, @row_item.(row), col[:sort_value], col[:sort_key])}
                 <span class={["relative", i == 0 && "font-semibold text-indigo-200"]}>
                   {render_slot(col, @row_item.(row))}
                 </span>
@@ -524,27 +535,36 @@ defmodule EpisodicalWeb.CoreComponents do
     """
   end
 
-  @doc """
-  Return the keyword list of options that are used for making the Flop.Phoenix.table look nice.
-  """
-  def floptions do
-    [
-      {:container, true},
-      {:container_attrs, [class: "overflow-y-auto px-4 sm:overflow-visible sm:px-0"]},
-      {:table_attrs, [class: "w-[40rem] mt-2 sm:w-full"]},
-      {:thead_attrs, [class: "text-sm text-left leading-6 text-yellow-400"]},
-      {:th_wrapper_attrs, [class: "font-bold"]},
-      {:thead_th_attrs, [class: "p-0 pb-4 pr-6 font-normal"]},
-      {:tbody_attrs,
-       [
-         id: "episodics",
-         class: "relative divide-y divide-gray-800 border-t text-sm leading-6 text-indigo-300"
-       ]},
-      {:tbody_td_attrs, [class: "relative p-0 py-2 pr-6 hover:cursor-pointer"]},
-      {:tbody_tr_attrs, [class: "group hover:bg-slate-900"]},
-      {:thead_th_attrs, [class: "p-0 pb-4 pr-6 font-normal"]},
-      {:thead_tr_attrs, [class: ""]}
-    ]
+  defp gen_td_span(assigns, _, nil, _) do
+    ~H"""
+    <span class="absolute -inset-y-px right-0 -left-4 sm:rounded-l-xl" />
+    """
+  end
+
+  defp gen_td_span(assigns, row, sort, key) when is_binary(sort) do
+    assigns =
+      assigns
+      |> assign(:row, row)
+      |> assign(:sort, sort)
+      |> assign(:key, key)
+
+    ~H"""
+    <span
+      data-sort-value={gen_td_span_sort_value(@row, @sort, @key)}
+      class="absolute sorter -insert-y-px right-0 -left-4 sm:rounded-l-xl"
+    />
+    """
+  end
+
+  defp gen_td_span_sort_value(row, attr, key) when is_binary(key) do
+    row
+    |> Map.get(String.to_existing_atom(key))
+    |> Map.get(String.to_existing_atom(attr))
+  end
+
+  defp gen_td_span_sort_value(row, attr, _) when is_binary(attr) do
+    row.episodic
+    |> Map.get(String.to_existing_atom(attr))
   end
 
   @doc """
@@ -639,10 +659,10 @@ defmodule EpisodicalWeb.CoreComponents do
   def pill_box(assigns) do
     ~H"""
     <span class={[
-      "inline-block text-gray-100 px-2 py-1 rounded-lg mt-1",
-      @colour == "zinc" && "bg-zinc-800",
-      @colour == "red" && "bg-rose-800",
-      @colour == "green" && "bg-emerald-800"
+      "inline-block text-gray-100 px-2 py-1 rounded-lg border-gray-300 mt-1",
+      @colour == "zinc" && "bg-zinc-600",
+      @colour == "red" && "bg-ruby-600",
+      @colour == "green" && "bg-emerald-600"
     ]}>
       {@text}
     </span>

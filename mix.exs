@@ -61,7 +61,6 @@ defmodule Episodical.MixProject do
       {:bandit, "~> 1.5"},
       {:httpoison, "~> 2.0"},
       {:que, "~> 0.10.1"},
-      {:flop_phoenix, "~> 0.25.1"},
       {:ex_doc, ">= 0.0.0", only: :docs},
       {:buildkite_test_collector, path: "vendor/test_collector_elixir", only: :test}
     ]

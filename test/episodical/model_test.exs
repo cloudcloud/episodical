@@ -16,13 +16,11 @@ defmodule Episodical.ModelTest do
       external_id: nil
     }
 
-    test "list_episodics/1 returns all episodics" do
+    test "list_episodics/0 returns all episodics" do
       episodic = episodic_fixture()
 
-      {:ok, {_, meta}} = Model.list_episodics(%{})
-
-      assert {:ok, {[episodic |> Episodical.Repo.preload([:episodes, :genres])], meta}} ==
-               Model.list_episodics(%{})
+      assert [episodic |> Episodical.Repo.preload([:episodes, :genres])] ==
+               Model.list_episodics()
     end
 
     test "get_episodic!/1 returns the episodic with given id" do

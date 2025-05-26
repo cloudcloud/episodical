@@ -60,8 +60,6 @@ config :logger, :console,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
-config :flop, repo: Episodical.Repo
-
 config :mnesia, dir: ~c"mnesia/#{Mix.env()}/#{node()}"
 
 try do
