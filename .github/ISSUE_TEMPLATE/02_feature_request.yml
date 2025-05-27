@@ -1,0 +1,29 @@
+name: Feature request
+description: Submit a feature request.
+title: "[Feature]: "
+labels: ["request", "triage"]
+assignees:
+  - CerealBoy
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to submit this feature request!
+  - type: textarea
+    id: idea
+    attributes:
+      label: What is your request?
+      description: Please try to be as thorough as you can.
+      placeholder: I want more colours!
+      value: ""
+    validations:
+      required: true
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our [Code of Conduct](https://example.com). 
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true
+
