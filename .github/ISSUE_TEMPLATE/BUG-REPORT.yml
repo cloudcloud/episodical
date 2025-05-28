@@ -30,7 +30,7 @@ body:
     attributes:
       label: Version
       description: What version of our software are you running?
-      default: v0.1.0
+      value: "v0.1.0"
     validations:
       required: true
   - type: dropdown
