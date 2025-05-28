@@ -15,7 +15,7 @@ body:
       label: What is your request?
       description: Please try to be as thorough as you can.
       placeholder: I want more colours!
-      value: ""
+      value: "Please, the colours, I need more."
     validations:
       required: true
   - type: checkboxes
