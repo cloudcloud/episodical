@@ -62,7 +62,7 @@ defmodule Episodical.MixProject do
       {:httpoison, "~> 2.0"},
       {:que, "~> 0.10.1"},
       {:ex_doc, ">= 0.0.0", only: :docs},
-      {:buildkite_test_collector, path: "vendor/test_collector_elixir", only: :test}
+      {:buildkite_test_collector, "~> 0.3.2"}
     ]
   end
 

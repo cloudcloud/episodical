@@ -12,10 +12,9 @@ RUN apt-get update -y && apt-get install -y build-essential git libstdc++6 opens
 RUN sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && locale-gen
 
 RUN mix local.hex --force && \
-    mix local.rebar --force
+  mix local.rebar --force
 
 COPY mix.exs mix.lock ./
-COPY vendor ./vendor
 RUN mix deps.get && mkdir config
 
 COPY .buildkite/scripts/build.sh config/config.exs config/test.exs config/
