@@ -9,7 +9,13 @@ import Config
 
 config :episodical,
   ecto_repos: [Episodical.Repo],
-  generators: [timestamp_type: :utc_datetime, binary_id: true]
+  generators: [timestamp_type: :utc_datetime, binary_id: true],
+  database: Path.expand("../episodical_dev.db", __DIR__),
+  pool_size: 5,
+  journal_mode: :wal,
+  cache_size: -64000,
+  temp_store: :memory,
+  busy_timeout: 5000
 
 # Configures the endpoint
 config :episodical, EpisodicalWeb.Endpoint,

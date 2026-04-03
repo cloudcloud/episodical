@@ -85,7 +85,7 @@ defmodule Episodical.Repo.Migrations.CreateEpisodics do
       add :released_at, :utc_datetime
       add :is_watched, :boolean, default: false, null: false
       add :watched_at, :utc_datetime, null: true
-      add :overview, :string
+      add :overview, :text
 
       add :external_id, :string, null: true
       add :episodic_id, references(:episodics, on_delete: :delete_all, type: :binary_id)

@@ -1,17 +1,9 @@
 services:
-  database:
-    image: postgres:17.4-bookworm
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-
   app:
     build:
       dockerfile: Dockerfile.test
-    depends_on:
-      - database
     environment:
-      PGHOST: database
+      MIX_ENV: test
 
   otel:
     image: otel/opentelemetry-collector-contrib:0.122.1

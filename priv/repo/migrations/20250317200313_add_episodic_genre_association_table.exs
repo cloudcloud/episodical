@@ -4,12 +4,12 @@ defmodule Episodical.Repo.Migrations.AddEpisodicGenreAssociationTable do
   def change do
     create table(:episodics_genres, primary_key: false) do
       add :episodic_id,
-        references(:episodics, type: :binary_id, on_delete: :delete_all),
-        null: false
+          references(:episodics, type: :binary_id, on_delete: :delete_all),
+          null: false
 
       add :genre_id,
-        references(:genres, type: :binary_id, on_delete: :delete_all),
-        null: false
+          references(:genres, type: :binary_id, on_delete: :delete_all),
+          null: false
 
       timestamps(type: :utc_datetime_usec)
     end
@@ -18,7 +18,6 @@ defmodule Episodical.Repo.Migrations.AddEpisodicGenreAssociationTable do
     create unique_index(:genres, [:external_id])
 
     alter table(:episodic_episodes) do
-      modify :overview, :text
       add :provider_id, references(:providers, on_delete: :nothing, type: :binary_id)
     end
 

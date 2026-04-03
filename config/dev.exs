@@ -2,13 +2,11 @@ import Config
 
 # Configure your database
 config :episodical, Episodical.Repo,
-  username: "postgres",
-  password: "postgres",
-  hostname: "localhost",
-  database: "episodical_dev",
-  stacktrace: true,
-  show_sensitive_data_on_connection_error: true,
-  pool_size: 10
+  database: Path.expand("../episodical_dev.db", __DIR__),
+  cache_size: -64000,
+  journal_mode: :wal,
+  temp_store: :memory,
+  busy_timeout: 5000
 
 # For development, we disable any cache and enable
 # debugging and code reloading.
@@ -19,7 +17,7 @@ config :episodical, Episodical.Repo,
 config :episodical, EpisodicalWeb.Endpoint,
   # Binding to loopback ipv4 address prevents access from other machines.
   # Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
-  http: [ip: {127, 0, 0, 1}, port: 4000],
+  http: [ip: {127, 0, 0, 1}, port: 4_000],
   check_origin: false,
   code_reloader: true,
   debug_errors: true,
