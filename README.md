@@ -19,7 +19,6 @@ Episodical is configured entirely through environment variables.
 | `HOSTNAME` | The hostname the service is served under (e.g. `localhost`) |
 | `PORT` | The port to listen on (e.g. `4000`) |
 | `DATA_FILE` | Full path to the SQLite database file (e.g. `/var/episodical/episodical.db`) |
-| `DATA_PASSPHRASE` | Passphrase used to encrypt the SQLite database |
 | `ENCRYPTION_KEYS` | Base64-encoded 32-byte key(s) used for data encryption at rest |
 | `SECRET_KEY_BASE` | Phoenix secret key base — required in production |
 
@@ -85,6 +84,9 @@ docker run -d \
   -v /path/to/local/data:/data \
   cloudcloud/episodical:latest
 ```
+
+The volume mount is important — without it the SQLite file lives inside the
+container and will be lost when the container is removed.
 
 ## Building a release
 

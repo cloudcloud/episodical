@@ -34,5 +34,5 @@ defmodule Episodical.Application do
     :ok
   end
 
-  def version, do: "0.0.1"
+  def version, do: "0.1.1"
 end
