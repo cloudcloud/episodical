@@ -26,7 +26,9 @@ config :episodical, EpisodicalWeb.Endpoint,
     layout: false
   ],
   pubsub_server: Episodical.PubSub,
-  live_view: [signing_salt: "2j3YW6Kp"]
+  live_view: [signing_salt: "2j3YW6Kp"],
+  reloadable_compilers: [:gettext, :elixir],
+  reloadable_apps: [:episodical, :episodical_web]
 
 # Configures the mailer
 #
