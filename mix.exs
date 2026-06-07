@@ -33,14 +33,14 @@ defmodule Episodical.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.8.5"},
+      {:phoenix, "~> 1.8.7"},
       {:phoenix_ecto, "~> 4.5"},
       {:ecto_sql, "~> 3.10"},
-      {:ecto_sqlite3, "~> 0.17"},
+      {:ecto_sqlite3, "~> 0.24"},
       {:phoenix_html, "~> 4.1"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
-      {:phoenix_live_view, "~> 1.1.11"},
-      {:floki, ">= 0.30.0", only: :test},
+      {:phoenix_live_view, "~> 1.1.31"},
+      {:floki, ">= 0.38.3", only: :test},
       {:phoenix_live_dashboard, "~> 0.8.3"},
       {:esbuild, "~> 0.8", runtime: Mix.env() == :dev},
       {:tailwind, "~> 0.2", runtime: Mix.env() == :dev},
@@ -52,17 +52,17 @@ defmodule Episodical.MixProject do
        app: false,
        compile: false,
        depth: 1},
-      {:swoosh, "~> 1.5"},
-      {:finch, "~> 0.13"},
+      {:swoosh, "~> 1.26.1"},
+      {:finch, "~> 0.22"},
       {:telemetry_metrics, "~> 1.0"},
       {:telemetry_poller, "~> 1.0"},
       {:gettext, "~> 1.0"},
-      {:jason, "~> 1.3"},
+      {:jason, "~> 1.4.5"},
       {:dns_cluster, "~> 0.2.0"},
-      {:bandit, "~> 1.5"},
+      {:bandit, "~> 1.11.1"},
       {:httpoison, "~> 2.0"},
       {:que, "~> 0.10.1"},
-      {:ex_doc, ">= 0.0.0", only: :docs},
+      {:ex_doc, ">= 0.40.3", only: :docs},
       {:buildkite_test_collector, "~> 0.3.2"}
     ]
   end
