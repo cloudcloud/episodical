@@ -60,7 +60,7 @@ defmodule Episodical.MixProject do
       {:jason, "~> 1.4.5"},
       {:dns_cluster, "~> 0.2.0"},
       {:bandit, "~> 1.11.1"},
-      {:httpoison, "~> 2.0"},
+      {:httpoison, "~> 3.0"},
       {:que, "~> 0.10.1"},
       {:ex_doc, ">= 0.40.3", only: :docs},
       {:buildkite_test_collector, "~> 0.3.2"}
