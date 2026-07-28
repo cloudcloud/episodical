@@ -59,7 +59,7 @@ defmodule Episodical.MixProject do
       {:gettext, "~> 1.0"},
       {:jason, "~> 1.4.5"},
       {:dns_cluster, "~> 0.2.0"},
-      {:bandit, "~> 1.11.1"},
+      {:bandit, "~> 1.12.4"},
       {:httpoison, "~> 2.0"},
       {:que, "~> 0.10.1"},
       {:ex_doc, ">= 0.40.3", only: :docs},
