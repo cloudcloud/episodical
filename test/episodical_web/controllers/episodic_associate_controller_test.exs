@@ -40,6 +40,18 @@ defmodule EpisodicalWeb.EpisodicAssociateControllerTest do
     end
   end
 
+  describe "#show with a provider that is not TheTVDB" do
+    test "redirects with a flash instead of raising", %{conn: conn} do
+      provider = provider_fixture(%{service_type: "tvmaze"})
+      episodic = episodic_fixture()
+
+      conn = get(conn, ~p"/episodics/#{episodic}/associate/#{provider}")
+
+      assert redirected_to(conn) == ~p"/episodics/#{episodic}"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "not supported"
+    end
+  end
+
   describe "#create happy path" do
     setup [:setup_create]
 

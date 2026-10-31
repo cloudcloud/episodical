@@ -70,19 +70,20 @@ defmodule Episodical.External.Provider.TheTVDB do
   defp api_call(provider, url) do
     provider = Episodical.Repo.preload(provider, [:token])
 
-    value =
-      with true <- Ecto.assoc_loaded?(provider.token),
-           true <- length(provider.token) > 0,
-           true <- List.first(provider.token).is_valid do
-        true
-      else
-        _ -> retrieve_token(provider)
-      end
-
-    if value == true do
-      make_request(url, List.first(provider.token).value)
+    with {:ok, token} <- token_for(provider) do
+      make_request(url, token.value)
     else
-      {:error, "Unable to make request"}
+      _ -> {:error, "Unable to make request"}
+    end
+  end
+
+  # A token fetched by retrieve_token/1 is not part of the association that was
+  # preloaded above, so hand the token itself back instead of re-reading the
+  # provider's (stale) token list, which is empty on a provider's first use.
+  defp token_for(%Provider{token: tokens} = provider) do
+    case Enum.find(tokens, & &1.is_valid) do
+      %Token{} = token -> {:ok, token}
+      nil -> retrieve_token(provider)
     end
   end
 
@@ -94,17 +95,17 @@ defmodule Episodical.External.Provider.TheTVDB do
       ])
 
     with {:ok, %{status_code: 200, body: body}} <- response,
-         %{"data" => %{"token" => token}, "status" => "success"} <- Jason.decode!(body),
-         {:ok, %Token{}} <-
+         %{"data" => %{"token" => value}, "status" => "success"} <- Jason.decode!(body),
+         {:ok, %Token{} = token} <-
            Episodical.External.create_token(%{
-             value: token,
+             value: value,
              expires_at: DateTime.shift(DateTime.now!("Etc/UTC"), month: 1),
              is_valid: true,
              provider_id: provider.id
            }) do
-      true
+      {:ok, token}
     else
-      _ -> false
+      _ -> :error
     end
   end
 
@@ -122,4 +123,10 @@ defmodule Episodical.External.Provider.TheTVDB do
   defp handle_response({:ok, %{status_code: 200, body: body}}) do
     {:ok, Jason.decode!(body)}
   end
+
+  defp handle_response({:ok, %{status_code: _status, body: _body}}) do
+    {:error}
+  end
+
+  defp handle_response({:error, _reason} = error), do: error
 end

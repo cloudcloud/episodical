@@ -27,7 +27,12 @@ defmodule EpisodicalWeb.EpisodicAssociateController do
         changeset: changeset
       )
     else
-      :error ->
+      %{service_type: service_type} ->
+        conn
+        |> put_flash(:error, "The #{service_type} provider is not supported for Episodics.")
+        |> redirect(to: ~p"/episodics/#{episodic}")
+
+      _ ->
         conn
         |> put_flash(:error, "Unable to retrieve details from API.")
         |> redirect(to: ~p"/episodics/#{episodic}")
