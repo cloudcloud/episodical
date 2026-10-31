@@ -193,7 +193,7 @@ defmodule EpisodicalWeb.CoreComponents do
   attr :as, :any, default: nil, doc: "the server side parameter to collect all input under"
 
   attr :class, :any,
-    default: "mt-10 space-y-8 bg-gray-950 text-indigo-200",
+    default: "mt-10 space-y-8 text-indigo-200",
     doc: "the class value for the form wrapper"
 
   attr :rest, :global,
