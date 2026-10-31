@@ -254,6 +254,37 @@ defmodule Episodical.ModelTest do
       assert Model.list_episodic_episodes() == [episode]
     end
 
+    test "list_upcoming_episodes/1 returns only the next upcoming episode per episodic" do
+      today = DateTime.new!(Date.utc_today(), ~T[00:00:00])
+      first = episodic_fixture()
+      second = episodic_fixture()
+
+      episode_fixture(%{episodic_id: first.id, released_at: DateTime.add(today, 3, :day)})
+
+      first_upcoming =
+        episode_fixture(%{episodic_id: first.id, released_at: DateTime.add(today, 1, :day)})
+
+      second_upcoming =
+        episode_fixture(%{episodic_id: second.id, released_at: DateTime.add(today, 2, :day)})
+
+      episode_fixture(%{episodic_id: second.id, released_at: DateTime.add(today, -1, :day)})
+
+      assert [first_result, second_result] = Model.list_upcoming_episodes()
+      assert first_result.id == first_upcoming.id
+      assert second_result.id == second_upcoming.id
+    end
+
+    test "list_upcoming_episodes/1 respects the limit" do
+      today = DateTime.new!(Date.utc_today(), ~T[00:00:00])
+
+      for days <- 1..3 do
+        episodic = episodic_fixture()
+        episode_fixture(%{episodic_id: episodic.id, released_at: DateTime.add(today, days, :day)})
+      end
+
+      assert length(Model.list_upcoming_episodes(2)) == 2
+    end
+
     test "get_episode!/1 returns the episode with given id" do
       episode = episode_fixture()
       assert Model.get_episode!(episode.id) == episode

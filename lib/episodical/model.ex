@@ -212,6 +212,33 @@ defmodule Episodical.Model do
   end
 
   @doc """
+  Returns the next upcoming episode for each episodic, ordered by release date.
+
+  Only episodes released from today onwards are considered, and at most one
+  episode per episodic is returned. The list is capped at `limit` entries.
+  """
+  @spec list_upcoming_episodes(pos_integer()) :: [Episode.t()]
+  def list_upcoming_episodes(limit \\ 10) do
+    today = DateTime.new!(Date.utc_today(), ~T[00:00:00])
+
+    earliest =
+      from ep in Episode,
+        where: ep.released_at >= ^today,
+        group_by: ep.episodic_id,
+        select: %{episodic_id: ep.episodic_id, released_at: min(ep.released_at)}
+
+    from(ep in Episode,
+      join: first in subquery(earliest),
+      on: first.episodic_id == ep.episodic_id and first.released_at == ep.released_at,
+      order_by: [asc: ep.released_at, asc: ep.season, asc: ep.index],
+      preload: [:episodic]
+    )
+    |> Repo.all()
+    |> Enum.uniq_by(& &1.episodic_id)
+    |> Enum.take(limit)
+  end
+
+  @doc """
   Gets a single episode.
   """
   @spec get_episode!(String.t()) :: Episode.t()

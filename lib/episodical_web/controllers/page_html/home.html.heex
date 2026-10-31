@@ -1,8 +1,27 @@
 <.flash_group flash={@flash} />
-<div class="px-4 py-10 sm:px-6 sm:py-28 lg:px-8 xl:px-28 xl:py-32">
-  <div class="mx-auto max-w-xl lg:mx-0">
-    <.header>
-      Latest releases
-    </.header>
-  </div>
-</div>
+
+<.header>
+  Upcoming episodes
+  <:subtitle>The next airing episode from each of your episodics.</:subtitle>
+</.header>
+
+<.table
+  :if={@upcoming != []}
+  id="upcoming-episodes"
+  rows={@upcoming}
+  row_click={&JS.navigate(~p"/episodics/#{&1.episodic}")}
+>
+  <:col :let={episode} label="Series">
+    <.link class="hover:text-indigo-400" navigate={~p"/episodics/#{episode.episodic}"}>
+      {episode.episodic.title}
+    </.link>
+  </:col>
+  <:col :let={episode} label="Season">{episode.season}</:col>
+  <:col :let={episode} label="Episode">{episode.index}</:col>
+  <:col :let={episode} label="Title">{episode.title}</:col>
+  <:col :let={episode} label="Air Date" class="date">{just_date(episode.released_at)}</:col>
+</.table>
+
+<p :if={@upcoming == []} class="mt-4 text-sm text-zinc-400">
+  No upcoming episodes found.
+</p>

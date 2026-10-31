@@ -43,7 +43,16 @@ defmodule Episodical.Model.Episodic.Episode do
   @doc false
   def changeset(episode, attrs) do
     episode
-    |> cast(attrs, [:index, :title, :season, :released_at, :is_watched, :watched_at, :overview])
+    |> cast(attrs, [
+      :episodic_id,
+      :index,
+      :title,
+      :season,
+      :released_at,
+      :is_watched,
+      :watched_at,
+      :overview
+    ])
     |> validate_required([
       :index,
       :title,
