@@ -55,6 +55,11 @@ defmodule EpisodicalWeb.PageControllerTest do
 
     assert html =~ "Survivor First"
     assert html =~ "Expanse First"
-    refute html =~ "Survivor Later"    refute html =~ "Expanse Past"
+    refute html =~ "Survivor Later"
+    refute html =~ "Expanse Past"
+
+    # Every row is clickable through to that Episodic's page.
+    assert html =~ "hover:cursor-pointer"
+    assert html =~ ~s(/episodics/#{survivor.id})
   end
 end
